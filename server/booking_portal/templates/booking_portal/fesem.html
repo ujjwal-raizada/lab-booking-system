@@ -1,0 +1,15 @@
+{% extends 'booking_portal/base.html' %}
+
+{% block title %} Field Emission Scanning Electron Microscope {% endblock %}
+
+{% block content %}
+<form action='book-machine/' method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div style="text-align: center;">
+        <input type="submit" class="btn btn-primary" value="Submit">
+    </div>
+</form>
+{% endblock %}
+
+{% block facility %} FESEM {% endblock %}
