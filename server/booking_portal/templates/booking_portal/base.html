@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+
+        <title>{% block title %} {% endblock %}</title>
+    </head>
+    <body>
+        <main>
+        <div class='container-fluid p-3 my-3 bg-primary text-white '>
+            <p style="text-align:center; font-size: 30px;"><b>REQUISITION FORM</b></p>
+            <p style="text-align:center; font-size: 20px;">Central Analytical Laboratory (CAL)</p>
+            <p style="text-align:center; font-size: 20px;">Birla Institute of Technology and Science, Pilani - Hyderabad Campus</p>
+        </div>
+        <div class="container-fluid pt-3">
+            <div class="form-group">
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
+
+        <div class="container-fluid pt-3">
+            <p style="text-align:justify">
+                I certify that my samples do not present any danger to the personnel or the equipment and I have provided
+                the appropriate handling instructions for safety to the operator before analysis. I also certify that I 
+                shall acknowledge the {% block facility %} {% endblock %} at the Birla Institute of Technology and Science, 
+                Pilani, Hyderabad Campus if the results are published in journals / conferences or in thesis. I shall also
+                forward the citation details to the In-charge of the CAL by email (cal@hyderabad.bits-pilani.ac.in) within
+                a month of such publication. I understand that the sample preparation is entirely my responsibility.
+            </p>
+
+            <p style="text-align: justify;">
+                I agree that if I could not be present/submit the sample for the given slot for whatever reason(s) without 
+                prior intimidation to the concerned operator, I will not be allotted a slot for next 4 weeks.
+            </p>
+        </div>
+        </main>
+    </body>
+</html>
