@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Email Portal{% endblock %}
+
+{% block content %}
+
+{% for email in emails %}
+
+    {{ email }} <br>
+
+{% endfor %}
+
+{% endblock %}

@@ -5,11 +5,19 @@ from .forms.fesemform import FESEMForm
 from .forms.tcspcform import TCSPCForm
 from .forms.ftirform import FTIRForm
 from .forms.lcmsform import LCMSForm
+from .models import EmailModel
 
 def index(request):
     context = {
     }
     return render(request, 'home.html', context=context)
+
+def email(request):
+    emails = EmailModel.objects.all()
+    context = {
+        'emails': emails,
+    }
+    return render(request, 'email.html', context=context)
 
 def book_machine(request, id):
     if id == 1:
@@ -50,3 +58,4 @@ def book_machine(request, id):
 
     else:
         return HttpResponse('Form for this ID has not been built yet')
+

@@ -38,8 +38,15 @@ class LabAssistant(CustomUser):
 
 
 class Instrument(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, unique=True, null=False)
     desc = models.CharField(max_length=200, null=True)
+
+    @property
+    def short_id(self):
+        return self.name
+
+    def __str__(self):
+        return f"{self.name}"
 
 
 class Slot(models.Model):
@@ -78,3 +85,11 @@ class EmailModel(models.Model):
     request = models.ForeignKey(Request, on_delete=models.PROTECT, null=True)
     text = models.CharField(max_length=500)
     date_time = models.DateTimeField()
+    subject = models.CharField(max_length=100, null=True)
+
+    @property
+    def short_id(self):
+        return self.subject
+
+    def __str__(self):
+        return f"{self.subject}"
