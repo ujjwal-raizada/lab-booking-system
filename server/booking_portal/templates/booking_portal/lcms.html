@@ -1,0 +1,19 @@
+{% extends "booking_portal/base.html" %}
+
+{% block title %} Liquid Chromatography - Mass Spectroscopy {% endblock %}
+
+{% block content %}
+<form action='book-machine/4' method='POST'>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <p style="text-align: justify;">
+        Note: User is requested to adopt standard technique for preparation of samples before giving them. <br>
+        The sample should be filtered through 0.2 μm PTFE filter.
+    </p>
+    <div style="text-align: center;">
+        <input type="submit" class="btn btn-primary" value="Submit">
+    </div>
+</form>
+{% endblock %}
+
+{% block facility %} LC-MS {% endblock %}

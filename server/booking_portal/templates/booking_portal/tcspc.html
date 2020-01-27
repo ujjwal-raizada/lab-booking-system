@@ -1,9 +1,9 @@
 {% extends 'booking_portal/base.html' %}
 
-{% block title %} Field Emission Scanning Electron Microscope {% endblock %}
+{% block title %} TCS-PC {% endblock %}
 
 {% block content %}
-<form action='book-machine/1' method="POST">
+<form action="book-machine/2" method="POST">
     {% csrf_token %}
     {{ form.as_p }}
     <div style="text-align: center;">
@@ -12,4 +12,4 @@
 </form>
 {% endblock %}
 
-{% block facility %} FESEM {% endblock %}
+{% block facility %} TCS-PC {% endblock %}
