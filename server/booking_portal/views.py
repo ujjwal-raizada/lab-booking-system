@@ -1,10 +1,12 @@
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 
 from .forms.fesemform import FESEMForm
 from .forms.tcspcform import TCSPCForm
 from .forms.ftirform import FTIRForm
 from .forms.lcmsform import LCMSForm
+from .forms.portal_forms import IntrumentList
 from .models import EmailModel
 
 def index(request):
@@ -12,6 +14,12 @@ def index(request):
     }
     return render(request, 'home.html', context=context)
 
+@login_required
+def instrument_list(request):
+    form = IntrumentList()
+    return render(request, 'booking_portal/portal_forms/instrument_list.html', {'form': form})
+
+@login_required
 def email(request):
     emails = EmailModel.objects.all()
     context = {
@@ -19,6 +27,7 @@ def email(request):
     }
     return render(request, 'email.html', context=context)
 
+@login_required
 def book_machine(request, id):
     if id == 1:
         if request.method == 'POST':

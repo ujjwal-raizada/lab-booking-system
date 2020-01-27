@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Intrument List{% endblock %}
+
+
+
+{% block content %}
+<h2>Instrument List</h2>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Proceed</button>
+</form>
+{% endblock %}
