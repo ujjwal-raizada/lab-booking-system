@@ -121,3 +121,4 @@ USE_TZ = True
 STATIC_URL = '/static/'
 LOGIN_REDIRECT_URL = '/booking/'
 LOGOUT_REDIRECT_URL = '/booking/'
+AUTH_USER_MODEL = 'booking_portal.CustomUser'
