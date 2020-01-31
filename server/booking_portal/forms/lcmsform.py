@@ -53,3 +53,9 @@ class LCMSForm(UserForm):
                                                 'class': 'form-control',
                                             }
     ))
+
+    other_remarks = forms.CharField(label="Any Other Relevant Information", max_length=50, widget=forms.Textarea(
+                                attrs={
+                                    'class': 'form-control',
+                                }
+    ))

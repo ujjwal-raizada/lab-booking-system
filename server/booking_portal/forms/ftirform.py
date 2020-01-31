@@ -30,7 +30,7 @@ class FTIRForm(UserForm):
                                 }
     ))
 
-    other_remarks = forms.CharField(label="Any Other Relevant Information", max_length=50, widget=forms.TextInput(
+    other_remarks = forms.CharField(label="Any Other Relevant Information", max_length=50, widget=forms.Textarea(
                                 attrs={
                                     'class': 'form-control',
                                 }
