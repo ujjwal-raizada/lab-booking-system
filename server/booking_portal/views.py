@@ -6,8 +6,8 @@ from .forms.fesemform import FESEMForm
 from .forms.tcspcform import TCSPCForm
 from .forms.ftirform import FTIRForm
 from .forms.lcmsform import LCMSForm
-from .forms.portal_forms import IntrumentList
-from .models import EmailModel
+from .forms.portal_forms import IntrumentList, SlotList
+from .models import EmailModel, Instrument
 
 def index(request):
     context = {
@@ -68,3 +68,10 @@ def book_machine(request, id):
     else:
         return HttpResponse('Form for this ID has not been built yet')
 
+@login_required
+def slot_list(request):
+    instr_id = request.POST['instruments']
+    instr_name = Instrument.objects.get(id=instr_id).name
+    form = SlotList(instr_id)
+    return render(request, 'booking_portal/portal_forms/slot_list.html', 
+                  {'instrument_name': instr_name, 'instrument_id': instr_id, 'form': form})
