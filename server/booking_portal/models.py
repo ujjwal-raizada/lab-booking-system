@@ -1,6 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.dispatch import receiver
+from django.db.models.signals import post_save
+from django.core.mail import send_mail
 
+from onlineCAL.settings import EMAIL_HOST_USER
 
 class CustomUser(AbstractUser):
     first_name = None
@@ -79,12 +83,10 @@ class Request(models.Model):
 
 
 class EmailModel(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.PROTECT, null=True)
-    faculty = models.ForeignKey(Faculty, on_delete=models.PROTECT, null=True)
-    instrument = models.ForeignKey(Instrument, on_delete=models.PROTECT, null=True)
-    request = models.ForeignKey(Request, on_delete=models.PROTECT, null=True)
-    text = models.CharField(max_length=500)
-    date_time = models.DateTimeField()
+    receiver = models.EmailField(null=True, blank=False)
+    request = models.ForeignKey(Request, on_delete=models.PROTECT, null=True, blank=False)
+    date_time = models.DateTimeField(auto_now_add=True)
+    text = models.CharField(max_length=500, null=True)
     subject = models.CharField(max_length=100, null=True)
 
     @property
@@ -93,3 +95,13 @@ class EmailModel(models.Model):
 
     def __str__(self):
         return f"{self.subject}"
+
+
+@receiver(signal=post_save, sender=EmailModel)
+def send_email_after_save(sender, instance, **kwargs):
+    sender = instance.sender
+    receiver = instance.receiver
+    subject = instance.subject
+    text = instance.text
+
+    send_mail(subject, text, EMAIL_HOST_USER, [receiver], fail_silently=False)

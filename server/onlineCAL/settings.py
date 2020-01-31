@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
-
+from .config import email_password, email_username
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -72,7 +72,8 @@ WSGI_APPLICATION = 'onlineCAL.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/2.2/ref/settings/#databases
+# https://docs.djangoproject.co# EMAIL_HOST_USER = 'pranjalgupta2199@gmail.com'
+# EMAIL_HOST_PASSWORD = 'X1n2j#t+'m/en/2.2/ref/settings/#databases
 
 DATABASES = {
     'default': {
@@ -122,3 +123,11 @@ STATIC_URL = '/static/'
 LOGIN_REDIRECT_URL = '/booking/'
 LOGOUT_REDIRECT_URL = '/booking/'
 AUTH_USER_MODEL = 'booking_portal.CustomUser'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = email_username
+EMAIL_HOST_PASSWORD = email_password
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
