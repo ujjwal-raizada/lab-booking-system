@@ -30,7 +30,7 @@ class TCSPCForm(UserForm):
                                             }
     ))
 
-    other_remarks = forms.CharField(label='Any Other Remarks', max_length=75, widget=forms.TextInput(
+    other_remarks = forms.CharField(label='Any Other Remarks', max_length=75, widget=forms.Textarea(
                                     attrs={
                                         "class": "form-control",
                                     }
