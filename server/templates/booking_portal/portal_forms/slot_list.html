@@ -6,7 +6,7 @@
 
 {% block content %}
 <h2>Available Slots: {{ instrument_name }}</h2>
-<form method="POST" action={% url 'book-machine' id=instrument_id %}>
+<form method="GET" action={% url 'book-machine' id=instrument_id %}>
   {% csrf_token %}
   {{ form.as_p }}
   <button type="submit">Proceed</button>
