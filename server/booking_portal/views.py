@@ -7,7 +7,7 @@ from .forms.tcspcform import TCSPCForm
 from .forms.ftirform import FTIRForm
 from .forms.lcmsform import LCMSForm
 from .forms.portal_forms import IntrumentList, SlotList
-from .models import EmailModel, Instrument
+from .models import EmailModel, Instrument, Slot, Request, Student, Faculty
 
 def index(request):
     context = {
@@ -29,44 +29,57 @@ def email(request):
 
 @login_required
 def book_machine(request, id):
-    if id == 1:
-        if request.method == 'POST':
-            form = FESEMForm(request.POST)
-            if form.is_valid():
-                return HttpResponse('Submission successful for FESEMForm')
-        else:
+    if request.method == 'GET':
+        if id == 1:
             form = FESEMForm()
-        return render(request, 'booking_portal/fesem.html', {'form': form})
-
-    elif id == 2:
-        if request.method == 'POST':
-            form = TCSPCForm(request.POST)
-            if form.is_valid():
-                return HttpResponse('Submission Successful for TCSPCForm')
-        else:
+            template = 'booking_portal/fesem.html'
+        elif id == 2:
             form = TCSPCForm()
-        return render(request, 'booking_portal/tcspc.html', {'form': form})
-
-    elif id == 3:
-        if request.method == 'POST':
-            form = FTIRForm(request.POST)
-            if form.is_valid():
-                return HttpResponse("Submission successful for FTIRForm")
-        else:
+            template = 'booking_portal/tcspsc.html'
+        elif id == 3:
             form = FTIRForm()
-        return render(request, 'booking_portal/ftir.html', {'form': form})
-
-    elif id == 4:
-        if request.method == 'POST':
-            form = LCMSForm(request.POST)
-            if form.is_valid():
-                return HttpResponse("Submission successful for LCMSForm")
-        else:
+            template = 'booking_portal/ftir.html'
+        elif id == 4:
             form = LCMSForm()
-        return render(request, 'booking_portal/lcms.html', {'form': form})
+            template = 'booking_portal/lcms.html'
+        else:
+            return HttpResponse('Form for this ID has not been built yet')
+        return render(request, template, {'form': form}) 
 
     else:
-        return HttpResponse('Form for this ID has not been built yet')
+        if id == 1:
+            form = FESEMForm(request.POST)
+        elif id == 2:
+            form = TCSPCForm(request.POST)
+        elif id == 3:
+            form = FTIRForm(request.POST)
+        elif id == 4:
+            form = LCMSForm(request.POST)
+
+        if form.is_valid():
+            slot_id = request.GET['slots']
+            student_name = request.POST['user_name']
+            faculty_name = request.POST['sup_name']
+
+            instr_instance = Instrument.objects.filter(id=id).exists()
+            slot_instance = Slot.objects.filter(id=slot_id,
+                                             status=Slot.STATUS_1, 
+                                             instrument=instr_instance).exists()
+            student_instance = Student.objects.filter(name=student_name).exists()
+            faculty_instance = Faculty.objects.filter(name=faculty_name).exists()
+
+            if slot_instance and student_instance and faculty_instance and instr_instance:
+                req_instance = Request(student=student_instance, 
+                                       faculty=faculty_instance, 
+                                       instrument=instr_instance, 
+                                       slot=slot_instance,
+                                       status=Request.STATUS_1)
+                req_instance.save()
+                slot_instance.status = Slot.STATUS_3
+                slot_instance.save()
+                return HttpResponse("Submission Successful")
+            else:
+                return HttpResponse('Submission Failed')
 
 @login_required
 def slot_list(request):

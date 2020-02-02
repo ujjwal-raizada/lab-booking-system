@@ -76,12 +76,18 @@ class Slot(models.Model):
 
 
 class Request(models.Model):
+    STATUS_1 = "S1"
+    STATUS_2 = "S2"
+    STATUS_3 = "S3"
+    STATUS_4 = "S4"
+    STATUS_5 = "S5"
+
     STATUS_CHOICES = [
-        ("S1", "Waiting for faculty approval."),
-        ("S2", "Waiting for lab assistant approval."),
-        ("S3", "Approved"),
-        ("S4", "Rejected"),
-        ("S5", "Cancelled")
+        (STATUS_1, "Waiting for faculty approval."),
+        (STATUS_2, "Waiting for lab assistant approval."),
+        (STATUS_3, "Approved"),
+        (STATUS_4, "Rejected"),
+        (STATUS_5, "Cancelled")
     ]
     student = models.ForeignKey(Student, on_delete=models.PROTECT)
     faculty = models.ForeignKey(Faculty, on_delete=models.PROTECT)
