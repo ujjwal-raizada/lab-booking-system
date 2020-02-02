@@ -2,13 +2,21 @@
 
 {% block title %}Instrument Slot List{% endblock %}
 
-
-
 {% block content %}
-<h2>Available Slots: {{ instrument_name }}</h2>
-<form method="GET" action={% url 'book-machine' id=instrument_id %}>
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Proceed</button>
-</form>
+<div class="container pt-4" style="text-align: center;">
+  <div class="card bg-light mb-3" style="max-width: 60rem;">
+    <div class="card-body">
+      <h2 clas="card-title">Available Slots: {{ instrument_name }}</h2>
+      <p class="card-text">
+        <form method="GET" action={% url 'book-machine' id=instrument_id %}>
+          {% csrf_token %}
+          <div class="form-group">
+            {{ form.as_p }}
+          </div>
+          <button type="submit" class="btn btn-primary">Proceed</button><br /><br />
+        </form>
+      </p>
+    </div>
+  </div>
+</div>
 {% endblock %}
