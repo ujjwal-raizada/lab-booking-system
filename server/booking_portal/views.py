@@ -35,7 +35,7 @@ def book_machine(request, id):
             template = 'booking_portal/fesem.html'
         elif id == 2:
             form = TCSPCForm()
-            template = 'booking_portal/tcspsc.html'
+            template = 'booking_portal/tcspc.html'
         elif id == 3:
             form = FTIRForm()
             template = 'booking_portal/ftir.html'
@@ -61,12 +61,12 @@ def book_machine(request, id):
             student_name = request.POST['user_name']
             faculty_name = request.POST['sup_name']
 
-            instr_instance = Instrument.objects.filter(id=id).exists()
+            instr_instance = Instrument.objects.filter(id=id).first()
             slot_instance = Slot.objects.filter(id=slot_id,
                                              status=Slot.STATUS_1, 
-                                             instrument=instr_instance).exists()
-            student_instance = Student.objects.filter(name=student_name).exists()
-            faculty_instance = Faculty.objects.filter(name=faculty_name).exists()
+                                             instrument=instr_instance).first()
+            student_instance = Student.objects.filter(name=student_name).first()
+            faculty_instance = Faculty.objects.filter(name=faculty_name).first()
 
             if slot_instance and student_instance and faculty_instance and instr_instance:
                 req_instance = Request(student=student_instance, 
@@ -74,8 +74,8 @@ def book_machine(request, id):
                                        instrument=instr_instance, 
                                        slot=slot_instance,
                                        status=Request.STATUS_1)
-                req_instance.save()
                 slot_instance.status = Slot.STATUS_3
+                req_instance.save()
                 slot_instance.save()
                 return HttpResponse("Submission Successful")
             else:
