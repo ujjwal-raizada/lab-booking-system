@@ -111,11 +111,16 @@ class EmailModel(models.Model):
         return f"{self.subject}"
 
 
-@receiver(signal=post_save, sender=EmailModel)
+@receiver(signal=post_save, sender=Request)
 def send_email_after_save(sender, instance, **kwargs):
-    sender = instance.sender
-    receiver = instance.receiver
-    subject = instance.subject
-    text = instance.text
+    if instance.status == instance.STATUS_1:
+        sub = "Waiting for Faculty approval"
+        receiver = instance.faculty.email
+        text = "Hello World"
 
-    send_mail(subject, text, EMAIL_HOST_USER, [receiver], fail_silently=False)
+    email_instance = EmailModel(receiver=receiver,
+                                request=instance,
+                                text=text,
+                                subject=sub)
+    email_instance.save()
+    send_mail(sub, text, EMAIL_HOST_USER, [receiver], fail_silently=False)
