@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Faculty Portal{% endblock %}
+
+{% block content %}
+<div class="container pt-4" style="text-align: center;">
+  <div class="card bg-light mb-3" style="max-width: 80rem;">
+    <div class="card-body">
+      <h2 class="card-title">Pending Requests</h2>
+      <p class="card-text">
+          {% csrf_token %}
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Student Name</th>
+                <th scope="col">Faculty</th>
+                <th scope="col">Instrument</th>
+                <th scope="col">Slot</th>
+                <th scope="col">Status</th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+
+              {% for request in requests %}
+                <tr>
+                    <th scope="row">{{request.id}}</th>
+                    <td>{{ request.student }}</td>
+                    <td>{{ request.faculty }}</td>
+                    <td>{{ request.instrument }}</td>
+                    <td>{{ request.slot }}</td>
+                    <td>{{ request.status }}</td>
+                    <td> <a href="/booking/requests_faculty/accept/{{request.id}}"><button type="button" class="btn btn-success">Accept</button></a> </td>
+                    <td> <a href="/booking/requests_faculty/reject/{{request.id}}"><button type="button" class="btn btn-danger">Reject</button></a> </td>
+                </tr>
+                {% endfor %}
+              
+            </tbody>
+          </table>
+          
+            <!-- {{ form.as_p }} -->
+            
+          
+          <!-- <button type="submit" class="btn btn-primary">Proceed</button><br /><br /> -->
+        
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}
