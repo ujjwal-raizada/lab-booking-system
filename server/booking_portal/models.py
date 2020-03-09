@@ -7,8 +7,7 @@ from django.core.mail import send_mail
 from onlineCAL.settings import EMAIL_HOST_USER
 
 class CustomUser(AbstractUser):
-    first_name = None
-    last_name = None
+
     email = models.EmailField("email address", unique=True, primary_key=True)
     name = models.CharField(max_length=50)
 
@@ -72,7 +71,7 @@ class Slot(models.Model):
     time = models.TimeField(null=True)
 
     def __str__(self):
-        return f"{self.date, self.time}"
+        return f"{str(self.date) + ' ' + str(self.time)}"
 
 
 class Request(models.Model):
@@ -114,13 +113,19 @@ class EmailModel(models.Model):
 @receiver(signal=post_save, sender=Request)
 def send_email_after_save(sender, instance, **kwargs):
     if instance.status == instance.STATUS_1:
+
+        # update slot status
+        slot_object = Slot.objects.get(id=instance.slot.id)
+        slot_object.status = "S2"
+        slot_object.save(update_fields=['status'])
+
         sub = "Waiting for Faculty approval"
         receiver = instance.faculty.email
         text = "Hello World"
 
-    email_instance = EmailModel(receiver=receiver,
-                                request=instance,
-                                text=text,
-                                subject=sub)
-    email_instance.save()
-    send_mail(sub, text, EMAIL_HOST_USER, [receiver], fail_silently=False)
+        email_instance = EmailModel(receiver=receiver,
+                                    request=instance,
+                                    text=text,
+                                    subject=sub)
+        email_instance.save()
+        # send_mail(sub, text, EMAIL_HOST_USER, [receiver], fail_silently=False)

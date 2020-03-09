@@ -88,3 +88,32 @@ def slot_list(request):
     form = SlotList(instr_id)
     return render(request, 'booking_portal/portal_forms/slot_list.html', 
                   {'instrument_name': instr_name, 'instrument_id': instr_id, 'form': form})
+
+@login_required
+def faculty_portal(request):
+    print(request.user)
+    requests_objects = Request.objects.filter(faculty=request.user, status='S1')
+    print(requests_objects)
+    return render(request, 'booking_portal/portal_forms/faculty_portal.html', 
+                  {'requests': requests_objects})
+
+
+@login_required
+def faculty_request_accept(request, id):
+
+    #TODO: match faculty access
+    request_object = Request.objects.get(id=id)
+    request_object.status = "S2"
+    request_object.save(update_fields=['status'])
+    return faculty_portal(request)
+
+
+@login_required
+def faculty_request_reject(request, id):
+
+    #TODO: match faculty access
+    request_object = Request.objects.get(id=id)
+    request_object.status = "S4"
+    request_object.save(update_fields=['status'])
+    return faculty_portal(request)
+
