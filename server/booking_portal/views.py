@@ -3,10 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
-from .forms.fesemform import FESEMForm
-from .forms.tcspcform import TCSPCForm
-from .forms.ftirform import FTIRForm
-from .forms.lcmsform import LCMSForm
+from .config import form_template_dict
 from .forms.portal_forms import IntrumentList, SlotList
 from .models import EmailModel, Instrument, Slot, Request, Student, Faculty, LabAssistant
 
@@ -30,57 +27,33 @@ def email(request):
 
 @login_required
 def book_machine(request, id):
-    print (request.user)
+    template, form = form_template_dict.get(id)
     if request.method == 'GET':
-        if id == 1:
-            form = FESEMForm()
-            template = 'booking_portal/fesem.html'
-        elif id == 2:
-            form = TCSPCForm()
-            template = 'booking_portal/tcspc.html'
-        elif id == 3:
-            form = FTIRForm()
-            template = 'booking_portal/ftir.html'
-        elif id == 4:
-            form = LCMSForm()
-            template = 'booking_portal/lcms.html'
+        return render(request, template, {'form': form()})
+
+    elif form.is_valid():
+        slot_id = request.GET['slots']
+        student_name = request.POST['user_name']
+        faculty_name = request.POST['sup_name']
+
+        instr_instance = Instrument.objects.filter(id=id).first()
+        slot_instance = Slot.objects.filter(id=slot_id,
+                                            status=Slot.STATUS_1,
+                                            instrument=instr_instance).first()
+        student_instance = Student.objects.filter(username=student_name).first()
+        faculty_instance = Faculty.objects.filter(username=faculty_name).first()
+
+        # TODO: Object Lock on Request Object
+        if slot_instance and student_instance and faculty_instance and instr_instance:
+            req_instance = Request(student=student_instance,
+                                    faculty=faculty_instance,
+                                    instrument=instr_instance,
+                                    slot=slot_instance,
+                                    status=Request.STATUS_1)
+            req_instance.save()
+            return HttpResponse("Submission Successful")
         else:
-            return HttpResponse('Form for this ID has not been built yet')
-        return render(request, template, {'form': form})
-
-    else:
-        if id == 1:
-            form = FESEMForm(request.POST)
-        elif id == 2:
-            form = TCSPCForm(request.POST)
-        elif id == 3:
-            form = FTIRForm(request.POST)
-        elif id == 4:
-            form = LCMSForm(request.POST)
-
-        if form.is_valid():
-            slot_id = request.GET['slots']
-            student_name = request.POST['user_name']
-            faculty_name = request.POST['sup_name']
-
-            instr_instance = Instrument.objects.filter(id=id).first()
-            slot_instance = Slot.objects.filter(id=slot_id,
-                                             status=Slot.STATUS_1,
-                                             instrument=instr_instance).first()
-            student_instance = Student.objects.filter(username=student_name).first()
-            faculty_instance = Faculty.objects.filter(username=faculty_name).first()
-
-            # TODO: Object Lock on Request Object
-            if slot_instance and student_instance and faculty_instance and instr_instance:
-                req_instance = Request(student=student_instance,
-                                       faculty=faculty_instance,
-                                       instrument=instr_instance,
-                                       slot=slot_instance,
-                                       status=Request.STATUS_1)
-                req_instance.save()
-                return HttpResponse("Submission Successful")
-            else:
-                return HttpResponse('Submission Failed')
+            return HttpResponse('Submission Failed')
 
 @login_required
 def slot_list(request):
