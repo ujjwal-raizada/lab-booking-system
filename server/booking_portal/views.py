@@ -107,7 +107,6 @@ def faculty_request_accept(request, id):
     request_object.status = Request.STATUS_2
     request_object.message = "accept"
     request_object.lab_assistant = random.choice(LabAssistant.objects.all())
-    # request_object.save(update_fields=['status'])
     request_object.save()
     return faculty_portal(request)
 
@@ -119,6 +118,27 @@ def faculty_request_reject(request, id):
     request_object = Request.objects.get(id=id)
     request_object.status = Request.STATUS_2
     request_object.message = "reject"
-    # request_object.save(update_fields=['status'])
     request_object.save()
     return faculty_portal(request)
+
+@login_required
+def lab_assistant_portal(request):
+    request_objects = Request.objects.filter(lab_assistant=request.user, status=Request.STATUS_2)
+    return render(request, 'booking_portal/portal_forms/lab_assistant_portal.html',
+                  {'requests': request_objects})
+
+@login_required
+def lab_assistant_accept(request, id):
+    request_object = Request.objects.get(id=id)
+    request_object.status = Request.STATUS_3
+    request_object.message = "accept"
+    request_object.save()
+    return lab_assistant_portal(request)
+
+@login_required
+def lab_assistant_reject(request, id):
+    request_object = Request.objects.get(id=id)
+    request_object.status = Request.STATUS_3
+    request_object.message = "reject"
+    request_object.save()
+    return lab_assistant_portal(request)
