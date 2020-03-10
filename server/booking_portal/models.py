@@ -189,7 +189,8 @@ def send_email_after_save(sender, instance, **kwargs):
             elif message == 'reject':
                 update_slot_status(Slot.STATUS_1)
                 update_request_status(Request.STATUS_5)
-                subject = "Booking Rejected by Lab Assistant {}".format(instance.lab_assistant.username)
+                subject = "Booking Rejected by {}".format(instance.lab_assistant.username)
+                text = "Test Email for Booking Rejected {}".format(instance.student.username)
                 receiver = instance.student.email
                 init_mail_and_send(receiver, instance, text, subject)
 
