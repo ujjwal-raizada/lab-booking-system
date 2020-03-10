@@ -142,3 +142,9 @@ def lab_assistant_reject(request, id):
     request_object.message = "reject"
     request_object.save()
     return lab_assistant_portal(request)
+
+@login_required
+def student_portal(request):
+    request_objects = Request.objects.filter(student=request.user)
+    return render(request, 'booking_portal/portal_forms/student_portal.html',
+                  {'requests': request_objects})
