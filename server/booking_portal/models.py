@@ -75,11 +75,11 @@ class Slot(models.Model):
 
 
 class Request(models.Model):
-    STATUS_1 = "S1"
-    STATUS_2 = "S2"
-    STATUS_3 = "S3"
-    STATUS_4 = "S4"
-    STATUS_5 = "S5"
+    STATUS_1 = "R1"
+    STATUS_2 = "R2"
+    STATUS_3 = "R3"
+    STATUS_4 = "R4"
+    STATUS_5 = "R5"
 
     STATUS_CHOICES = [
         (STATUS_1, "Waiting for faculty approval."),
@@ -90,6 +90,8 @@ class Request(models.Model):
     ]
     student = models.ForeignKey(Student, on_delete=models.PROTECT)
     faculty = models.ForeignKey(Faculty, on_delete=models.PROTECT)
+    lab_assistant = models.ForeignKey(LabAssistant, on_delete=models.PROTECT,
+                                      default=None, null=True)
     instrument = models.ForeignKey(Instrument, on_delete=models.PROTECT)
     slot = models.ForeignKey(Slot, on_delete=models.CASCADE)
     status = models.CharField(max_length=50, choices=STATUS_CHOICES)
@@ -110,22 +112,89 @@ class EmailModel(models.Model):
         return f"{self.subject}"
 
 
+class FailedEmailAttempt(Exception):
+    def __str__(self):
+        return "Attempt to Send Email failed !"
+
+
 @receiver(signal=post_save, sender=Request)
 def send_email_after_save(sender, instance, **kwargs):
-    if instance.status == instance.STATUS_1:
+    slot = Slot.objects.get(id=instance.slot.id)
+    initial_status = slot.status
+    try:
+        message = instance.message
+    except AttributeError:
+        message = None
+        print ("Attribute Error Called")
 
-        # update slot status
-        slot_object = Slot.objects.get(id=instance.slot.id)
-        slot_object.status = "S2"
-        slot_object.save(update_fields=['status'])
+    def init_mail_and_send(recvr, request, mail_text, subject):
+        EmailModel(receiver=recvr,
+                   request=request,
+                   text=mail_text,
+                   subject=subject).save()
 
-        sub = "Waiting for Faculty approval"
-        receiver = instance.faculty.email
-        text = "Hello World"
+        try:
+            send_mail(subject, mail_text, EMAIL_HOST_USER,
+                     [receiver], fail_silently=False)
+        except:
+            slot.status = initial_status
+            slot.save(update_fields=['status'])
+            raise FailedEmailAttempt()
 
-        email_instance = EmailModel(receiver=receiver,
-                                    request=instance,
-                                    text=text,
-                                    subject=sub)
-        email_instance.save()
-        # send_mail(sub, text, EMAIL_HOST_USER, [receiver], fail_silently=False)
+    def update_slot_status(status):
+        assert status in (Slot.STATUS_1, Slot.STATUS_2, Slot.STATUS_3, Slot.STATUS_4), FailedEmailAttempt()
+        slot.status = status
+        slot.save(update_fields=['status'])
+
+    def update_request_status(status):
+        instance.status = status
+        instance.save(update_fields=['status'])
+
+    try:
+        if instance.status == Request.STATUS_1:
+            update_slot_status(Slot.STATUS_2) # in-process
+            subject = "Waiting for Faculty Approval"
+            text = "Test Email send to {} : Faculty".format(instance.faculty.username)
+            receiver = instance.faculty.email
+            init_mail_and_send(receiver, instance, text, subject)
+
+            subject = "Pending Lab Booking Request"
+            text = "Test Email send to {} : Student".format(instance.student.username)
+            receiver = instance.student.email
+            init_mail_and_send(receiver, instance, text, subject)
+
+        elif instance.status == Request.STATUS_2:
+            if message == 'accept':
+                subject = "Waiting for Lab Assistant Approval"
+                text = "Test Email send to {} : Lab Assistant".format(instance.lab_assistant.username)
+                receiver = instance.lab_assistant.email
+                init_mail_and_send(receiver, instance, text, subject)
+
+            elif message == 'reject':
+                update_slot_status(Slot.STATUS_1)
+                update_request_status(Request.STATUS_5)
+                subject = "Booking Rejected by {}".format(instance.faculty.username)
+                text = "Test Email send to {} : Student".format(instance.student.username)
+                receiver = instance.student.email
+                init_mail_and_send(receiver, instance, text, subject)
+
+        elif instance.status == Request.STATUS_3:
+            if message == 'accept':
+                update_slot_status(Slot.STATUS_3)
+                subject = "Lab Booking Approved"
+                text = "Test Email for Booking Approved {}".format(instance.student.username)
+                receiver = instance.student.email
+                init_mail_and_send(receiver, instance, text, subject)
+
+            elif message == 'reject':
+                update_slot_status(Slot.STATUS_1)
+                update_request_status(Request.STATUS_5)
+                subject = "Booking Rejected by Lab Assistant {}".format(instance.lab_assistant.username)
+                receiver = instance.student.email
+                init_mail_and_send(receiver, instance, text, subject)
+
+    except FailedEmailAttempt:
+        update_slot_status(initial_status)
+
+    except Exception as e:
+        print(e)

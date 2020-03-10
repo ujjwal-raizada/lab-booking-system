@@ -1,3 +1,4 @@
+import random
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
@@ -7,7 +8,7 @@ from .forms.tcspcform import TCSPCForm
 from .forms.ftirform import FTIRForm
 from .forms.lcmsform import LCMSForm
 from .forms.portal_forms import IntrumentList, SlotList
-from .models import EmailModel, Instrument, Slot, Request, Student, Faculty
+from .models import EmailModel, Instrument, Slot, Request, Student, Faculty, LabAssistant
 
 def index(request):
     context = {
@@ -29,6 +30,7 @@ def email(request):
 
 @login_required
 def book_machine(request, id):
+    print (request.user)
     if request.method == 'GET':
         if id == 1:
             form = FESEMForm()
@@ -44,7 +46,7 @@ def book_machine(request, id):
             template = 'booking_portal/lcms.html'
         else:
             return HttpResponse('Form for this ID has not been built yet')
-        return render(request, template, {'form': form}) 
+        return render(request, template, {'form': form})
 
     else:
         if id == 1:
@@ -63,20 +65,19 @@ def book_machine(request, id):
 
             instr_instance = Instrument.objects.filter(id=id).first()
             slot_instance = Slot.objects.filter(id=slot_id,
-                                             status=Slot.STATUS_1, 
+                                             status=Slot.STATUS_1,
                                              instrument=instr_instance).first()
-            student_instance = Student.objects.filter(name=student_name).first()
-            faculty_instance = Faculty.objects.filter(name=faculty_name).first()
+            student_instance = Student.objects.filter(username=student_name).first()
+            faculty_instance = Faculty.objects.filter(username=faculty_name).first()
 
+            # TODO: Object Lock on Request Object
             if slot_instance and student_instance and faculty_instance and instr_instance:
-                req_instance = Request(student=student_instance, 
-                                       faculty=faculty_instance, 
-                                       instrument=instr_instance, 
+                req_instance = Request(student=student_instance,
+                                       faculty=faculty_instance,
+                                       instrument=instr_instance,
                                        slot=slot_instance,
                                        status=Request.STATUS_1)
-                slot_instance.status = Slot.STATUS_3
                 req_instance.save()
-                slot_instance.save()
                 return HttpResponse("Submission Successful")
             else:
                 return HttpResponse('Submission Failed')
@@ -86,15 +87,15 @@ def slot_list(request):
     instr_id = request.POST['instruments']
     instr_name = Instrument.objects.get(id=instr_id).name
     form = SlotList(instr_id)
-    return render(request, 'booking_portal/portal_forms/slot_list.html', 
+    return render(request, 'booking_portal/portal_forms/slot_list.html',
                   {'instrument_name': instr_name, 'instrument_id': instr_id, 'form': form})
 
 @login_required
 def faculty_portal(request):
     print(request.user)
-    requests_objects = Request.objects.filter(faculty=request.user, status='S1')
+    requests_objects = Request.objects.filter(faculty=request.user, status=Request.STATUS_1)
     print(requests_objects)
-    return render(request, 'booking_portal/portal_forms/faculty_portal.html', 
+    return render(request, 'booking_portal/portal_forms/faculty_portal.html',
                   {'requests': requests_objects})
 
 
@@ -103,8 +104,11 @@ def faculty_request_accept(request, id):
 
     #TODO: match faculty access
     request_object = Request.objects.get(id=id)
-    request_object.status = "S2"
-    request_object.save(update_fields=['status'])
+    request_object.status = Request.STATUS_2
+    request_object.message = "accept"
+    request_object.lab_assistant = random.choice(LabAssistant.objects.all())
+    # request_object.save(update_fields=['status'])
+    request_object.save()
     return faculty_portal(request)
 
 
@@ -113,7 +117,8 @@ def faculty_request_reject(request, id):
 
     #TODO: match faculty access
     request_object = Request.objects.get(id=id)
-    request_object.status = "S4"
-    request_object.save(update_fields=['status'])
+    request_object.status = Request.STATUS_2
+    request_object.message = "reject"
+    # request_object.save(update_fields=['status'])
+    request_object.save()
     return faculty_portal(request)
-
