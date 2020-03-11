@@ -22,7 +22,7 @@ class UserDetailsForm(forms.ModelForm):
             'req_discussed': 'Have the sampling modalities and requirements been discussed with the operator?',
         }
         widgets = {
-            'user_name': forms.TextInput(attrs={
+            'user_name': forms.Select(attrs={
                                            'class': 'form-control',
                                          }
             ),
@@ -30,7 +30,7 @@ class UserDetailsForm(forms.ModelForm):
                                               'class': 'form-control',
                                            }
             ),
-            'sup_name': forms.TextInput(attrs={
+            'sup_name': forms.Select(attrs={
                                            'class': 'form-control',
                                         }
             ),

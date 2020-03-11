@@ -35,15 +35,17 @@ def book_machine(request, id):
         f = form(request.POST)
         if f.is_valid():
             slot_id = request.GET['slots']
-            student_name = request.POST['user_name']
-            faculty_name = request.POST['sup_name']
+            student_email = request.POST['user_name']
+            student_instance = Student.objects.filter(email=student_email).first()
+            faculty_email = request.POST['sup_name']
+            faculty_instance = Faculty.objects.filter(email=faculty_email).first()
 
             instr_instance = Instrument.objects.filter(id=id).first()
             slot_instance = Slot.objects.filter(id=slot_id,
                                                 status=Slot.STATUS_1,
                                                 instrument=instr_instance).first()
-            student_instance = Student.objects.filter(username=student_name).first()
-            faculty_instance = Faculty.objects.filter(username=faculty_name).first()
+            # student_instance = Student.objects.filter(name=student_name).first()
+            # faculty_instance = Faculty.objects.filter(name=faculty_name).first()
 
             # TODO: Object Lock on Request Object
             if slot_instance and student_instance and faculty_instance and instr_instance:
@@ -53,12 +55,15 @@ def book_machine(request, id):
                                         slot=slot_instance,
                                         status=Request.STATUS_1)
                 req_instance.save()
+                f.save(commit=False)
+                f.user_name = student_instance
+                f.sup_name = faculty_instance
                 f.save()
                 return HttpResponse("Submission Successful")
             else:
                 return HttpResponse('Submission Failed')
         else:
-            return render(request, template, {'form': form()})
+            return render(request, template, {'form': form(request.POST)})
 
 @login_required
 def slot_list(request):
