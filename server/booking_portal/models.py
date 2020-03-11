@@ -6,6 +6,8 @@ from django.core.mail import send_mail
 
 from onlineCAL.settings import EMAIL_HOST_USER
 
+import datetime
+
 class CustomUser(AbstractUser):
 
     email = models.EmailField("email address", unique=True, primary_key=True)
@@ -199,3 +201,77 @@ def send_email_after_save(sender, instance, **kwargs):
 
     except Exception as e:
         print(e)
+
+
+class UserDetails(models.Model):
+    user_name = models.CharField(max_length=75)
+    date = models.DateField(default=datetime.date.today)
+    sup_name = models.CharField(max_length=75)
+    sup_dept = models.CharField(max_length=75)
+    sample_from_outside = models.CharField(max_length=3, choices=[('Yes', 'Yes'),
+                                                                  ('No', 'No')])
+    origin_of_sample = models.CharField(max_length=75)
+    req_discussed = models.CharField(max_length=3, choices=[('Yes', 'Yes'),
+                                                            ('No', 'No')])
+
+
+class FESEM(UserDetails):
+    sample_code = models.CharField(max_length=75)
+    sample_nature = models.CharField(max_length=15, choices=[
+                                                        ('Metal', 'Metal'),
+                                                        ('Film', 'Film'),
+                                                        ('Crystal', 'Crystal'),
+                                                        ('Powder', 'Powder'),
+                                                        ('Biological', 'Biological'),
+                                                        ('Ceramic', 'Ceramic'),
+                                                        ('Tissue', 'Tissue'),
+                                                        ('Others', 'Others'),
+                                                    ])
+    analysis_nature = models.CharField(max_length=75)
+    sputter_required = models.CharField(max_length=3, choices=[
+                                                          ('Yes', 'Yes'),
+                                                          ('No', 'No'),
+                                                      ])
+    other_remarks = models.CharField(max_length=200)
+
+
+class TCSPC(UserDetails):
+    sample_code = models.CharField(max_length=75)
+    sample_nature = models.CharField(max_length=15, choices=[
+                                                        ('Metal', 'Metal'),
+                                                        ('Film', 'Film'),
+                                                        ('Crystal', 'Crystal'),
+                                                        ('Powder', 'Powder'),
+                                                        ('Biological', 'Biological'),
+                                                        ('Ceramic', 'Ceramic'),
+                                                        ('Tissue', 'Tissue'),
+                                                        ('Others', 'Others'),
+                                                    ])
+    chemical_composition = models.CharField(max_length=75)
+    other_remarks = models.CharField(max_length=200)
+
+
+class FTIR(UserDetails):
+    sample_code = models.CharField(max_length=75)
+    composition = models.CharField(max_length=75)
+    state = models.CharField(max_length=10, choices=[
+                                                ('Solid', 'Solid'),
+                                                ('Liquid', 'Liquid'),
+                                            ])
+    solvent = models.CharField(max_length=75)
+    other_remarks = models.CharField(max_length=200)
+
+
+class LCMS(UserDetails):
+    sample_code = models.CharField(max_length=75)
+    composition = models.CharField(max_length=75)
+    phase = models.CharField(max_length=75)
+    no_of_lc_peaks = models.IntegerField()
+    solvent_solubility = models.CharField(max_length=75)
+    exact_mass = models.CharField(max_length=75)
+    mass_adducts = models.CharField(max_length=75)
+    analysis_mode = models.CharField(max_length=10, choices=[
+                                                        ('Positive', 'Positive'),
+                                                        ('Negative', 'Negative'),
+                                                    ])
+    other_remarks = models.CharField(max_length=200)

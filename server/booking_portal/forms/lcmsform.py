@@ -1,61 +1,73 @@
 from django import forms
-from .userform import UserForm
+
+from ..models import LCMS
+from .userform import UserDetailsForm
 
 
-class LCMSForm(UserForm):
-    sample_code = forms.CharField(label="Sample Code", max_length=50, widget=forms.TextInput(
-                                    attrs={
-                                        'class': 'form-control',
-                                    }
-    ))
-
-    composition = forms.CharField(label="Sample Information / Composition", max_length=50, widget=forms.TextInput(
-                                    attrs={
-                                        'class': 'form-control',
-                                    }
-    ))
-
-    phase = forms.CharField(label="Mobile Phase and Column for LC", max_length=75, widget=forms.TextInput(
-                            attrs={
-                                'class': 'form-control',
-                            }
-    ))
-
-    no_of_lc_peaks = forms.IntegerField(label="No. of LC peaks", widget=forms.NumberInput(
-                            attrs={
-                                'class': 'form-control',
-                            }
-    ))
-
-    solvent_solubility = forms.CharField(label="Solvent Solubility", max_length=50, widget=forms.TextInput(
-                                            attrs={
+class LCMSForm(UserDetailsForm):
+  class Meta(UserDetailsForm.Meta):
+      model = LCMS
+      fields = UserDetailsForm.Meta.fields + ('sample_code',
+                                              'composition',
+                                              'phase',
+                                              'no_of_lc_peaks',
+                                              'solvent_solubility',
+                                              'exact_mass',
+                                              'mass_adducts',
+                                              'analysis_mode',
+                                              'other_remarks')
+      UserDetailsForm.Meta.labels.update(
+          {
+              'sample_code': 'Sample Code',
+              'composition': 'Sample Information / Composition',
+              'phase': 'Mobile Phase and Column for LC',
+              'no_of_lc_peaks': 'No. of LC peaks',
+              'solvent_solubility': 'Solvent Solubility',
+              'exact_mass': 'Exact Mass',
+              'mass_adducts': 'Expected Mass Adducts',
+              'analysis_mode': 'Mode of Analysis (Positive / Negative)',
+              'other_remarks': 'Any other relevant information',
+          }
+      )
+      labels = UserDetailsForm.Meta.labels
+      UserDetailsForm.Meta.widgets.update(
+          {
+              'sample_code': forms.TextInput(attrs={
                                                 'class': 'form-control',
                                             }
-    ))
-
-    exact_mass = forms.CharField(label="Exact Mass", max_length=50, widget=forms.TextInput(
-                                    attrs={
-                                        'class': 'form-control',
-                                    }
-    ))
-
-    mass_adducts = forms.CharField(label="Expected Mass Adducts", max_length=50, widget=forms.TextInput(
-                                    attrs={
-                                        'class': 'form-control',
-                                    }
-    ))
-
-    analysis_mode = forms.ChoiceField(label='Mode of Analysis (Positive / Negative)', choices=[
-                                        ('Positive', 'Positive'),
-                                        ('Negative', 'Negative'),
-                                        ], widget=forms.Select(
-                                            attrs={
-                                                'class': 'form-control',
+              ),
+              'composition': forms.TextInput(attrs={
+                                              'class': 'form-control',
                                             }
-    ))
-
-    other_remarks = forms.CharField(label="Any Other Relevant Information", max_length=50, widget=forms.Textarea(
-                                attrs={
-                                    'class': 'form-control',
-                                }
-    ))
+              ),
+              'phase': forms.TextInput(attrs={
+                                          'class': 'form-control',
+                                      }
+              ),
+              'no_of_lc_peaks': forms.NumberInput(attrs={
+                                                    'class':' form-control',
+                                                  }
+              ),
+              'solvent_solubility': forms.TextInput(attrs={
+                                                      'class': 'form-control',
+                                                    }
+              ),
+              'exact_mass': forms.TextInput(attrs={
+                                              'class': 'form-control',
+                                            }
+              ),
+              'mass_adducts': forms.TextInput(attrs={
+                                                'class': 'form-control',
+                                              }
+              ),
+              'analysis_mode': forms.Select(attrs={
+                                              'class': 'form-control',
+                                            }
+              ),
+              'other_remarks': forms.Textarea(attrs={
+                                                'class': 'form-control',
+                                              }
+              ),
+          }
+      )
+      widgets = UserDetailsForm.Meta.widgets
