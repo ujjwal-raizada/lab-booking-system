@@ -31,29 +31,34 @@ def book_machine(request, id):
     if request.method == 'GET':
         return render(request, template, {'form': form()})
 
-    elif form.is_valid():
-        slot_id = request.GET['slots']
-        student_name = request.POST['user_name']
-        faculty_name = request.POST['sup_name']
+    elif request.method == 'POST': 
+        f = form(request.POST)
+        if f.is_valid():
+            slot_id = request.GET['slots']
+            student_name = request.POST['user_name']
+            faculty_name = request.POST['sup_name']
 
-        instr_instance = Instrument.objects.filter(id=id).first()
-        slot_instance = Slot.objects.filter(id=slot_id,
-                                            status=Slot.STATUS_1,
-                                            instrument=instr_instance).first()
-        student_instance = Student.objects.filter(username=student_name).first()
-        faculty_instance = Faculty.objects.filter(username=faculty_name).first()
+            instr_instance = Instrument.objects.filter(id=id).first()
+            slot_instance = Slot.objects.filter(id=slot_id,
+                                                status=Slot.STATUS_1,
+                                                instrument=instr_instance).first()
+            student_instance = Student.objects.filter(username=student_name).first()
+            faculty_instance = Faculty.objects.filter(username=faculty_name).first()
 
-        # TODO: Object Lock on Request Object
-        if slot_instance and student_instance and faculty_instance and instr_instance:
-            req_instance = Request(student=student_instance,
-                                    faculty=faculty_instance,
-                                    instrument=instr_instance,
-                                    slot=slot_instance,
-                                    status=Request.STATUS_1)
-            req_instance.save()
-            return HttpResponse("Submission Successful")
+            # TODO: Object Lock on Request Object
+            if slot_instance and student_instance and faculty_instance and instr_instance:
+                req_instance = Request(student=student_instance,
+                                        faculty=faculty_instance,
+                                        instrument=instr_instance,
+                                        slot=slot_instance,
+                                        status=Request.STATUS_1)
+                req_instance.save()
+                f.save()
+                return HttpResponse("Submission Successful")
+            else:
+                return HttpResponse('Submission Failed')
         else:
-            return HttpResponse('Submission Failed')
+            return render(request, template, {'form': form()})
 
 @login_required
 def slot_list(request):
