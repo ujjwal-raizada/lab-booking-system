@@ -138,8 +138,6 @@ def send_email_after_save(sender, instance, **kwargs):
             send_mail(subject, mail_text, EMAIL_HOST_USER,
                      [receiver], fail_silently=False)
         except:
-            slot.status = initial_status
-            slot.save(update_fields=['status'])
             raise FailedEmailAttempt()
 
     def update_slot_status(status):
@@ -196,6 +194,7 @@ def send_email_after_save(sender, instance, **kwargs):
                 init_mail_and_send(receiver, instance, text, subject)
 
     except FailedEmailAttempt:
+        print ("Failed Email Attempt")
         update_slot_status(initial_status)
 
     except Exception as e:

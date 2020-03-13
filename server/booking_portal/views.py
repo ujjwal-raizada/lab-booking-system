@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 
 from .config import form_template_dict
 from .forms.portal_forms import IntrumentList, SlotList
+from .forms.sampleform import UserDetails, UserDetailsForm
 from .models import EmailModel, Instrument, Slot, Request, Student, Faculty, LabAssistant
 from .permissions import is_faculty, is_lab_assistant, is_student
 
@@ -46,37 +47,27 @@ def book_machine(request, id):
     if request.method == 'GET':
         return render(request, template, {'form': form(initial={'user_name': request.user.username})})
 
-    elif request.method == 'POST': 
-        f = form(request.POST)
-        if f.is_valid():
-            slot_id = request.GET['slots']
-            student_email = request.POST['user_name']
-            student_instance = Student.objects.filter(email=student_email).first()
-            faculty_email = request.POST['sup_name']
-            faculty_instance = Faculty.objects.filter(email=faculty_email).first()
+    elif request.method == "POST" and form(request.POST).is_valid():
+        slot_id = request.GET['slots']
+        student_name = request.POST['user_name']
+        faculty_name = request.POST['sup_name']
 
-            instr_instance = Instrument.objects.filter(id=id).first()
-            slot_instance = Slot.objects.filter(id=slot_id,
-                                                status=Slot.STATUS_1,
-                                                instrument=instr_instance).first()
-            # student_instance = Student.objects.filter(name=student_name).first()
-            # faculty_instance = Faculty.objects.filter(name=faculty_name).first()
+        instr_instance = Instrument.objects.filter(id=id).first()
+        slot_instance = Slot.objects.filter(id=slot_id,
+                                            status=Slot.STATUS_1,
+                                            instrument=instr_instance).first()
+        student_instance = Student.objects.filter(username=student_name).first()
+        faculty_instance = Faculty.objects.filter(username=faculty_name).first()
 
-            # TODO: Object Lock on Request Object
-            if slot_instance and student_instance and faculty_instance and instr_instance:
-                req_instance = Request(student=student_instance,
-                                        faculty=faculty_instance,
-                                        instrument=instr_instance,
-                                        slot=slot_instance,
-                                        status=Request.STATUS_1)
-                req_instance.save()
-                f.save(commit=False)
-                f.user_name = student_instance
-                f.sup_name = faculty_instance
-                f.save()
-                return HttpResponse("Submission Successful")
-            else:
-                return HttpResponse('Submission Failed')
+        # TODO: Object Lock on Request Object
+        if slot_instance and student_instance and faculty_instance and instr_instance:
+            req_instance = Request(student=student_instance,
+                                    faculty=faculty_instance,
+                                    instrument=instr_instance,
+                                    slot=slot_instance,
+                                    status=Request.STATUS_1)
+            req_instance.save()
+            return HttpResponse("Submission Successful")
         else:
             return render(request, template, {'form': form(request.POST)})
 
