@@ -10,12 +10,12 @@ import datetime
 
 class CustomUser(AbstractUser):
 
-    email = models.EmailField("email address", unique=True, primary_key=True)
+    email = models.EmailField("email address", unique=True)
     name = models.CharField(max_length=50)
 
     @property
     def short_id(self):
-        return self.email[:self.email.find("@")].lower()
+        return self.username[:self.username.find("@")].lower()
 
     def __str__(self):
         return f"{self.name} ({self.short_id})"

@@ -5,11 +5,23 @@ from .models import CustomUser, Student, Faculty, EmailModel, LabAssistant
 from .models import Instrument, Slot, Request
 from .models import FTIR, FESEM, LCMS, TCSPC, UserDetails
 
+class StudentAdmin(UserAdmin):
+    pass
+
+
+class FacultyAdmin(UserAdmin):
+    pass
+
+
+class LabAssistantAdmin(UserAdmin):
+    pass
+
+
 admin.site.register(CustomUser, UserAdmin)
-admin.site.register(Student)
-admin.site.register(Faculty)
+admin.site.register(Student, StudentAdmin)
+admin.site.register(Faculty, FacultyAdmin)
 admin.site.register(EmailModel)
-admin.site.register(LabAssistant)
+admin.site.register(LabAssistant, LabAssistantAdmin)
 admin.site.register(Instrument)
 admin.site.register(Slot)
 admin.site.register(Request)
