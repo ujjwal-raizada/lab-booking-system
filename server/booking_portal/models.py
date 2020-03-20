@@ -10,7 +10,6 @@ import datetime
 
 class CustomUser(AbstractUser):
 
-    email = models.EmailField("email address", unique=True)
     name = models.CharField(max_length=50)
 
     @property

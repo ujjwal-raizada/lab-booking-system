@@ -123,6 +123,7 @@ STATIC_URL = '/static/'
 LOGIN_REDIRECT_URL = '/booking/'
 LOGOUT_REDIRECT_URL = '/booking/'
 AUTH_USER_MODEL = 'booking_portal.CustomUser'
+LOGIN_URL = '/auth/login/'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'

@@ -1,11 +1,13 @@
 import random
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 
 from .config import form_template_dict
 from .forms.portal_forms import IntrumentList, SlotList
 from .models import EmailModel, Instrument, Slot, Request, Student, Faculty, LabAssistant
+from .permissions import is_faculty, is_lab_assistant, is_student
+
 
 def index(request):
     context = {
@@ -13,6 +15,7 @@ def index(request):
     return render(request, 'home.html', context=context)
 
 @login_required
+@user_passes_test(is_student)
 def instrument_list(request):
     form = IntrumentList()
     return render(request, 'booking_portal/portal_forms/instrument_list.html', {'form': form})
@@ -26,6 +29,7 @@ def email(request):
     return render(request, 'email.html', context=context)
 
 @login_required
+@user_passes_test(is_student)
 def book_machine(request, id):
     template, form = form_template_dict.get(id)
     if request.method == 'GET':
@@ -66,6 +70,7 @@ def book_machine(request, id):
             return render(request, template, {'form': form(request.POST)})
 
 @login_required
+@user_passes_test(is_student)
 def slot_list(request):
     instr_id = request.POST['instruments']
     instr_name = Instrument.objects.get(id=instr_id).name
@@ -74,6 +79,7 @@ def slot_list(request):
                   {'instrument_name': instr_name, 'instrument_id': instr_id, 'form': form})
 
 @login_required
+@user_passes_test(is_faculty)
 def faculty_portal(request):
     print(request.user)
     requests_objects = Request.objects.filter(faculty=request.user, status=Request.STATUS_1)
@@ -83,6 +89,7 @@ def faculty_portal(request):
 
 
 @login_required
+@user_passes_test(is_faculty)
 def faculty_request_accept(request, id):
 
     #TODO: match faculty access
@@ -95,6 +102,7 @@ def faculty_request_accept(request, id):
 
 
 @login_required
+@user_passes_test(is_faculty)
 def faculty_request_reject(request, id):
 
     #TODO: match faculty access
@@ -105,12 +113,14 @@ def faculty_request_reject(request, id):
     return faculty_portal(request)
 
 @login_required
+@user_passes_test(is_lab_assistant)
 def lab_assistant_portal(request):
     request_objects = Request.objects.filter(lab_assistant=request.user, status=Request.STATUS_2)
     return render(request, 'booking_portal/portal_forms/lab_assistant_portal.html',
                   {'requests': request_objects})
 
 @login_required
+@user_passes_test(is_lab_assistant)
 def lab_assistant_accept(request, id):
     request_object = Request.objects.get(id=id)
     request_object.status = Request.STATUS_3
@@ -119,6 +129,7 @@ def lab_assistant_accept(request, id):
     return lab_assistant_portal(request)
 
 @login_required
+@user_passes_test(is_lab_assistant)
 def lab_assistant_reject(request, id):
     request_object = Request.objects.get(id=id)
     request_object.status = Request.STATUS_3
@@ -127,6 +138,7 @@ def lab_assistant_reject(request, id):
     return lab_assistant_portal(request)
 
 @login_required
+@user_passes_test(is_student)
 def student_portal(request):
     request_objects = Request.objects.filter(student=request.user)
     return render(request, 'booking_portal/portal_forms/student_portal.html',
