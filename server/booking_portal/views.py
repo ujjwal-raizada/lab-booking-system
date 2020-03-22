@@ -33,7 +33,7 @@ def email(request):
 def book_machine(request, id):
     template, form = form_template_dict.get(id)
     if request.method == 'GET':
-        return render(request, template, {'form': form()})
+        return render(request, template, {'form': form(initial={'user_name': request.user.username})})
 
     elif request.method == 'POST': 
         f = form(request.POST)

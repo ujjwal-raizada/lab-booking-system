@@ -274,3 +274,193 @@ class LCMS(UserDetails):
                                                         ('Negative', 'Negative'),
                                                     ])
     other_remarks = models.CharField(max_length=200)
+
+
+class Rheometer(UserDetails):
+    sample_code = models.CharField(max_length=75)
+    ingredient_details = models.CharField(max_length=75)
+    physical_characteristics = models.CharField(max_length=75)
+    chemical_nature = models.CharField(max_length=75)
+    origin = models.CharField(max_length=10, choices=[
+                                                ('Natural', 'Natural'),
+                                                ('Synthetic', 'Synthetic')
+                                             ])
+    analysis_required = models.CharField(max_length=75)
+    other_remarks = models.CharField(max_length=200)
+
+
+class AAS(UserDetails):
+    sample_code = models.CharField(max_length=75)
+    elements = models.CharField(max_length=75)
+    other_remarks = models.CharField(max_length=200)
+
+
+class TGA(UserDetails):
+    sample_code = models.CharField(max_length=75)
+    chemical_composition = models.CharField(max_length=75)
+    sample_amount = models.CharField(max_length=75)
+    heating_program = models.CharField(max_length=15, choices=[
+                                                        ('Dynamic', 'Dynamic'),
+                                                        ('Isothermal', 'Isothermal'),
+                                                      ])
+    temperature = models.CharField(max_length=75)
+    atmosphere = models.CharField(max_length=5, choices=[
+                                                    ('N2', 'N2'),
+                                                    ('Ar', 'Ar'),
+                                                    ('Air', 'Air'),
+                                                ])
+    heating_rate = models.CharField(max_length=75)
+    sample_solubility = models.CharField(max_length=75)
+    other_remarks = models.CharField(max_length=200)
+
+
+class BET(UserDetails):
+    sample_code = models.CharField(max_length=75)
+    pretreatment_conditions = models.CharField(max_length=75)
+    precautions = models.CharField(max_length=75)
+    adsorption = models.CharField(max_length=75)
+    surface_area = models.CharField(max_length=75)
+    other_remarks = models.CharField(max_length=200)
+
+
+class CDSpectrophotometer(UserDetails):
+    sample_code = models.CharField(max_length=75)
+    wavelength_scan_start = models.CharField(max_length=75)
+    wavelength_scan_end = models.CharField(max_length=75)
+    wavelength_fixed = models.CharField(max_length=75)
+    temp_range_scan_start = models.CharField(max_length=75)
+    temp_range_scan_end = models.CharField(max_length=75)
+    temp_range_fixed = models.CharField(max_length=75)
+    concentration = models.CharField(max_length=75)
+    cell_path_length = models.CharField(max_length=75)
+    other_remarks = models.CharField(max_length=200)
+
+
+class LSCM(UserDetails):
+    sample_description = models.CharField(max_length=75)
+    dye = models.CharField(max_length=75)
+    excitation_wavelength = models.CharField(max_length=75)
+    emission_range = models.CharField(max_length=75)
+    analysis_details = models.CharField(max_length=75)
+
+
+class DSC(UserDetails):
+    sample_code = models.CharField(max_length=75)
+    chemical_composition = models.CharField(max_length=75)
+    sample_amount = models.CharField(max_length=75)
+    heating_program = models.CharField(max_length=15, choices=[
+                                                        ('Dynamic', 'Dynamic'),
+                                                        ('Isothermal', 'Isothermal')
+                                                      ])
+    temp_range = models.CharField(max_length=75)
+    atmosphere = models.CharField(max_length=5, choices=[
+                                                    ('N2', 'N2'),
+                                                    ('Ar', 'Ar'),
+                                                    ('Air', 'Air'),
+                                                ])
+    heating_rate = models.CharField(max_length=75)
+    other_remarks = models.CharField(max_length=200)
+
+
+class GC(UserDetails):
+    sample_code = models.CharField(max_length=75)
+    appearance = models.CharField(max_length=75)
+    no_of_gc_peaks = models.IntegerField()
+    solvent_solubility = models.CharField(max_length=75)
+    column_details = models.CharField(max_length=75)
+    exp_mol_wt = models.CharField(max_length=75)
+    mp_bp = models.CharField(max_length=75)
+    sample_source = models.CharField(max_length=15, choices=[
+                                                        ('Natural', 'Natural'),
+                                                        ('Synthesis', 'Synthesis'),
+                                                        ('Waste', 'Waste')
+                                                    ])
+    other_remarks = models.CharField(max_length=200)
+
+
+class EDXRF(UserDetails):
+    sample_code = models.CharField(max_length=75)
+    sample_nature = models.CharField(max_length=15, choices=[
+                                                        ('Powder', 'Powder'),
+                                                        ('Metal', 'Metal'),
+                                                        ('Film', 'Film'),
+                                                        ('Biological', 'Biological'),
+                                                        ('Concrete', 'Concrete'),
+                                                    ])
+    elements_present = models.CharField(max_length=75)
+    other_remarks = models.CharField(max_length=200)
+
+
+class HPLC(UserDetails):
+    sample_code = models.CharField(max_length=75)
+    sample_information = models.CharField(max_length=75)
+    mobile_phase = models.CharField(max_length=75)
+    column_for_lc = models.CharField(max_length=75)
+    detection_wavelength = models.CharField(max_length=75)
+    other_information = models.CharField(max_length=200)
+
+
+class NMR(UserDetails):
+    sample_code = models.CharField(max_length=75)
+    sample_nature = models.CharField(max_length=10, choices=[
+                                                        ('Solid', 'Solid'),
+                                                        ('Liquid', 'Liquid'),
+                                                    ])
+    quantity = models.CharField(max_length=75)
+    solvent = models.CharField(max_length=75)
+    analysis = models.CharField(max_length=75)
+    experiment = models.CharField(max_length=75)
+    spectral_range = models.CharField(max_length=75)
+    other_remarks = models.CharField(max_length=200)
+
+
+class PXRD(UserDetails):
+    sample_code = models.CharField(max_length=75)
+    chemical_composition = models.CharField(max_length=75)
+    sample_description = models.CharField(max_length=10, choices=[
+                                                            ('Film', 'Film'),
+                                                            ('Powder', 'Powder'),
+                                                            ('Pellet', 'Pellet'),
+                                                         ])
+    range = models.CharField(max_length=75)
+    scanning_rate = models.CharField(max_length=75)
+    any_remarks = models.CharField(max_length=200)
+
+
+class SCXRD(UserDetails):
+    sample_code = models.CharField(max_length=75)
+    chemical_composition = models.CharField(max_length=75)
+    scanning_rate = models.CharField(max_length=75)
+    source = models.CharField(max_length=5, choices=[
+                                                ('Cu', 'Cu'),
+                                                ('Mo', 'Mo'),
+                                            ])
+    any_remarks = models.CharField(max_length=200)
+
+
+class XPS(UserDetails):
+    sample_name = models.CharField(max_length=75)
+    sample_nature = models.CharField(max_length=75)
+    chemical_composition = models.CharField(max_length=75)
+    sample_property = models.CharField(max_length=20, choices=[
+                                                        ('Conducting', 'Conducting'),
+                                                        ('Semi Conducting', 'Semi Conducting'),
+                                                        ('Insulating', 'Insulating'),
+                                                      ])
+    analysed_elements = models.CharField(max_length=75)
+    scan_details = models.CharField(max_length=75)
+    other_remarks = models.CharField(max_length=200)
+
+
+class UVSpectrophotometer(UserDetails):
+    sample_code = models.CharField(max_length=75)
+    sample_composition = models.CharField(max_length=75)
+    molecular_weight = models.CharField(max_length=75)
+    analysis_mode = models.CharField(max_length=10, choices=[
+                                                        ('Solid', 'Solid'),
+                                                        ('Liquid', 'Liquid'),
+                                                        ('Thin Film', 'Thin Film'),
+                                                    ])
+    wavelength = models.CharField(max_length=75)
+    ordinate_mode = models.CharField(max_length=75)
+    other_remarks = models.CharField(max_length=200)

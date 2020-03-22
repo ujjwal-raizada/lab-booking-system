@@ -1,17 +1,18 @@
 {% extends 'instrument_form_base.html' %}
 
-{% block title %} TCS-PC {% endblock %}
-{% block subtitle %} TCS-PC {% endblock %}
-
+{% block title %} HPLC-Shimadzu {% endblock %}
+{% block subtitle %} HPLC-Shimadzu UFLC {% endblock %}
 
 {% block content %}
 <form action="" method="POST">
     {% csrf_token %}
     {{ form.as_p }}
+    <p style="text-align: justify;">
+        <b>Please provide any other information in other remarks (eg. toxic samples) </b>    </p>
     <div style="text-align: center;">
         <input type="submit" class="btn btn-primary" value="Submit">
     </div>
 </form>
 {% endblock %}
 
-{% block facility %} TCS-PC {% endblock %}
+{% block facility %} HPLC {% endblock %}

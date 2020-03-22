@@ -4,6 +4,11 @@ from ..models import UserDetails
 
 
 class UserDetailsForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(UserDetailsForm, self).__init__(*args, **kwargs)
+        self.fields['user_name'].widget.attrs['readonly'] = True
+
     class Meta:
         model = UserDetails
         fields = ('user_name',
@@ -22,7 +27,7 @@ class UserDetailsForm(forms.ModelForm):
             'req_discussed': 'Have the sampling modalities and requirements been discussed with the operator?',
         }
         widgets = {
-            'user_name': forms.Select(attrs={
+            'user_name': forms.TextInput(attrs={
                                            'class': 'form-control',
                                          }
             ),

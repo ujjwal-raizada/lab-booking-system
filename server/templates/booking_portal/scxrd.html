@@ -1,15 +1,14 @@
 {% extends 'instrument_form_base.html' %}
 
-{% block title %} Fourier Transform Infrared Spectrometer {% endblock %}
-{% block subtitle %} Fourier Transform Infrared Spectrometer {% endblock %}
-
+{% block title %} Single Crystal X-RAY Diffractometer {% endblock %}
+{% block subtitle %} Single Crystal X-RAY Diffractometer RIGAKU Oxford XTALAB {% endblock %}
 
 {% block content %}
 <form action="" method="POST">
     {% csrf_token %}
     {{ form.as_p }}
     <p style="text-align: justify;">
-        Note: the minimum amount of the sample should be 2 mg.
+        <b>Please provide any other information in other remarks (eg. toxic samples) </b>
     </p>
     <div style="text-align: center;">
         <input type="submit" class="btn btn-primary" value="Submit">
@@ -17,4 +16,4 @@
 </form>
 {% endblock %}
 
-{% block facility %} FTIR {% endblock %}
+{% block facility %} SC-XRD {% endblock %}
