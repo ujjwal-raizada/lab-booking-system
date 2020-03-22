@@ -1,0 +1,33 @@
+body, html {
+    height: 100%;
+    margin: 10;
+    font: 400 15px/1.8 "Lato", sans-serif;
+    color: #777;
+}
+
+.bgimg {
+    position: relative;
+    opacity: 0.65;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-image: url("image.jpg");
+    height: 100%;
+}
+
+.caption {
+    position: absolute;
+    left: 10;
+    top: 50%;
+    width: 100%;
+    text-align: center;
+    color: #000000;
+}
+
+.caption span.border {
+    background-color: #111111;
+    color: #ffffff;
+    padding: 18px;
+    font-size: 25px;
+    letter-spacing: 10px;
+}

@@ -1,7 +1,7 @@
 {% extends 'instrument_form_base.html' %}
 
-{% block title %} Fourier Transform Infrared Spectrometer {% endblock %}
-{% block subtitle %} Fourier Transform Infrared Spectrometer {% endblock %}
+{% block title %} XPS-Thermo Scientific K-Alpha {% endblock %}
+{% block subtitle %} XPS-Thermo Scientific K-Alpha {% endblock %}
 
 
 {% block content %}
@@ -9,7 +9,8 @@
     {% csrf_token %}
     {{ form.as_p }}
     <p style="text-align: justify;">
-        Note: the minimum amount of the sample should be 2 mg.
+        <b>Please provide any other information in other remarks (eg. toxic samples) </b><br>
+        <b>Mention any volatile elements like I, S, Hg</b>
     </p>
     <div style="text-align: center;">
         <input type="submit" class="btn btn-primary" value="Submit">
@@ -17,4 +18,4 @@
 </form>
 {% endblock %}
 
-{% block facility %} FTIR {% endblock %}
+{% block facility %} XPS {% endblock %}

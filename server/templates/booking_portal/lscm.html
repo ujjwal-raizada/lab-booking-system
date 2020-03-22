@@ -1,0 +1,22 @@
+{% extends 'instrument_form_base.html' %}
+
+{% block title %} Laser Scanning Confocal Microscopy {% endblock %}
+{% block subtitle %} Laser Scanning Confocal Microscopy (Leica DMi8) {% endblock %}
+
+{% block content %}
+<form action="" method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <p style="text-align: justify;">
+        <b>Note:</b><br>
+        1. For live sampling images, please mention the time required for analysis.<br>
+        2. Analysis details: Whether fluorescence/ transmission/ reflection imaging and Z sectioning or time lapse is required/not.<br>
+        <b>Please provide any other information in other remarks (eg. toxic samples) </b>
+    </p>
+    <div style="text-align: center;">
+        <input type="submit" class="btn btn-primary" value="Submit">
+    </div>
+</form>
+{% endblock %}
+
+{% block facility %} Leica DMi8 {% endblock %}
