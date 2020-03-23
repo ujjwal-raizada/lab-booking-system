@@ -10,9 +10,20 @@ from .permissions import is_faculty, is_lab_assistant, is_student
 
 
 def index(request):
-    context = {
-    }
-    return render(request, 'home.html', context=context)
+    context = {}
+    faculty_instance = Faculty.objects.filter(username=request.user.username).first()
+    student_instance = Student.objects.filter(username=request.user.username).first()
+    lab_instance = LabAssistant.objects.filter(username=request.user.username).first()
+    if faculty_instance:
+        context = 'faculty'
+    elif student_instance:
+        context = 'student'
+    elif lab_instance:
+        context = 'lab'
+    else:
+        context = 'none'
+
+    return render(request, 'home.html', {'usertype': context})
 
 @login_required
 @user_passes_test(is_student)
@@ -81,11 +92,10 @@ def slot_list(request):
 @login_required
 @user_passes_test(is_faculty)
 def faculty_portal(request):
-    print(request.user)
     requests_objects = Request.objects.filter(faculty=request.user, status=Request.STATUS_1)
     print(requests_objects)
     return render(request, 'booking_portal/portal_forms/faculty_portal.html',
-                  {'requests': requests_objects})
+                  {'requests': requests_objects, 'usertype': 'faculty'})
 
 
 @login_required
@@ -117,7 +127,7 @@ def faculty_request_reject(request, id):
 def lab_assistant_portal(request):
     request_objects = Request.objects.filter(lab_assistant=request.user, status=Request.STATUS_2)
     return render(request, 'booking_portal/portal_forms/lab_assistant_portal.html',
-                  {'requests': request_objects})
+                  {'requests': request_objects, 'usertype': 'lab'})
 
 @login_required
 @user_passes_test(is_lab_assistant)
@@ -142,4 +152,4 @@ def lab_assistant_reject(request, id):
 def student_portal(request):
     request_objects = Request.objects.filter(student=request.user)
     return render(request, 'booking_portal/portal_forms/student_portal.html',
-                  {'requests': request_objects})
+                  {'requests': request_objects, 'usertype': 'student'})
