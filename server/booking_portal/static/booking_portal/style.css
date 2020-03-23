@@ -1,8 +1,14 @@
 body, html {
     height: 100%;
+    width: 100%;
     margin: 10;
     font: 400 15px/1.8 "Lato", sans-serif;
     color: #777;
+}
+
+.main-div {
+    height: 100%;
+    width: 100%;
 }
 
 .bgimg {
@@ -11,8 +17,8 @@ body, html {
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    background-image: url("image.jpg");
     height: 100%;
+    width: 100%;
 }
 
 .caption {
@@ -20,6 +26,7 @@ body, html {
     left: 10;
     top: 50%;
     width: 100%;
+    height: 100%;
     text-align: center;
     color: #000000;
 }
