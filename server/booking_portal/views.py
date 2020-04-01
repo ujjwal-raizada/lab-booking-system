@@ -5,7 +5,6 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 
 from .config import form_template_dict
 from .forms.portal_forms import IntrumentList, SlotList
-from .forms.sampleform import UserDetails, UserDetailsForm
 from .models import EmailModel, Instrument, Slot, Request, Student, Faculty, LabAssistant
 from .permissions import is_faculty, is_lab_assistant, is_student
 
