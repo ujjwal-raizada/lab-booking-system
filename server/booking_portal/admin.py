@@ -11,6 +11,9 @@ from django.contrib.auth.hashers import make_password
 from .models import CustomUser, Student, Faculty, EmailModel, LabAssistant
 from .models import Instrument, Slot, Request
 from .models import FTIR, FESEM, LCMS, TCSPC, UserDetails
+from .models import Rheometer, AAS, TGA, BET, CDSpectrophotometer
+from .models import LSCM, DSC, GC, EDXRF, HPLC, NMR
+from .models import PXRD, SCXRD, XPS, UVSpectrophotometer
 from .forms.adminForms import BulkImportForm
 
 
@@ -83,3 +86,18 @@ admin.site.register(FESEM)
 admin.site.register(LCMS)
 admin.site.register(TCSPC)
 admin.site.register(UserDetails)
+admin.site.register(Rheometer)
+admin.site.register(AAS)
+admin.site.register(TGA)
+admin.site.register(BET)
+admin.site.register(CDSpectrophotometer)
+admin.site.register(LSCM)
+admin.site.register(DSC)
+admin.site.register(GC)
+admin.site.register(EDXRF)
+admin.site.register(HPLC)
+admin.site.register(NMR)
+admin.site.register(PXRD)
+admin.site.register(SCXRD)
+admin.site.register(XPS)
+admin.site.register(UVSpectrophotometer)
