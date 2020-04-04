@@ -1,5 +1,5 @@
 from django import forms
-from booking_portal.models import Instrument, Slot
+from ..models import Instrument, Slot
 
 
 class IntrumentList(forms.Form):
