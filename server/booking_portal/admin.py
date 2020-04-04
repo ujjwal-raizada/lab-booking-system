@@ -1,4 +1,5 @@
 import csv
+import datetime
 from io import TextIOWrapper
 
 from django.contrib.auth.admin import UserAdmin
@@ -8,13 +9,14 @@ from django.http import Http404
 from django.shortcuts import render, redirect
 from django.contrib.auth.hashers import make_password
 
-from .models import CustomUser, Student, Faculty, EmailModel, LabAssistant
+from .models import CustomUser, Student, Faculty, EmailModel, LabAssistant, Slot, Instrument
 from .models import Instrument, Slot, Request
 from .models import FTIR, FESEM, LCMS, TCSPC, UserDetails
 from .models import Rheometer, AAS, TGA, BET, CDSpectrophotometer
 from .models import LSCM, DSC, GC, EDXRF, HPLC, NMR
 from .models import PXRD, SCXRD, XPS, UVSpectrophotometer
 from .forms.adminForms import BulkImportForm
+from .forms.adminForms import BulkImportForm, BulkTimeSlotForm
 
 
 CSV_HEADERS = ('username', 'password')
@@ -27,6 +29,13 @@ def create_users(user_type, records):
         record['password'] = make_password(record['password'])
         user_type.objects.create(**record)
 
+
+def time_left(current, end, duration):
+    today = datetime.date.today()
+    diff = (datetime.datetime.combine(today, end) -
+            datetime.datetime.combine(today, current))
+
+    return (diff >= duration)
 
 class BulkImportAdmin(UserAdmin):
     change_list_template = "admin/csv_change_list.html"
@@ -73,13 +82,70 @@ class BulkImportAdmin(UserAdmin):
         )
 
 
+class BulkSlotImportAdmin(admin.ModelAdmin):
+    change_list_template = "admin/slot_change_list.html"
+
+    def get_urls(self):
+        urls = super().get_urls()
+        my_urls = [
+            path("import-slot/", self.generate_slots),
+        ]
+        return my_urls + urls
+
+    def generate_slots(self, request):
+        INTERVAL_CHOICES = {
+                "1-hour" : datetime.timedelta(hours=1),
+                "2-hour" : datetime.timedelta(hours=2),
+                '4-hour' : datetime.timedelta(hours=4),
+                '3-hour' : datetime.timedelta(hours=3),
+            }
+
+        if request.method == 'POST':
+            today = datetime.datetime.strptime(request.POST.get('date'), '%Y-%m-%d')
+            start_time = int(request.POST.get('start_time').split(':')[0])
+            end_time = int(request.POST.get('end_time').split(':')[0])
+            instr = Instrument.objects.get(id=request.POST.get('instruments'))
+            duration = INTERVAL_CHOICES.get(request.POST.get('lab_duration'), None)
+            delta = int(request.POST.get('for_the_next'))
+
+            if start_time >= end_time: return redirect('..')
+            if duration == None: return redirect('..')
+            if today.date() < datetime.date.today(): return redirect('..')
+
+            today_weekday = today.weekday()
+            next_days = [today + datetime.timedelta(days=var) for var in range(0, delta)]
+
+            all_slots = {}
+            for day in next_days:
+                day_wise = []
+                current = datetime.time(hour=start_time)
+                end = datetime.time(hour=end_time)
+                while current < end and time_left(current, end, duration) == True:
+                    day_wise.append(datetime.datetime.combine(day, current))
+                    current = datetime.time(hour=(datetime.datetime.combine(day, current) + duration).hour)
+                all_slots[day] = day_wise
+
+            for day, time_slots in all_slots.items():
+                for time_slot in time_slots:
+                    if not Slot.objects.filter(date=day, time=time_slot.time()).exists():
+                        slot_obj = Slot(slot_name=instr.name, instrument=instr,
+                                        status=Slot.STATUS_1, date=day, time=time_slot.time())
+                        slot_obj.save()
+
+            return redirect("..")
+        form = BulkTimeSlotForm()
+        payload = {"form": form}
+        return render(
+            request, "admin/bulk_import_slots_form.html", payload
+        )
+
+
 admin.site.register(CustomUser, UserAdmin)
 admin.site.register(Student, BulkImportAdmin)
 admin.site.register(Faculty, BulkImportAdmin)
 admin.site.register(EmailModel)
 admin.site.register(LabAssistant, BulkImportAdmin)
 admin.site.register(Instrument)
-admin.site.register(Slot)
 admin.site.register(Request)
 admin.site.register(FTIR)
 admin.site.register(FESEM)
@@ -101,3 +167,4 @@ admin.site.register(PXRD)
 admin.site.register(SCXRD)
 admin.site.register(XPS)
 admin.site.register(UVSpectrophotometer)
+admin.site.register(Slot, BulkSlotImportAdmin)
