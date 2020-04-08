@@ -44,19 +44,19 @@ def email(request):
 def book_machine(request, id):
     template, form = form_template_dict.get(id)
     if request.method == 'GET':
-        return render(request, template, {'form': form(initial={'user_name': request.user.username})})
+        return render(request, template, {'form': form(initial={'user_name': Student.objects.filter(username=request.user.username).first().id})})
 
-    elif request.method == "POST" and form(request.POST).is_valid():
+    elif request.method == "POST" and form(request.POST).is_valid():    
         slot_id = request.GET['slots']
-        student_name = request.POST['user_name']
-        faculty_name = request.POST['sup_name']
+        student_id = request.POST['user_name']
+        faculty_id = request.POST['sup_name']
 
         instr_instance = Instrument.objects.filter(id=id).first()
         slot_instance = Slot.objects.filter(id=slot_id,
                                             status=Slot.STATUS_1,
                                             instrument=instr_instance).first()
-        student_instance = Student.objects.filter(username=student_name).first()
-        faculty_instance = Faculty.objects.filter(username=faculty_name).first()
+        student_instance = Student.objects.filter(id=student_id).first()
+        faculty_instance = Faculty.objects.filter(id=faculty_id).first()
 
         # TODO: Object Lock on Request Object
         if slot_instance and student_instance and faculty_instance and instr_instance:
@@ -69,6 +69,9 @@ def book_machine(request, id):
             return HttpResponse("Submission Successful")
         else:
             return render(request, template, {'form': form(request.POST)})
+
+    else:
+        return render(request, template, {'form': form(request.POST)})
 
 @login_required
 @user_passes_test(is_student)

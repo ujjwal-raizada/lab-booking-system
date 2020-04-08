@@ -1,13 +1,31 @@
 from django import forms
 
-from ..models import UserDetails
+from ..models import UserDetails, Faculty, Student
+
+
+class MyModelChoiceField(forms.ModelChoiceField):
+
+    def label_from_instance(self, obj):
+        return obj.first_name + ' ' + obj.last_name
 
 
 class UserDetailsForm(forms.ModelForm):
 
+    user_name = MyModelChoiceField(queryset=Student.objects.all(),
+                                   widget=forms.Select(attrs={
+                                                         'class': 'form-control',
+                                                        }
+                                    ))
+
+    sup_name = MyModelChoiceField(queryset=Faculty.objects.all(), 
+                                  widget=forms.Select(attrs={
+                                                        'class': 'form-control',
+                                                      }
+                                 ))
+
     def __init__(self, *args, **kwargs):
         super(UserDetailsForm, self).__init__(*args, **kwargs)
-        self.fields['user_name'].widget.attrs['readonly'] = True
+        self.fields['user_name'].widget.attrs['disabled'] = True
 
     class Meta:
         model = UserDetails
@@ -27,17 +45,9 @@ class UserDetailsForm(forms.ModelForm):
             'req_discussed': 'Have the sampling modalities and requirements been discussed with the operator?',
         }
         widgets = {
-            'user_name': forms.TextInput(attrs={
-                                           'class': 'form-control',
-                                         }
-            ),
             'date': forms.SelectDateWidget(attrs={
                                               'class': 'form-control',
                                            }
-            ),
-            'sup_name': forms.Select(attrs={
-                                           'class': 'form-control',
-                                        }
             ),
             'sup_dept': forms.TextInput(attrs={
                                            'class': 'form-control',
