@@ -1,6 +1,7 @@
 import random
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 
 from .config import form_template_dict
@@ -66,7 +67,8 @@ def book_machine(request, id):
                                     slot=slot_instance,
                                     status=Request.STATUS_1)
             req_instance.save()
-            return HttpResponse("Submission Successful")
+            messages.success(request, 'Form Submission Successful')
+            return HttpResponseRedirect('/booking/')
         else:
             return render(request, template, {'form': form(request.POST)})
 
