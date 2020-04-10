@@ -67,6 +67,7 @@ def book_machine(request, id):
                                     slot=slot_instance,
                                     status=Request.STATUS_1)
             req_instance.save()
+            form(request.POST).save()
             messages.success(request, 'Form Submission Successful')
             return HttpResponseRedirect('/booking/')
         else:

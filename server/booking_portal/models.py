@@ -6,7 +6,7 @@ from django.core.mail import send_mail
 
 from onlineCAL.settings import EMAIL_HOST_USER
 
-import datetime
+import datetime, calendar
 
 class CustomUser(AbstractUser):
 
@@ -212,6 +212,9 @@ class UserDetails(models.Model):
     req_discussed = models.CharField(max_length=3, choices=[('Yes', 'Yes'),
                                                             ('No', 'No')])
 
+    def __str__(self):
+        return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
+    
     class Meta:
         verbose_name = 'User Detail'
         verbose_name_plural = 'User Details'
@@ -236,6 +239,9 @@ class FESEM(UserDetails):
                                                       ])
     other_remarks = models.CharField(max_length=200)
 
+    def __str__(self):
+        return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
+
     class Meta:
         verbose_name = 'FESEM'
         verbose_name_plural = 'FESEM'
@@ -256,6 +262,9 @@ class TCSPC(UserDetails):
     chemical_composition = models.CharField(max_length=75)
     other_remarks = models.CharField(max_length=200)
 
+    def __str__(self):
+        return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
+
     class Meta:
         verbose_name = 'TCSPC'
         verbose_name_plural = 'TCSPC'
@@ -271,6 +280,9 @@ class FTIR(UserDetails):
     solvent = models.CharField(max_length=75)
     other_remarks = models.CharField(max_length=200)
 
+    def __str__(self):
+        return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
+    
     class Meta:
         verbose_name = 'FTIR'
         verbose_name_plural = 'FTIR'
@@ -290,6 +302,9 @@ class LCMS(UserDetails):
                                                     ])
     other_remarks = models.CharField(max_length=200)
 
+    def __str__(self):
+        return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
+    
     class Meta:
         verbose_name = 'LCMS'
         verbose_name_plural = 'LCMS'
@@ -307,6 +322,9 @@ class Rheometer(UserDetails):
     analysis_required = models.CharField(max_length=75)
     other_remarks = models.CharField(max_length=200)
 
+    def __str__(self):
+        return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
+    
     class Meta:
         verbose_name = 'Rheometer'
         verbose_name_plural = 'Rheometer'
@@ -317,6 +335,9 @@ class AAS(UserDetails):
     elements = models.CharField(max_length=75)
     other_remarks = models.CharField(max_length=200)
 
+    def __str__(self):
+        return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
+    
     class Meta:
         verbose_name = 'AAS'
         verbose_name_plural = 'AAS'
@@ -340,6 +361,9 @@ class TGA(UserDetails):
     sample_solubility = models.CharField(max_length=75)
     other_remarks = models.CharField(max_length=200)
 
+    def __str__(self):
+        return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
+    
     class Meta:
         verbose_name = 'TGA'
         verbose_name_plural = 'TGA'
@@ -353,6 +377,9 @@ class BET(UserDetails):
     surface_area = models.CharField(max_length=75)
     other_remarks = models.CharField(max_length=200)
 
+    def __str__(self):
+        return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
+    
     class Meta:
         verbose_name = 'BET'
         verbose_name_plural = 'BET'
@@ -370,6 +397,9 @@ class CDSpectrophotometer(UserDetails):
     cell_path_length = models.CharField(max_length=75)
     other_remarks = models.CharField(max_length=200)
 
+    def __str__(self):
+        return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
+    
     class Meta:
         verbose_name = 'CDSpectrophotometer'
         verbose_name_plural = 'CDSpectrophotometer'
@@ -382,6 +412,9 @@ class LSCM(UserDetails):
     emission_range = models.CharField(max_length=75)
     analysis_details = models.CharField(max_length=75)
 
+    def __str__(self):
+        return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
+    
     class Meta:
         verbose_name = 'LSCM'
         verbose_name_plural = 'LSCM'
@@ -404,6 +437,9 @@ class DSC(UserDetails):
     heating_rate = models.CharField(max_length=75)
     other_remarks = models.CharField(max_length=200)
 
+    def __str__(self):
+        return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
+    
     class Meta:
         verbose_name = 'DSC'
         verbose_name_plural = 'DSC'
@@ -424,6 +460,9 @@ class GC(UserDetails):
                                                     ])
     other_remarks = models.CharField(max_length=200)
 
+    def __str__(self):
+        return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
+    
     class Meta:
         verbose_name = 'GC'
         verbose_name_plural = 'GC'
@@ -441,6 +480,9 @@ class EDXRF(UserDetails):
     elements_present = models.CharField(max_length=75)
     other_remarks = models.CharField(max_length=200)
 
+    def __str__(self):
+        return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
+    
     class Meta:
         verbose_name = 'EDXRF'
         verbose_name_plural = 'EDXRF'
@@ -454,6 +496,9 @@ class HPLC(UserDetails):
     detection_wavelength = models.CharField(max_length=75)
     other_information = models.CharField(max_length=200)
 
+    def __str__(self):
+        return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
+    
     class Meta:
         verbose_name = 'HPLC'
         verbose_name_plural = 'HPLC'
@@ -472,6 +517,9 @@ class NMR(UserDetails):
     spectral_range = models.CharField(max_length=75)
     other_remarks = models.CharField(max_length=200)
 
+    def __str__(self):
+        return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
+    
     class Meta:
         verbose_name = 'NMR'
         verbose_name_plural = 'NMR'
@@ -489,6 +537,9 @@ class PXRD(UserDetails):
     scanning_rate = models.CharField(max_length=75)
     any_remarks = models.CharField(max_length=200)
 
+    def __str__(self):
+        return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
+    
     class Meta:
         verbose_name = 'PXRD'
         verbose_name_plural = 'PXRD'
@@ -504,6 +555,9 @@ class SCXRD(UserDetails):
                                             ])
     any_remarks = models.CharField(max_length=200)
 
+    def __str__(self):
+        return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
+    
     class Meta:
         verbose_name = 'SCXRD'
         verbose_name_plural = 'SCXRD'
@@ -522,6 +576,9 @@ class XPS(UserDetails):
     scan_details = models.CharField(max_length=75)
     other_remarks = models.CharField(max_length=200)
 
+    def __str__(self):
+        return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
+    
     class Meta:
         verbose_name = 'XPS'
         verbose_name_plural = 'XPS'
@@ -540,6 +597,9 @@ class UVSpectrophotometer(UserDetails):
     ordinate_mode = models.CharField(max_length=75)
     other_remarks = models.CharField(max_length=200)
 
+    def __str__(self):
+        return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
+    
     class Meta:
         verbose_name = 'UVSpectrophotometer'
         verbose_name_plural = 'UVSpectrophotometer'
