@@ -33,6 +33,12 @@
                     <td>{{ request.instrument }}</td>
                     <td>{{ request.slot }}</td>
                     <td>{{ request.status }}</td>
+                    {% if request.status == 'R1' %} <td>Waiting for Faculty Approval</td>
+                    {% elif request.status == 'R2' %} <td>Waiting for Lab Assistant Approval</td>
+                    {% elif request.status == 'R3' %} <td>Approved</td>
+                    {% elif request.status == 'R4' %} <td>Rejected</td>
+                    {% elif request.status == 'R5' %} <td>Cancelled</td>
+                    {% endif %}
                     <td> <a href={% url 'view-application' id=request.id %} target="_blank"> View Application </a></td>
                     <td> <a href="/booking/requests_faculty/accept/{{request.id}}"><button type="button" class="btn btn-success">Accept</button></a> </td>
                     <td> <a href="/booking/requests_faculty/reject/{{request.id}}"><button type="button" class="btn btn-danger">Reject</button></a> </td>
