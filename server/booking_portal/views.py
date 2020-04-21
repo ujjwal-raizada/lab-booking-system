@@ -1,5 +1,5 @@
 import random
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -47,7 +47,7 @@ def book_machine(request, id):
     if request.method == 'GET':
         return render(request, template, {'form': form(initial={'user_name': Student.objects.filter(username=request.user.username).first().id})})
 
-    elif request.method == "POST" and form(request.POST).is_valid():    
+    elif request.method == "POST" and form(request.POST).is_valid():
         slot_id = request.GET['slots']
         student_id = request.POST['user_name']
         faculty_id = request.POST['sup_name']
@@ -97,26 +97,36 @@ def faculty_portal(request):
 @login_required
 @user_passes_test(is_faculty)
 def faculty_request_accept(request, id):
-
-    #TODO: match faculty access
-    request_object = Request.objects.get(id=id)
-    request_object.status = Request.STATUS_2
-    request_object.message = "accept"
-    request_object.lab_assistant = random.choice(LabAssistant.objects.all())
-    request_object.save()
-    return faculty_portal(request)
+    try:
+        request_object = Request.objects.get(id=id)
+    except:
+        raise Http404()
+    faculty = request_object.faculty
+    if (faculty == request.user):
+        request_object.status = Request.STATUS_2
+        request_object.message = "accept"
+        request_object.lab_assistant = random.choice(LabAssistant.objects.all())
+        request_object.save()
+        return faculty_portal(request)
+    else:
+        return HttpResponse("Bad Request")
 
 
 @login_required
 @user_passes_test(is_faculty)
 def faculty_request_reject(request, id):
-
-    #TODO: match faculty access
-    request_object = Request.objects.get(id=id)
-    request_object.status = Request.STATUS_2
-    request_object.message = "reject"
-    request_object.save()
-    return faculty_portal(request)
+    try:
+        request_object = Request.objects.get(id=id)
+    except:
+        raise Http404()
+    faculty = request_object.faculty
+    if faculty == request.user:
+        request_object.status = Request.STATUS_2
+        request_object.message = "reject"
+        request_object.save()
+        return faculty_portal(request)
+    else:
+        return HttpResponse("Bad Request")
 
 @login_required
 @user_passes_test(is_lab_assistant)
@@ -128,20 +138,34 @@ def lab_assistant_portal(request):
 @login_required
 @user_passes_test(is_lab_assistant)
 def lab_assistant_accept(request, id):
-    request_object = Request.objects.get(id=id)
-    request_object.status = Request.STATUS_3
-    request_object.message = "accept"
-    request_object.save()
-    return lab_assistant_portal(request)
+    try:
+        request_object = Request.objects.get(id=id)
+    except:
+        raise Http404()
+    lab_assistant = request_object.lab_assistant
+    if (lab_assistant == request.user):
+        request_object.status = Request.STATUS_3
+        request_object.message = "accept"
+        request_object.save()
+        return lab_assistant_portal(request)
+    else:
+        return HttpResponse("Bad Request")
 
 @login_required
 @user_passes_test(is_lab_assistant)
 def lab_assistant_reject(request, id):
-    request_object = Request.objects.get(id=id)
-    request_object.status = Request.STATUS_3
-    request_object.message = "reject"
-    request_object.save()
-    return lab_assistant_portal(request)
+    try:
+        request_object = Request.objects.get(id=id)
+    except:
+        raise Http404()
+    lab_assistant = request_object.lab_assistant
+    if (lab_assistant == request.user):
+        request_object.status = Request.STATUS_3
+        request_object.message = "reject"
+        request_object.save()
+        return lab_assistant_portal(request)
+    else:
+        return HttpResponse("Bad Request")
 
 @login_required
 @user_passes_test(is_student)
