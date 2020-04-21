@@ -1,0 +1,44 @@
+BODY
+{
+    margin: 0;
+    padding: 0;
+}
+#content
+{
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: #DDD;
+    padding-top: 60px;
+}
+#header
+{
+    background-color: #FFF;
+    height: 60px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
+.caption {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    text-align: center;
+    color: #000000;
+}
+
+.caption span.border {
+    background-color: #111111;
+    color: #ffffff;
+    padding: 18px;
+    font-size: 25px;
+    letter-spacing: 10px;
+}
+
+.main-div {
+    width: 100%;
+}

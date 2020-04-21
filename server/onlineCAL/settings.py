@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'onlineCAL',
     'booking_portal',
     'django.contrib.admin',
     'django.contrib.auth',
