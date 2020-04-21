@@ -18,6 +18,7 @@
                 <th scope="col">Instrument</th>
                 <th scope="col">Slot</th>
                 <th scope="col">Status</th>
+                <th scope="col">Application</th>
                 <th scope="col"></th>
                 <th scope="col"></th>
               </tr>
@@ -37,17 +38,12 @@
                     {% elif request.status == 'R4' %} <td>Rejected</td>
                     {% elif request.status == 'R5' %} <td>Cancelled</td>
                     {% endif %}
+                    <td> <a href={% url 'view-application' id=request.id %} target="_blank"> View Application </a></td>
                 </tr>
                 {% endfor %}
 
             </tbody>
           </table>
-
-            <!-- {{ form.as_p }} -->
-
-
-          <!-- <button type="submit" class="btn btn-primary">Proceed</button><br /><br /> -->
-
       </p>
     </div>
   </div>

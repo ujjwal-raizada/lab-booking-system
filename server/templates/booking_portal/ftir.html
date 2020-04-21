@@ -18,9 +18,11 @@
     <p style="text-align: justify;">
         Note: the minimum amount of the sample should be 2 mg.
     </p>
-    <div style="text-align: center;">
-        <input type="submit" class="btn btn-primary" value="Submit">
-    </div>
+    {% if edit %}
+        <div style="text-align: center;">
+            <input type="submit" class="btn btn-primary" value="Submit">
+        </div>
+    {% endif %}
 </form>
 {% endblock %}
 

@@ -18,9 +18,11 @@
     <p style="text-align: justify;">
         <b>Please provide any other information in other remarks (eg. toxic samples) </b>
     </p>
-    <div style="text-align: center;">
-        <input type="submit" class="btn btn-primary" value="Submit">
-    </div>
+    {% if edit %}
+        <div style="text-align: center;">
+            <input type="submit" class="btn btn-primary" value="Submit">
+        </div>
+    {% endif %}
 </form>
 {% endblock %}
 
