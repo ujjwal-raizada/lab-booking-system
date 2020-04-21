@@ -1,10 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.core.mail import send_mail
 
-from onlineCAL.settings import EMAIL_HOST_USER
+from onlineCAL.settings import EMAIL_HOST_USER, EMAIL_HOST_PASSWORD
 
 import datetime, calendar
 
@@ -92,10 +94,14 @@ class Request(models.Model):
     student = models.ForeignKey(Student, on_delete=models.PROTECT)
     faculty = models.ForeignKey(Faculty, on_delete=models.PROTECT)
     lab_assistant = models.ForeignKey(LabAssistant, on_delete=models.PROTECT,
-                                      default=None, null=True)
+                                      blank=True, null=True)
     instrument = models.ForeignKey(Instrument, on_delete=models.PROTECT)
     slot = models.ForeignKey(Slot, on_delete=models.CASCADE)
     status = models.CharField(max_length=50, choices=STATUS_CHOICES)
+
+    content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT, blank=True, null=True)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
 
 
 class EmailModel(models.Model):
@@ -214,7 +220,7 @@ class UserDetails(models.Model):
 
     def __str__(self):
         return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
-    
+
     class Meta:
         verbose_name = 'User Detail'
         verbose_name_plural = 'User Details'
@@ -282,7 +288,7 @@ class FTIR(UserDetails):
 
     def __str__(self):
         return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
-    
+
     class Meta:
         verbose_name = 'FTIR'
         verbose_name_plural = 'FTIR'
@@ -304,7 +310,7 @@ class LCMS(UserDetails):
 
     def __str__(self):
         return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
-    
+
     class Meta:
         verbose_name = 'LCMS'
         verbose_name_plural = 'LCMS'
@@ -324,7 +330,7 @@ class Rheometer(UserDetails):
 
     def __str__(self):
         return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
-    
+
     class Meta:
         verbose_name = 'Rheometer'
         verbose_name_plural = 'Rheometer'
@@ -337,7 +343,7 @@ class AAS(UserDetails):
 
     def __str__(self):
         return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
-    
+
     class Meta:
         verbose_name = 'AAS'
         verbose_name_plural = 'AAS'
@@ -363,7 +369,7 @@ class TGA(UserDetails):
 
     def __str__(self):
         return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
-    
+
     class Meta:
         verbose_name = 'TGA'
         verbose_name_plural = 'TGA'
@@ -379,7 +385,7 @@ class BET(UserDetails):
 
     def __str__(self):
         return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
-    
+
     class Meta:
         verbose_name = 'BET'
         verbose_name_plural = 'BET'
@@ -399,7 +405,7 @@ class CDSpectrophotometer(UserDetails):
 
     def __str__(self):
         return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
-    
+
     class Meta:
         verbose_name = 'CDSpectrophotometer'
         verbose_name_plural = 'CDSpectrophotometer'
@@ -414,7 +420,7 @@ class LSCM(UserDetails):
 
     def __str__(self):
         return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
-    
+
     class Meta:
         verbose_name = 'LSCM'
         verbose_name_plural = 'LSCM'
@@ -439,7 +445,7 @@ class DSC(UserDetails):
 
     def __str__(self):
         return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
-    
+
     class Meta:
         verbose_name = 'DSC'
         verbose_name_plural = 'DSC'
@@ -462,7 +468,7 @@ class GC(UserDetails):
 
     def __str__(self):
         return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
-    
+
     class Meta:
         verbose_name = 'GC'
         verbose_name_plural = 'GC'
@@ -482,7 +488,7 @@ class EDXRF(UserDetails):
 
     def __str__(self):
         return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
-    
+
     class Meta:
         verbose_name = 'EDXRF'
         verbose_name_plural = 'EDXRF'
@@ -498,7 +504,7 @@ class HPLC(UserDetails):
 
     def __str__(self):
         return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
-    
+
     class Meta:
         verbose_name = 'HPLC'
         verbose_name_plural = 'HPLC'
@@ -519,7 +525,7 @@ class NMR(UserDetails):
 
     def __str__(self):
         return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
-    
+
     class Meta:
         verbose_name = 'NMR'
         verbose_name_plural = 'NMR'
@@ -539,7 +545,7 @@ class PXRD(UserDetails):
 
     def __str__(self):
         return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
-    
+
     class Meta:
         verbose_name = 'PXRD'
         verbose_name_plural = 'PXRD'
@@ -557,7 +563,7 @@ class SCXRD(UserDetails):
 
     def __str__(self):
         return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
-    
+
     class Meta:
         verbose_name = 'SCXRD'
         verbose_name_plural = 'SCXRD'
@@ -578,7 +584,7 @@ class XPS(UserDetails):
 
     def __str__(self):
         return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
-    
+
     class Meta:
         verbose_name = 'XPS'
         verbose_name_plural = 'XPS'
@@ -599,7 +605,7 @@ class UVSpectrophotometer(UserDetails):
 
     def __str__(self):
         return 'Form ' + ": " +  str(self.date.day) + " " + calendar.month_name[self.date.month] + " " + str(self.date.year)
-    
+
     class Meta:
         verbose_name = 'UVSpectrophotometer'
         verbose_name_plural = 'UVSpectrophotometer'

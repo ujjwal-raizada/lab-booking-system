@@ -18,6 +18,7 @@
                 <th scope="col">Instrument</th>
                 <th scope="col">Slot</th>
                 <th scope="col">Status</th>
+                <th scope="col">Application</th>
                 <th scope="col"></th>
                 <th scope="col"></th>
               </tr>
@@ -32,6 +33,7 @@
                     <td>{{ request.instrument }}</td>
                     <td>{{ request.slot }}</td>
                     <td>{{ request.status }}</td>
+                    <td> <a href={% url 'view-application' id=request.id %} target="_blank"> View Application </a></td>
                     <td> <a href="/booking/requests_assistant/accept/{{request.id}}"><button type="button" class="btn btn-success">Accept</button></a> </td>
                     <td> <a href="/booking/requests_assistant/reject/{{request.id}}"><button type="button" class="btn btn-danger">Reject</button></a> </td>
                 </tr>

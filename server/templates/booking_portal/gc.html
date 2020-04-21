@@ -18,9 +18,11 @@
         <b>Note:</b> User is requested to adopt standard techniques for preparation of samples before giving them. <br>
         The sample should be filtered through 0.2 micrometer PTFE filter.
     </p>
-    <div style="text-align: center;">
-        <input type="submit" class="btn btn-primary" value="Submit">
-    </div>
+    {% if edit %}
+        <div style="text-align: center;">
+            <input type="submit" class="btn btn-primary" value="Submit">
+        </div>
+    {% endif %}
 </form>
 {% endblock %}
 

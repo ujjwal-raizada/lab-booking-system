@@ -15,4 +15,5 @@ urlpatterns = [
     path('requests_faculty/reject/<int:id>', views.faculty_request_reject, name='faculty_request_reject'),
     path('requests_assistant/accept/<int:id>', views.lab_assistant_accept, name='faculty_request_accept'),
     path('requests_assistant/reject/<int:id>', views.lab_assistant_reject, name='faculty_request_reject'),
+    path('view-application/<int:id>', views.show_application, name='view-application'),
 ]
