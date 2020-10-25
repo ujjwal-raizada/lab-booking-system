@@ -1,8 +1,10 @@
 import random
+import datetime
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.db.models import Q
 
 from .config import form_template_dict, view_application_dict
 from .forms.portal_forms import IntrumentList, SlotList
@@ -82,15 +84,25 @@ def book_machine(request, id):
 @user_passes_test(is_student)
 def slot_list(request):
     instr_id = request.POST['instruments']
-    instr_name = Instrument.objects.get(id=instr_id).name
-    form = SlotList(instr_id)
-    return render(request, 'booking_portal/portal_forms/slot_list.html',
-                  {'instrument_name': instr_name, 'instrument_id': instr_id, 'form': form})
+    instr_obj = Instrument.objects.get(id=instr_id)
+    instr_name = instr_obj.name
+
+    check_prev_slots = Slot.objects.filter((Q(status=Slot.STATUS_2) | Q(status=Slot.STATUS_3))
+                                            & Q(date__gte=datetime.datetime.today()))
+
+    if len(check_prev_slots) >= 1 :
+        return render(request, 'booking_portal/portal_forms/instrument_list.html',
+                      {'form' : IntrumentList(),
+                      "message":'You cannot book a slot for this instrument since you already have a booking !'})
+    else :
+        form = SlotList(instr_id)
+        return render(request, 'booking_portal/portal_forms/slot_list.html',
+                  {'instrument_name': instr_obj.name, 'instrument_id': instr_id, 'form': form})
 
 @login_required
 @user_passes_test(is_faculty)
 def faculty_portal(request):
-    requests_objects = Request.objects.filter(faculty=request.user, status=Request.STATUS_1)
+    requests_objects = Request.objects.filter(faculty=request.user, status=Request.STATUS_1).order_by('slot__date').reverse()
     return render(request, 'booking_portal/portal_forms/faculty_portal.html',
                   {'requests': requests_objects, 'usertype': 'faculty'})
 
@@ -132,7 +144,7 @@ def faculty_request_reject(request, id):
 @login_required
 @user_passes_test(is_lab_assistant)
 def lab_assistant_portal(request):
-    request_objects = Request.objects.filter(lab_assistant=request.user, status=Request.STATUS_2)
+    request_objects = Request.objects.filter(lab_assistant=request.user, status=Request.STATUS_2).order_by('slot__date').reverse()
     return render(request, 'booking_portal/portal_forms/lab_assistant_portal.html',
                   {'requests': request_objects, 'usertype': 'lab'})
 
@@ -171,7 +183,7 @@ def lab_assistant_reject(request, id):
 @login_required
 @user_passes_test(is_student)
 def student_portal(request):
-    request_objects = Request.objects.filter(student=request.user)
+    request_objects = Request.objects.filter(student=request.user).order_by('slot__date').reverse()
     return render(request, 'booking_portal/portal_forms/student_portal.html',
                   {'requests': request_objects, 'usertype': 'student'})
 
