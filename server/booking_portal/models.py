@@ -132,7 +132,7 @@ def send_email_after_save(sender, instance, **kwargs):
         message = instance.message
     except AttributeError:
         message = None
-        print ("Attribute Error Called")
+        print ("No Attribute present")
 
     def init_mail_and_send(recvr, request, mail_text, subject):
         EmailModel(receiver=recvr,
@@ -142,12 +142,16 @@ def send_email_after_save(sender, instance, **kwargs):
 
         try:
             send_mail(subject, mail_text, EMAIL_HOST_USER,
-                     [receiver], fail_silently=False)
+                     [recvr], fail_silently=False)
         except:
             raise FailedEmailAttempt()
 
     def update_slot_status(status):
-        assert status in (Slot.STATUS_1, Slot.STATUS_2, Slot.STATUS_3, Slot.STATUS_4), FailedEmailAttempt()
+        assert status in (
+            Slot.STATUS_1,
+            Slot.STATUS_2,
+            Slot.STATUS_3,
+            Slot.STATUS_4), FailedEmailAttempt()
         slot.status = status
         slot.save(update_fields=['status'])
 
