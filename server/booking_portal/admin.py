@@ -3,7 +3,9 @@ import datetime
 from io import TextIOWrapper
 
 from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.urls import path
+from django.core.exceptions import MultipleObjectsReturned
 from django.contrib import admin, messages
 from django.http import Http404
 from django.shortcuts import render, redirect
@@ -20,14 +22,26 @@ from .forms.adminForms import BulkImportForm, BulkTimeSlotForm
 
 
 CSV_HEADERS = ('username', 'password')
+CSV_HEADERS_STUDENT = CSV_HEADERS + ('supervisor',)
 
 def create_users(user_type, records):
-    headers = CSV_HEADERS
+    headers = CSV_HEADERS if user_type != Student else CSV_HEADERS_STUDENT
     if set(records.fieldnames) != set(headers):
         raise Exception(f"Invalid CSV headers/columns. Expected: {headers}")
+
     for record in records:
         record['password'] = make_password(record['password'])
-        user_type.objects.create(**record)
+        if user_type == Student:
+            obj = Faculty.objects.filter(username=record['supervisor']).first()
+            if not obj:
+                raise Exception(f"Invalid Supervisor Name: \"{record['supervisor']}\"")
+            else:
+                record['supervisor'] = obj
+
+        if user_type.objects.filter(username=record['username']).first():
+            raise Exception(f"{user_type} with username \"{record['username']}\" already exists.")
+        else:
+            user_type.objects.create(**record)
 
 
 def time_left(current, end, duration):
@@ -139,9 +153,34 @@ class BulkSlotImportAdmin(admin.ModelAdmin):
             request, "admin/bulk_import_slots_form.html", payload
         )
 
+class StudentCreationForm(UserCreationForm):
+    class Meta:
+        model = Student
+        fields = ('supervisor',)
+
+class StudentChangeForm(UserChangeForm):
+    class Meta:
+        model = Student
+        fields = ('supervisor',)
+
+class StudentAdmin(BulkImportAdmin):
+    form = StudentChangeForm
+    add_form = StudentCreationForm
+
+    list_display = UserAdmin.list_display + ('supervisor',)
+    fieldsets = UserAdmin.fieldsets + (
+        (None, {'fields' : ('supervisor',)},),
+    )
+    add_fieldsets = UserAdmin.add_fieldsets + (
+        (None, {
+            'classes' : ('wide',),
+            'fields' : ('supervisor',)}
+        ),
+    )
+    change_list_template = "admin/csv_change_list.html"
 
 admin.site.register(CustomUser, UserAdmin)
-admin.site.register(Student, BulkImportAdmin)
+admin.site.register(Student, StudentAdmin)
 admin.site.register(Faculty, BulkImportAdmin)
 admin.site.register(EmailModel)
 admin.site.register(LabAssistant, BulkImportAdmin)

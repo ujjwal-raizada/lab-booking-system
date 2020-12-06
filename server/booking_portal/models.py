@@ -21,20 +21,19 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return f"{self.name} ({self.short_id})"
 
-
-class Student(CustomUser):
-    id_number = models.CharField(max_length=20)
-
-    class Meta:
-        verbose_name = "student"
-        default_related_name = "students"
-
-
 class Faculty(CustomUser):
     class Meta:
         verbose_name = "faculty"
         verbose_name_plural = "faculties"
         default_related_name = "faculties"
+
+class Student(CustomUser):
+    id_number = models.CharField(max_length=20)
+    supervisor = models.ForeignKey(Faculty, on_delete=models.PROTECT, null=False)
+
+    class Meta:
+        verbose_name = "student"
+        default_related_name = "students"
 
 
 class LabAssistant(CustomUser):
