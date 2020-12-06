@@ -6,7 +6,7 @@ from ..models import UserDetails, Faculty, Student
 class MyModelChoiceField(forms.ModelChoiceField):
 
     def label_from_instance(self, obj):
-        return obj.first_name + ' ' + obj.last_name
+        return f"{obj.first_name} {obj.last_name} ({obj.short_id})"
 
 
 class UserDetailsForm(forms.ModelForm):
@@ -17,7 +17,7 @@ class UserDetailsForm(forms.ModelForm):
                                                         }
                                     ))
 
-    sup_name = MyModelChoiceField(queryset=Faculty.objects.all(), 
+    sup_name = MyModelChoiceField(queryset=Faculty.objects.all(),
                                   widget=forms.Select(attrs={
                                                         'class': 'form-control',
                                                       }
@@ -26,6 +26,9 @@ class UserDetailsForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(UserDetailsForm, self).__init__(*args, **kwargs)
         self.fields['user_name'].widget.attrs['disabled'] = True
+        self.fields['sup_name'].widget.attrs['disabled'] = True
+        self.fields['date'].widget.attrs['disabled'] = True
+        self.fields['sup_dept'].widget.attrs['readonly'] = True
 
     class Meta:
         model = UserDetails

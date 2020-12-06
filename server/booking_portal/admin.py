@@ -23,9 +23,15 @@ from .forms.adminForms import BulkImportForm, BulkTimeSlotForm
 
 CSV_HEADERS = ('username', 'password')
 CSV_HEADERS_STUDENT = CSV_HEADERS + ('supervisor',)
+CSV_HEADERS_FACULTY = CSV_HEADERS + ('department', )
 
 def create_users(user_type, records):
-    headers = CSV_HEADERS if user_type != Student else CSV_HEADERS_STUDENT
+    headers = CSV_HEADERS
+    if user_type == Student:
+        headers = CSV_HEADERS_STUDENT
+    elif user_type == Faculty:
+        headers = CSV_HEADERS_FACULTY
+
     if set(records.fieldnames) != set(headers):
         raise Exception(f"Invalid CSV headers/columns. Expected: {headers}")
 
@@ -177,11 +183,35 @@ class StudentAdmin(BulkImportAdmin):
             'fields' : ('supervisor',)}
         ),
     )
-    change_list_template = "admin/csv_change_list.html"
+
+class FacultyCreationForm(UserCreationForm):
+    class Meta:
+        model = Faculty
+        fields = ('department',)
+
+class FacultyChangeForm(UserChangeForm):
+    class Meta:
+        model = Faculty
+        fields = ('department',)
+
+class FacultyAdmin(BulkImportAdmin):
+    form = FacultyChangeForm
+    add_form = FacultyCreationForm
+
+    list_display = UserAdmin.list_display + ('department',)
+    fieldsets = UserAdmin.fieldsets + (
+        (None, {'fields' : ('department',)},),
+    )
+    add_fieldsets = UserAdmin.add_fieldsets + (
+        (None, {
+            'classes' : ('wide',),
+            'fields' : ('department',)}
+        ),
+    )
 
 admin.site.register(CustomUser, UserAdmin)
 admin.site.register(Student, StudentAdmin)
-admin.site.register(Faculty, BulkImportAdmin)
+admin.site.register(Faculty, FacultyAdmin)
 admin.site.register(EmailModel)
 admin.site.register(LabAssistant, BulkImportAdmin)
 admin.site.register(Instrument)
