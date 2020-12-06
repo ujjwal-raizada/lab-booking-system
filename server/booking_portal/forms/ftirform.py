@@ -1,6 +1,6 @@
 from django import forms
 
-from ..models import FTIR
+from ..models.instrument.form_models import FTIR
 from .userform import UserDetailsForm
 
 

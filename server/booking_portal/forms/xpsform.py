@@ -1,6 +1,6 @@
 from django import forms
 
-from ..models import XPS
+from ..models.instrument.form_models import XPS
 from .userform import UserDetailsForm
 
 
@@ -22,7 +22,7 @@ class XPSForm(UserDetailsForm):
                 'sample_property': 'Sample Property',
                 'analysed_elements': 'Elements to be analysed',
                 'scan_details': 'Scan details specification (Expected B.E.)',
-                'other_remarks': 'Any other relevant information',    
+                'other_remarks': 'Any other relevant information',
             }
         )
         labels = UserDetailsForm.Meta.labels

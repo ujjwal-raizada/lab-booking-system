@@ -1,7 +1,8 @@
 from django import forms
-from ..models import Instrument, Slot
 import datetime
 
+from ..models.instrument import Instrument
+from ..models.slot import Slot
 
 class IntrumentList(forms.Form):
     instruments = forms.ModelChoiceField(queryset=Instrument.objects.all())

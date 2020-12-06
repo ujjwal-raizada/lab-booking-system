@@ -1,6 +1,6 @@
 from django import forms
 
-from ..models import BET
+from ..models.instrument.form_models import BET
 from .userform import UserDetailsForm
 
 

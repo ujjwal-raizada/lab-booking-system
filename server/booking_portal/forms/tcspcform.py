@@ -1,6 +1,6 @@
 from django import forms
 
-from ..models import TCSPC
+from ..models.instrument.form_models import TCSPC
 from .userform import UserDetailsForm
 
 

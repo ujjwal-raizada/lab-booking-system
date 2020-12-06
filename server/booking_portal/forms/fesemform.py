@@ -1,6 +1,6 @@
 from django import forms
 
-from ..models import FESEM
+from ..models.instrument.form_models import FESEM
 from .userform import UserDetailsForm
 
 

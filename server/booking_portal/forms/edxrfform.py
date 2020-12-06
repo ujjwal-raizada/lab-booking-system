@@ -1,6 +1,6 @@
 from django import forms
 
-from ..models import EDXRF
+from ..models.instrument.form_models import EDXRF
 from .userform import UserDetailsForm
 
 

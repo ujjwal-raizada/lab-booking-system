@@ -1,6 +1,6 @@
 from django import forms
 
-from ..models import TGA
+from ..models.instrument.form_models import TGA
 from .userform import UserDetailsForm
 
 
@@ -61,7 +61,7 @@ class TGAForm(UserDetailsForm):
                                                 }
                 ),
                 'sample_solubility': forms.TextInput(attrs={
-                                                      'class': 'form-control', 
+                                                      'class': 'form-control',
                                                      }
                 ),
                 'other_remarks': forms.Textarea(attrs={

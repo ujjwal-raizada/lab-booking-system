@@ -1,12 +1,12 @@
 from django import forms
 
-from ..models import UserDetails, Faculty, Student
-
+from ..models.user import Faculty, Student
+from ..models.instrument.userdetails import UserDetail
 
 class MyModelChoiceField(forms.ModelChoiceField):
 
     def label_from_instance(self, obj):
-        return f"{obj.first_name} {obj.last_name} ({obj.short_id})"
+        return "{} ({})".format(obj.name, obj.email)
 
 
 class UserDetailsForm(forms.ModelForm):
@@ -31,7 +31,7 @@ class UserDetailsForm(forms.ModelForm):
         self.fields['sup_dept'].widget.attrs['readonly'] = True
 
     class Meta:
-        model = UserDetails
+        model = UserDetail
         fields = ('user_name',
                   'date',
                   'sup_name',

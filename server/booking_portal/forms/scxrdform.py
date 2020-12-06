@@ -1,6 +1,6 @@
 from django import forms
 
-from ..models import SCXRD
+from ..models.instrument.form_models import SCXRD
 from .userform import UserDetailsForm
 
 

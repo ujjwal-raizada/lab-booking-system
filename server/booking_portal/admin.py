@@ -5,7 +5,6 @@ from io import TextIOWrapper
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.urls import path
-from django.core.exceptions import MultipleObjectsReturned
 from django.contrib import admin, messages
 from django.http import Http404
 from django.shortcuts import render, redirect
@@ -13,15 +12,17 @@ from django.contrib.auth.hashers import make_password
 
 from .models import CustomUser, Student, Faculty, EmailModel, LabAssistant, Slot, Instrument
 from .models import Instrument, Slot, Request
-from .models import FTIR, FESEM, LCMS, TCSPC, UserDetails
+from .models import FTIR, FESEM, LCMS, TCSPC, UserDetail
 from .models import Rheometer, AAS, TGA, BET, CDSpectrophotometer
 from .models import LSCM, DSC, GC, EDXRF, HPLC, NMR
 from .models import PXRD, SCXRD, XPS, UVSpectrophotometer
-from .forms.adminForms import BulkImportForm
-from .forms.adminForms import BulkImportForm, BulkTimeSlotForm
+from .forms.adminForms import (
+    BulkImportForm, BulkTimeSlotForm, FacultyChangeForm, FacultyCreationForm,
+    StudentChangeForm, StudentCreationForm, CustomUserCreationForm, CustomUserChangeForm
+)
 
 
-CSV_HEADERS = ('username', 'password')
+CSV_HEADERS = ('email', 'password')
 CSV_HEADERS_STUDENT = CSV_HEADERS + ('supervisor',)
 CSV_HEADERS_FACULTY = CSV_HEADERS + ('department', )
 
@@ -38,17 +39,16 @@ def create_users(user_type, records):
     for record in records:
         record['password'] = make_password(record['password'])
         if user_type == Student:
-            obj = Faculty.objects.filter(username=record['supervisor']).first()
+            obj = Faculty.objects.filter(email=record['supervisor']).first()
             if not obj:
                 raise Exception(f"Invalid Supervisor Name: \"{record['supervisor']}\"")
             else:
                 record['supervisor'] = obj
 
-        if user_type.objects.filter(username=record['username']).first():
+        if user_type.objects.filter(email=record['email']).first():
             raise Exception(f"{user_type} with username \"{record['username']}\" already exists.")
         else:
             user_type.objects.create(**record)
-
 
 def time_left(current, end, duration):
     today = datetime.date.today()
@@ -57,7 +57,28 @@ def time_left(current, end, duration):
 
     return (diff >= duration)
 
-class BulkImportAdmin(UserAdmin):
+class CustomUserAdmin(UserAdmin):
+    form = CustomUserChangeForm
+    add_form = CustomUserCreationForm
+
+    list_display = ('email', 'is_staff', 'is_active')
+    list_filter = ('email', 'is_staff', 'is_active')
+    fieldsets = (
+        (None, {'fields': ('email', 'name', 'password')}),
+        ('Permissions', {'fields': ('is_staff', 'is_active')}),
+    )
+
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('email', 'name', 'password1', 'password2', 'is_staff', 'is_active')
+        }),
+    )
+
+    search_fields = ('email',)
+    ordering = ('email',)
+
+class BulkImportAdmin(CustomUserAdmin):
     change_list_template = "admin/csv_change_list.html"
 
     def get_urls(self):
@@ -100,7 +121,6 @@ class BulkImportAdmin(UserAdmin):
         return render(
             request, "admin/bulk_import_form.html", payload
         )
-
 
 class BulkSlotImportAdmin(admin.ModelAdmin):
     change_list_template = "admin/slot_change_list.html"
@@ -147,7 +167,7 @@ class BulkSlotImportAdmin(admin.ModelAdmin):
 
             for day, time_slots in all_slots.items():
                 for time_slot in time_slots:
-                    if not Slot.objects.filter(date=day, time=time_slot.time()).exists():
+                    if not Slot.objects.filter(instrument=instr, date=day, time=time_slot.time()).exists():
                         slot_obj = Slot(slot_name=instr.name, instrument=instr,
                                         status=Slot.STATUS_1, date=day, time=time_slot.time())
                         slot_obj.save()
@@ -159,81 +179,61 @@ class BulkSlotImportAdmin(admin.ModelAdmin):
             request, "admin/bulk_import_slots_form.html", payload
         )
 
-class StudentCreationForm(UserCreationForm):
-    class Meta:
-        model = Student
-        fields = ('supervisor',)
-
-class StudentChangeForm(UserChangeForm):
-    class Meta:
-        model = Student
-        fields = ('supervisor',)
-
 class StudentAdmin(BulkImportAdmin):
     form = StudentChangeForm
     add_form = StudentCreationForm
 
-    list_display = UserAdmin.list_display + ('supervisor',)
-    fieldsets = UserAdmin.fieldsets + (
+    list_display = CustomUserAdmin.list_display + ('supervisor',)
+    fieldsets = CustomUserAdmin.fieldsets + (
         (None, {'fields' : ('supervisor',)},),
     )
-    add_fieldsets = UserAdmin.add_fieldsets + (
+    add_fieldsets = CustomUserAdmin.add_fieldsets + (
         (None, {
             'classes' : ('wide',),
             'fields' : ('supervisor',)}
         ),
     )
 
-class FacultyCreationForm(UserCreationForm):
-    class Meta:
-        model = Faculty
-        fields = ('department',)
-
-class FacultyChangeForm(UserChangeForm):
-    class Meta:
-        model = Faculty
-        fields = ('department',)
-
 class FacultyAdmin(BulkImportAdmin):
     form = FacultyChangeForm
     add_form = FacultyCreationForm
 
-    list_display = UserAdmin.list_display + ('department',)
-    fieldsets = UserAdmin.fieldsets + (
+    list_display = CustomUserAdmin.list_display + ('department',)
+    fieldsets = CustomUserAdmin.fieldsets + (
         (None, {'fields' : ('department',)},),
     )
-    add_fieldsets = UserAdmin.add_fieldsets + (
+    add_fieldsets = CustomUserAdmin.add_fieldsets + (
         (None, {
             'classes' : ('wide',),
             'fields' : ('department',)}
         ),
     )
 
-admin.site.register(CustomUser, UserAdmin)
+admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Student, StudentAdmin)
 admin.site.register(Faculty, FacultyAdmin)
 admin.site.register(EmailModel)
 admin.site.register(LabAssistant, BulkImportAdmin)
+admin.site.register(UserDetail)
 admin.site.register(Instrument)
 admin.site.register(Request)
-admin.site.register(FTIR)
-admin.site.register(FESEM)
-admin.site.register(LCMS)
-admin.site.register(TCSPC)
-admin.site.register(UserDetails)
-admin.site.register(Rheometer)
-admin.site.register(AAS)
-admin.site.register(TGA)
-admin.site.register(BET)
-admin.site.register(CDSpectrophotometer)
-admin.site.register(LSCM)
-admin.site.register(DSC)
-admin.site.register(GC)
-admin.site.register(EDXRF)
-admin.site.register(HPLC)
-admin.site.register(NMR)
-admin.site.register(PXRD)
-admin.site.register(SCXRD)
-admin.site.register(XPS)
-admin.site.register(UVSpectrophotometer)
 admin.site.register(Slot, BulkSlotImportAdmin)
+# admin.site.register(FTIR)
+# admin.site.register(FESEM)
+# admin.site.register(LCMS)
+# admin.site.register(TCSPC)
+# admin.site.register(Rheometer)
+# admin.site.register(AAS)
+# admin.site.register(TGA)
+# admin.site.register(BET)
+# admin.site.register(CDSpectrophotometer)
+# admin.site.register(LSCM)
+# admin.site.register(DSC)
+# admin.site.register(GC)
+# admin.site.register(EDXRF)
+# admin.site.register(HPLC)
+# admin.site.register(NMR)
+# admin.site.register(PXRD)
+# admin.site.register(SCXRD)
+# admin.site.register(XPS)
+# admin.site.register(UVSpectrophotometer)

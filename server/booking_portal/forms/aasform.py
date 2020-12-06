@@ -1,13 +1,13 @@
 from django import forms
 
-from ..models import AAS
+from ..models.instrument.form_models import AAS
 from .userform import UserDetailsForm
 
 
 class AASForm(UserDetailsForm):
     class Meta(UserDetailsForm.Meta):
         model = AAS
-        fields = UserDetailsForm.Meta.fields + ('sample_code', 
+        fields = UserDetailsForm.Meta.fields + ('sample_code',
                                                 'elements',
                                                 'other_remarks')
         UserDetailsForm.Meta.labels.update(

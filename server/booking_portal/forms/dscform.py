@@ -1,6 +1,6 @@
 from django import forms
 
-from ..models import DSC
+from ..models.instrument.form_models import DSC
 from .userform import UserDetailsForm
 
 

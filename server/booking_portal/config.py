@@ -1,5 +1,5 @@
 from .forms import *
-from .models import *
+from .models.instrument.form_models import *
 
 form_template_dict = {
     1: ('booking_portal/fesem.html', FESEMForm, FESEM),

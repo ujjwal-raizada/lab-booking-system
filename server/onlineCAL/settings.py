@@ -52,6 +52,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'onlineCAL.urls'
+AUTH_USER_MODEL = 'booking_portal.CustomUser'
 
 TEMPLATES = [
     {
