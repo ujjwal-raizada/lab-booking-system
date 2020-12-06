@@ -47,8 +47,17 @@ def email(request):
 def book_machine(request, id):
     template, form, _ = form_template_dict.get(id)
     if request.method == 'GET':
-        return render(request, template, {'form': form(initial={'user_name': Student.objects.filter(username=request.user.username).first().id}),
-                                                                'edit' : True})
+        student_obj = Student.objects.filter(username=request.user.username).first()
+        sup_obj = Faculty.objects.filter(username=student_obj.supervisor.username).first()
+
+        return render(request, template, {
+            'form': form(initial={
+                    'user_name': student_obj.id,
+                    'sup_name': sup_obj.id,
+                    'sup_dept': sup_obj.department,
+                }),
+            'edit' : True
+        })
 
     elif request.method == "POST" and form(request.POST).is_valid():
         slot_id = request.GET['slots']
