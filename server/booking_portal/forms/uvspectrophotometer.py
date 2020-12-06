@@ -1,6 +1,6 @@
 from django import forms
 
-from ..models import UVSpectrophotometer
+from ..models.instrument.form_models import UVSpectrophotometer
 from .userform import UserDetailsForm
 
 

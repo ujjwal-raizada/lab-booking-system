@@ -1,6 +1,6 @@
 from django import forms
 
-from ..models import PXRD
+from ..models.instrument.form_models import PXRD
 from .userform import UserDetailsForm
 
 

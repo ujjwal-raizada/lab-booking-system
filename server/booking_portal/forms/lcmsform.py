@@ -1,6 +1,6 @@
 from django import forms
 
-from ..models import LCMS
+from ..models.instrument.form_models import LCMS
 from .userform import UserDetailsForm
 
 

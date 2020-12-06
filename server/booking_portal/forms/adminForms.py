@@ -1,7 +1,11 @@
+import datetime
+
 from django import forms
 from django.contrib.admin import widgets
-from ..models import Instrument
-import datetime
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+
+from ..models.instrument import Instrument
+from ..models.user import CustomUser, Student, Faculty, LabAssistant
 
 class BulkImportForm(forms.Form):
     csv_file = forms.FileField()
@@ -58,3 +62,33 @@ class BulkTimeSlotForm(forms.Form):
     start_time = forms.ChoiceField(choices=START_TIME_CHOICES)
     end_time = forms.ChoiceField(choices=START_TIME_CHOICES)
     lab_duration = forms.ChoiceField(choices=DURATION)
+
+class CustomUserCreationForm(UserCreationForm):
+    class Meta:
+        model = CustomUser
+        fields = ('email', 'name')
+
+class CustomUserChangeForm(UserChangeForm):
+    class Meta:
+        model = CustomUser
+        fields = ('email', 'name')
+
+class StudentCreationForm(CustomUserCreationForm):
+    class Meta:
+        model = Student
+        fields = ('supervisor',)
+
+class StudentChangeForm(CustomUserChangeForm):
+    class Meta:
+        model = Student
+        fields = ('supervisor',)
+
+class FacultyCreationForm(CustomUserCreationForm):
+    class Meta:
+        model = Faculty
+        fields = ('department',)
+
+class FacultyChangeForm(CustomUserChangeForm):
+    class Meta:
+        model = Faculty
+        fields = ('department',)

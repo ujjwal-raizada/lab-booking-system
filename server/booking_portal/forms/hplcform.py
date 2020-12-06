@@ -1,6 +1,6 @@
 from django import forms
 
-from ..models import HPLC
+from ..models.instrument.form_models import HPLC
 from .userform import UserDetailsForm
 
 

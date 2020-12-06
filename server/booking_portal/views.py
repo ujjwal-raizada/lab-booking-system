@@ -3,6 +3,7 @@ import datetime
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models import Q
 
@@ -14,9 +15,10 @@ from .permissions import is_faculty, is_lab_assistant, is_student
 
 def index(request):
     context = {}
-    faculty_instance = Faculty.objects.filter(username=request.user.username).first()
-    student_instance = Student.objects.filter(username=request.user.username).first()
-    lab_instance = LabAssistant.objects.filter(username=request.user.username).first()
+    print (request.user.username)
+    faculty_instance = Faculty.objects.filter(email=request.user.username).first()
+    student_instance = Student.objects.filter(email=request.user.username).first()
+    lab_instance = LabAssistant.objects.filter(email=request.user.username).first()
     if faculty_instance:
         context = 'faculty'
     elif student_instance:
@@ -47,13 +49,13 @@ def email(request):
 def book_machine(request, id):
     template, form, _ = form_template_dict.get(id)
     if request.method == 'GET':
-        student_obj = Student.objects.filter(username=request.user.username).first()
-        sup_obj = Faculty.objects.filter(username=student_obj.supervisor.username).first()
+        student_obj = Student.objects.filter(email=request.user.username).first()
+        sup_obj = Faculty.objects.filter(email=student_obj.supervisor.username).first()
 
         return render(request, template, {
             'form': form(initial={
-                    'user_name': student_obj.id,
-                    'sup_name': sup_obj.id,
+                    'user_name': student_obj.username,
+                    'sup_name': sup_obj.username,
                     'sup_dept': sup_obj.department,
                 }),
             'edit' : True
@@ -68,8 +70,8 @@ def book_machine(request, id):
         slot_instance = Slot.objects.filter(id=slot_id,
                                             status=Slot.STATUS_1,
                                             instrument=instr_instance).first()
-        student_instance = Student.objects.filter(id=student_id).first()
-        faculty_instance = Faculty.objects.filter(id=faculty_id).first()
+        student_instance = Student.objects.filter(email=student_id).first()
+        faculty_instance = Faculty.objects.filter(email=faculty_id).first()
 
         # TODO: Object Lock on Request Object
         if slot_instance and student_instance and faculty_instance and instr_instance:
@@ -124,7 +126,7 @@ def faculty_request_accept(request, id):
     except:
         raise Http404()
     faculty = request_object.faculty
-    if (faculty == Faculty.objects.get(id=request.user.id)):
+    if (faculty == Faculty.objects.get(email=request.user.username)):
         request_object.status = Request.STATUS_2
         request_object.message = "accept"
         request_object.lab_assistant = random.choice(LabAssistant.objects.all())
@@ -142,7 +144,7 @@ def faculty_request_reject(request, id):
     except:
         raise Http404()
     faculty = request_object.faculty
-    if (faculty == Faculty.objects.get(id=request.user.id)):
+    if (faculty == Faculty.objects.get(email=request.user.username)):
         request_object.status = Request.STATUS_2
         request_object.message = "reject"
         request_object.save()
@@ -165,7 +167,7 @@ def lab_assistant_accept(request, id):
     except:
         raise Http404()
     lab_assistant = request_object.lab_assistant
-    if (lab_assistant == LabAssistant.objects.get(id=request.user.id)):
+    if (lab_assistant == LabAssistant.objects.get(email=request.user.username)):
         request_object.status = Request.STATUS_3
         request_object.message = "accept"
         request_object.save()
@@ -181,7 +183,7 @@ def lab_assistant_reject(request, id):
     except:
         raise Http404()
     lab_assistant = request_object.lab_assistant
-    if (lab_assistant == LabAssistant.objects.get(id=request.user.id)):
+    if (lab_assistant == LabAssistant.objects.get(email=request.user.username)):
         request_object.status = Request.STATUS_3
         request_object.message = "reject"
         request_object.save()
@@ -206,8 +208,8 @@ def show_application(request, id):
     template, form = view_application_dict[content_object._meta.model]
 
     data = content_object.__dict__
-    data['user_name'] = Student.objects.get(id=data['user_name_id'])
-    data['sup_name'] = Faculty.objects.get(id=data['sup_name_id'])
+    data['user_name'] = Student.objects.get(email=data['user_name_id'])
+    data['sup_name'] = Faculty.objects.get(email=data['sup_name_id'])
     form_object = form(data)
 
     for field_val, val in data.items():

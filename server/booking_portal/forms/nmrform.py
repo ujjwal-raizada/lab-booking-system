@@ -1,6 +1,6 @@
 from django import forms
 
-from ..models import NMR
+from ..models.instrument.form_models import NMR
 from .userform import UserDetailsForm
 
 

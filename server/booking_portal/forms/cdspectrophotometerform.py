@@ -1,6 +1,6 @@
 from django import forms
 
-from ..models import CDSpectrophotometer
+from ..models.instrument.form_models import CDSpectrophotometer
 from .userform import UserDetailsForm
 
 

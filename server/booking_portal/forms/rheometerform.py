@@ -1,6 +1,6 @@
 from django import forms
 
-from ..models import Rheometer
+from ..models.instrument.form_models import Rheometer
 from .userform import UserDetailsForm
 
 
