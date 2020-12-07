@@ -20,5 +20,15 @@ class Slot(models.Model):
     date = models.DateField()
     time = models.TimeField(null=True)
 
+    def update_status(self, status):
+        assert status in (
+                Slot.STATUS_1,
+                Slot.STATUS_2,
+                Slot.STATUS_3,
+                Slot.STATUS_4
+        )
+        self.status = status
+        self.save(update_fields=['status'])
+
     def __str__(self):
         return f"{str(self.date) + ' ' + str(self.time)}"

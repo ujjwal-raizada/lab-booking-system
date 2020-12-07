@@ -2,8 +2,11 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.utils.translation import gettext_lazy
 from django.utils import timezone
+from django.conf import settings
+from django.core.mail import send_mail
 
 from .manager import CustomUserManager
+from .email import EmailModel
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(gettext_lazy("email address"), unique=True, max_length=50)
@@ -23,6 +26,17 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def has_module_perms(self, app_label):
         return self.is_superuser
+
+    def _create_email_obj(self, request, subject, message):
+        EmailModel(receiver=self.email,
+                   request=request,
+                   text=message,
+                   subject=subject).save()
+
+    def send_email(self, subject, message, request, sender=None, **kwargs):
+        self._create_email_obj(request, subject, message)
+        sender = settings.EMAIL_HOST_USER if sender == None else sender
+        send_mail(subject, message, sender, [self.email], fail_silently=False)
 
     @property
     def username(self):
