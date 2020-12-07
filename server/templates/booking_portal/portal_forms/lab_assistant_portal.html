@@ -32,7 +32,6 @@
                     <td>{{ request.faculty }}</td>
                     <td>{{ request.instrument }}</td>
                     <td>{{ request.slot }}</td>
-                    <td>{{ request.status }}</td>
                     {% if request.status == 'R1' %} <td>Waiting for Faculty Approval</td>
                     {% elif request.status == 'R2' %} <td>Waiting for Lab Assistant Approval</td>
                     {% elif request.status == 'R3' %} <td>Approved</td>

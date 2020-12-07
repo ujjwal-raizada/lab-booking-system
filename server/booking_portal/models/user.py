@@ -6,7 +6,7 @@ from django.utils import timezone
 from .manager import CustomUserManager
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
-    email = models.EmailField(gettext_lazy("email address"), unique=True, max_length=50, primary_key=True)
+    email = models.EmailField(gettext_lazy("email address"), unique=True, max_length=50)
     name = models.CharField(max_length=100)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
