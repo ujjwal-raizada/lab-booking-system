@@ -1,6 +1,3 @@
-# import sys
-# sys.path.append("...")
-
 from .faculty import (
                 faculty_portal,
                 faculty_request_accept,
