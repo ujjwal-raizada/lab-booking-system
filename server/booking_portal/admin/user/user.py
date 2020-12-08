@@ -12,7 +12,7 @@ from django.contrib.auth.admin import UserAdmin
 from ... import models
 from ... import forms
 
-CSV_HEADERS = ('email', 'password')
+CSV_HEADERS = ('name', 'email', 'password')
 CSV_HEADERS_STUDENT = CSV_HEADERS + ('supervisor',)
 CSV_HEADERS_FACULTY = CSV_HEADERS + ('department', )
 
@@ -58,8 +58,8 @@ class CustomUserAdmin(UserAdmin):
                 else:
                     record['supervisor'] = obj
 
-            if user_type.objects.filter(email=record['email']).first():
-                raise Exception(f"{user_type} with username \"{record['username']}\" already exists.")
+            if user_type.objects.filter(email=record['email']).exists():
+                raise Exception(f"User with username \"{record['email']}\" already exists.")
             else:
                 user_type.objects.create(**record)
 
