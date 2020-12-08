@@ -47,7 +47,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
 
 class Faculty(CustomUser):
-    department = models.CharField(max_length=20, null=False)
+    department = models.CharField(max_length=20, null=True)
 
     class Meta:
         verbose_name = "faculty"
