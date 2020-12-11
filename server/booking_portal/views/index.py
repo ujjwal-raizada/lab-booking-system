@@ -37,11 +37,8 @@ def show_application(request, id):
     data['sup_name'] = Faculty.objects.get(id=data['sup_name_id'])
     form_object = form(data)
 
-    for field_val, val in data.items():
-        try:
-            form_object.fields[field_val].widgets.attrs['disabled'] = True
-            form_object.fields[field_val].widget.attrs['readonly'] = True
-        except KeyError:
-            pass
+    for field_val, val in form_object.fields.items():
+        form_object.fields[field_val].widget.attrs['disabled'] = True
+        form_object.fields[field_val].widget.attrs['read-only'] = True
 
     return render(request, template, {'form': form_object, 'edit' : False})
