@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models, transaction
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.dispatch import receiver
@@ -45,28 +45,26 @@ class Request(models.Model):
         self.status = status
         self.update()
 
+@transaction.atomic
 @receiver(signal=post_save, sender=Request)
 def send_email_after_save(sender, instance, **kwargs):
     slot = Slot.objects.get(id=instance.slot.id)
-    initial_slot_status = slot.status
-    initial_request_status = instance.status
 
-    # try:
     if instance.status == Request.STATUS_1:
         slot.update_status(Slot.STATUS_2)
         subject = "Waiting for Faculty Approval"
         text = "Test Email send to {} : Faculty".format(instance.faculty.username)
-        instance.faculty.send_email(subject, text, instance)
+        transaction.on_commit(lambda: instance.faculty.send_email(subject, text, instance))
 
         subject = "Pending Lab Booking Request"
         text = "Test Email send to {} : Student".format(instance.student.username)
-        receiver = instance.student.send_email(subject, text, instance)
+        transaction.on_commit(lambda: instance.student.send_email(subject, text, instance))
 
     elif instance.status == Request.STATUS_2:
         if instance.message == 'accept':
             subject = "Waiting for Lab Assistant Approval"
             text = "Test Email send to {} : Lab Assistant".format(instance.lab_assistant.username)
-            instance.lab_assistant.send_email(subject, text, instance)
+            transaction.on_commit(lambda: instance.lab_assistant.send_email(subject, text, instance))
 
         elif instance.message == 'reject':
             slot.update_status(Slot.STATUS_1)
@@ -74,35 +72,18 @@ def send_email_after_save(sender, instance, **kwargs):
 
             subject = "Booking Rejected by {}".format(instance.faculty.username)
             text = "Test Email send to {} : Student".format(instance.student.username)
-            receiver = instance.student.send_email(subject, text, instance)
+            transaction.on_commit(lambda: instance.student.send_email(subject, text, instance))
 
     elif instance.status == Request.STATUS_3:
         if instance.message == 'accept':
             slot.update_status(Slot.STATUS_3)
             subject = "Lab Booking Approved"
             text = "Test Email for Booking Approved {}".format(instance.student.username)
-            instance.student.send_email(subject, text, instance)
+            transaction.on_commit(lambda: instance.student.send_email(subject, text, instance))
 
         elif instance.message == 'reject':
             slot.update_status(Slot.STATUS_1)
             instance.update_status(Request.STATUS_5)
             subject = "Booking Rejected by {}".format(instance.lab_assistant.username)
             text = "Test Email for Booking Rejected {}".format(instance.student.username)
-            instance.student.send_email(subject, text, instance)
-
-    # except:
-    #     print("Failed Email Attempt. Reverting back to initial Slot and Request status")
-    #     slot.update_status(initial_slot_status)
-    #     if instance.status == Request.STATUS_1:
-    #         print ("deleting instance {} {}".format(instance.id, instance))
-    #         EmailModel.objects.filter(request=instance).delete()
-    #         instance.delete()
-    #     else:
-    #         print (initial_request_status)
-    #         print ("Updating Request object ")
-    #         print (instance.status)
-    #         Request.objects.filter(id=instance.id).update(
-    #             status=initial_request_status
-    #         )
-    #         print (instance.status)
-    #         # instance.update_status(initial_request_status)
+            transaction.on_commit(lambda: instance.student.send_email(subject, text, instance))
