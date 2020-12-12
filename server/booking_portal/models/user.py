@@ -33,10 +33,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
                    text=message,
                    subject=subject).save()
 
-    def send_email(self, subject, message, request, sender=None, **kwargs):
+    def send_email(self, request, subject, message, sender=None, html_message=None, **kwargs):
         self._create_email_obj(request, subject, message)
         sender = settings.EMAIL_HOST_USER if sender == None else sender
-        send_mail(subject, message, sender, [self.email], fail_silently=False)
+        send_mail(subject, message, sender, [self.email],
+                  html_message=html_message, fail_silently=False)
 
     @property
     def username(self):
