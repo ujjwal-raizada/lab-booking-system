@@ -1,6 +1,7 @@
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.db import transaction
 
 from ... import models, permissions
 
@@ -17,31 +18,38 @@ def lab_assistant_portal(request):
 @user_passes_test(permissions.is_lab_assistant)
 def lab_assistant_accept(request, id):
     try:
-        request_object = models.Request.objects.get(id=id)
+        with transaction.atomic():
+            request_object = models.Request.objects.get(
+                                                    id=id,
+                                                    status=models.Request.STATUS_2
+            )
+            lab_assistant = request_object.lab_assistant
+            if (lab_assistant == models.LabAssistant.objects.get(id=request.user.id)):
+                request_object.status = models.Request.STATUS_3
+                request_object.save()
+                return lab_assistant_portal(request)
+            else:
+                return HttpResponse("Bad Request")
     except:
-        raise Http404()
-    lab_assistant = request_object.lab_assistant
-    if (lab_assistant == models.LabAssistant.objects.get(id=request.user.id)):
-        request_object.status = models.Request.STATUS_3
-        request_object.message = "accept"
-        request_object.save()
-        return lab_assistant_portal(request)
-    else:
-        return HttpResponse("Bad Request")
+        raise Http404("Page Not Found")
 
 
+@transaction.atomic
 @login_required
 @user_passes_test(permissions.is_lab_assistant)
 def lab_assistant_reject(request, id):
     try:
-        request_object = models.Request.objects.get(id=id)
+        with transaction.atomic():
+            request_object = models.Request.objects.get(
+                                                    id=id,
+                                                    status=models.Request.STATUS_2
+            )
+            lab_assistant = request_object.lab_assistant
+            if (lab_assistant == models.LabAssistant.objects.get(id=request.user.id)):
+                request_object.status = models.Request.STATUS_4
+                request_object.save()
+                return lab_assistant_portal(request)
+            else:
+                return HttpResponse("Bad Request")
     except:
-        raise Http404()
-    lab_assistant = request_object.lab_assistant
-    if (lab_assistant == models.LabAssistant.objects.get(id=request.user.id)):
-        request_object.status = models.Request.STATUS_3
-        request_object.message = "reject"
-        request_object.save()
-        return lab_assistant_portal(request)
-    else:
-        return HttpResponse("Bad Request")
+        raise Http404("Page Not Found")
