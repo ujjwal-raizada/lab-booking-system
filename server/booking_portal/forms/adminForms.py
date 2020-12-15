@@ -56,7 +56,11 @@ class DateInput(forms.DateInput):
     input_type = 'date'
 
 class BulkTimeSlotForm(forms.Form):
-    instruments = forms.ModelChoiceField(queryset=Instrument.objects.all())
+    instruments = forms.ModelChoiceField(
+                        queryset=Instrument.objects.all(),
+                        empty_label="Select All",
+                        required=False
+                    )
     date = forms.DateField(initial=datetime.date.today, widget=DateInput)
     for_the_next = forms.ChoiceField(choices=DELTA_DAYS)
     start_time = forms.ChoiceField(choices=START_TIME_CHOICES)

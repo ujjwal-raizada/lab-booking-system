@@ -11,17 +11,19 @@ from ..models import (
                 EmailModel, LabAssistant, Instrument,
                 Request, Slot, UserDetail,
 )
+from .email import EmailAdmin
+from .request import RequestAdmin
 
 
-# admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Student, StudentAdmin)
 admin.site.register(Faculty, FacultyAdmin)
-admin.site.register(EmailModel)
+admin.site.register(EmailModel, EmailAdmin)
 admin.site.register(LabAssistant, CustomUserAdmin)
-admin.site.register(UserDetail)
 admin.site.register(Instrument)
-admin.site.register(Request)
+admin.site.register(Request, RequestAdmin)
 admin.site.register(Slot, SlotAdmin)
+# admin.site.register(CustomUser, CustomUserAdmin)
+# admin.site.register(UserDetail)
 # admin.site.register(FTIR)
 # admin.site.register(FESEM)
 # admin.site.register(LCMS)
