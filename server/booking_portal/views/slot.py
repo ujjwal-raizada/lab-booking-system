@@ -16,8 +16,12 @@ def slot_list(request):
     instr_obj = Instrument.objects.get(id=instr_id)
     instr_name = instr_obj.name
 
-    check_prev_slots = Slot.objects.filter((Q(status=Slot.STATUS_2) | Q(status=Slot.STATUS_3))
-                                            & Q(date__gte=datetime.datetime.today()))
+    check_prev_slots = Slot.objects.filter(
+                                    Q(instrument=instr_obj) &
+                                    (Q(status=Slot.STATUS_2) |
+                                    Q(status=Slot.STATUS_3))
+                                    & Q(date__gte=datetime.datetime.today())
+                                )
 
     if len(check_prev_slots) >= 1 :
         return render(request, 'booking_portal/portal_forms/instrument_list.html',
