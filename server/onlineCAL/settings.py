@@ -72,11 +72,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'onlineCAL.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.co# EMAIL_HOST_USER = 'pranjalgupta2199@gmail.com'
-# EMAIL_HOST_PASSWORD = 'X1n2j#t+'m/en/2.2/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
