@@ -58,6 +58,7 @@ def send_email_after_save(sender, instance, **kwargs):
             'receipent_name' : instance.faculty.name,
             'student_name' : instance.student.name,
             'instrument_name': instance.instrument.name,
+            'slot' : instance.slot,
         })
         instance.faculty.send_email(instance, subject,
                                     strip_tags(text),
@@ -67,6 +68,7 @@ def send_email_after_save(sender, instance, **kwargs):
         text = render_to_string('email/student_pending.html', {
             'receipent_name' : instance.student.name,
             'instrument_name' : instance.instrument.name,
+            'slot' : instance.slot,
         })
         instance.student.send_email(instance, subject,
                                     strip_tags(text),
@@ -79,6 +81,7 @@ def send_email_after_save(sender, instance, **kwargs):
             'student_name' : instance.student.name,
             'instrument_name' : instance.instrument.name,
             'faculty_name' : instance.faculty.name,
+            'slot' : instance.slot,
         })
         instance.lab_assistant.send_email(instance, subject,
                                           strip_tags(text),
@@ -89,6 +92,7 @@ def send_email_after_save(sender, instance, **kwargs):
         subject = "Lab Booking Approved"
         text = render_to_string('email/student_accepted.html', {
             'receipent_name' : instance.student.name,
+            'slot' : instance.slot,
         })
         instance.student.send_email(instance, subject,
                                     strip_tags(text),
@@ -99,6 +103,7 @@ def send_email_after_save(sender, instance, **kwargs):
         subject = "Lab Booking Rejected"
         text = render_to_string('email/student_rejected.html', {
             'receipent_name' : instance.student.name,
+            'slot' : instance.slot,
         })
         instance.student.send_email(instance, subject,
                                     strip_tags(text),
