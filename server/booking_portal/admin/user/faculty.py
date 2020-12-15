@@ -5,6 +5,7 @@ class FacultyAdmin(CustomUserAdmin):
     form = forms.FacultyChangeForm
     add_form = forms.FacultyCreationForm
 
+    list_filter = CustomUserAdmin.list_filter + ('department',)
     list_display = CustomUserAdmin.list_display + ('department',)
     fieldsets = CustomUserAdmin.fieldsets + (
         (None, {'fields' : ('department',)},),

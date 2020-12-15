@@ -10,12 +10,18 @@ class EmailModel(models.Model):
     text = models.CharField(max_length=500, null=True)
     subject = models.CharField(max_length=100, null=True)
 
+    class Meta:
+        verbose_name = "Email"
+        verbose_name_plural = "Emails"
+        default_related_name = "Emails"
+
+
     @property
     def short_id(self):
         return self.subject
 
     def __str__(self):
-        return f"{self.subject}"
+        return "{} : {}".format(self.subject, self.receiver)
 
 class FailedEmailAttempt(Exception):
     def __str__(self):
