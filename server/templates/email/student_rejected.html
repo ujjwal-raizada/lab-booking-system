@@ -1,2 +1,2 @@
 {% extends 'email/base.html' %}
-{% block message %} Unfortunately, your booking has been rejected. Please consult your supervisor for more information.{% endblock %}
+{% block message %} Unfortunately, your booking has been rejected for <strong> Machine: {{ instrument_name }}</strong> and <strong> Time Slot: {{ slot }}</strong>. Please consult your supervisor for more information.{% endblock %}
