@@ -36,8 +36,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def send_email(self, request, subject, message, sender=None, html_message=None, **kwargs):
         self._create_email_obj(request, subject, message)
         sender = settings.EMAIL_HOST_USER if sender == None else sender
+
+        # set 'fail_silently=False' when debugging the email system.
         send_mail(subject, message, sender, [self.email],
-                  html_message=html_message, fail_silently=False)
+                  html_message=html_message, fail_silently=True)
 
     @property
     def username(self):

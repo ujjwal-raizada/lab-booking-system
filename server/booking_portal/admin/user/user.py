@@ -77,7 +77,7 @@ class CustomUserAdmin(UserAdmin):
                     request.FILES['csv_file'].file,
                     encoding=request.encoding
                 )
-                dialect = csv.Sniffer().sniff(csv_file.read(1024))
+                dialect = csv.Sniffer().sniff(csv_file.read())
                 csv_file.seek(0)
                 reader = csv.DictReader(csv_file, dialect=dialect)
             except Exception as err:
