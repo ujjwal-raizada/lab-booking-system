@@ -7,6 +7,8 @@ authors = ["Ujjwal Raizada <ujjwalraizada@gmail.com>"]
 [tool.poetry.dependencies]
 python = "^3.7"
 django = "^3.0.2"
+django-filter = "^2.4.0"
+django-admin-rangefilter = "^0.6.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

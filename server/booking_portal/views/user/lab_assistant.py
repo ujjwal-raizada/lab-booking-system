@@ -4,14 +4,25 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db import transaction
 
 from ... import models, permissions
+from .portal import BasePortalFilter
 
 
 @login_required
 @user_passes_test(permissions.is_lab_assistant)
 def lab_assistant_portal(request):
-    request_objects = models.Request.objects.filter(lab_assistant=request.user, status=models.Request.STATUS_2).order_by('slot__date').reverse()
-    return render(request, 'booking_portal/portal_forms/lab_assistant_portal.html',
-                  {'requests': request_objects, 'usertype': 'lab'})
+    f = BasePortalFilter(
+            request.GET,
+            queryset= models.Request.objects.all()
+        )
+
+    return render(
+        request,
+        'booking_portal/portal_forms/lab_assistant_portal.html',
+        {
+            'context_data' : f,
+            'usertype': 'lab'
+        }
+    )
 
 
 @login_required

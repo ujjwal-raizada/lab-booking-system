@@ -47,6 +47,9 @@ class Request(models.Model):
         self.status = status
         self.save(update_fields=['status'])
 
+    def __str__(self):
+        return self.slot
+
 @receiver(signal=post_save, sender=Request)
 def send_email_after_save(sender, instance, **kwargs):
     slot = Slot.objects.get(id=instance.slot.id)
@@ -58,7 +61,7 @@ def send_email_after_save(sender, instance, **kwargs):
             'receipent_name' : instance.faculty.name,
             'student_name' : instance.student.name,
             'instrument_name': instance.instrument.name,
-            'slot' : instance.slot,
+            'slot' : instance.slot.description,
         })
         instance.faculty.send_email(instance, subject,
                                     strip_tags(text),
@@ -68,7 +71,7 @@ def send_email_after_save(sender, instance, **kwargs):
         text = render_to_string('email/student_pending.html', {
             'receipent_name' : instance.student.name,
             'instrument_name' : instance.instrument.name,
-            'slot' : instance.slot,
+            'slot' : instance.slot.description,
         })
         instance.student.send_email(instance, subject,
                                     strip_tags(text),
@@ -81,7 +84,7 @@ def send_email_after_save(sender, instance, **kwargs):
             'student_name' : instance.student.name,
             'instrument_name' : instance.instrument.name,
             'faculty_name' : instance.faculty.name,
-            'slot' : instance.slot,
+            'slot' : instance.slot.description,
         })
         instance.lab_assistant.send_email(instance, subject,
                                           strip_tags(text),
@@ -92,7 +95,7 @@ def send_email_after_save(sender, instance, **kwargs):
         subject = "Lab Booking Approved"
         text = render_to_string('email/student_accepted.html', {
             'receipent_name' : instance.student.name,
-            'slot' : instance.slot,
+            'slot' : instance.slot.description,
         })
         instance.student.send_email(instance, subject,
                                     strip_tags(text),
@@ -103,7 +106,7 @@ def send_email_after_save(sender, instance, **kwargs):
         subject = "Lab Booking Rejected"
         text = render_to_string('email/student_rejected.html', {
             'receipent_name' : instance.student.name,
-            'slot' : instance.slot,
+            'slot' : instance.slot.description,
         })
         instance.student.send_email(instance, subject,
                                     strip_tags(text),

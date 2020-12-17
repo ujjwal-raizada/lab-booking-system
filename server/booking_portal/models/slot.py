@@ -30,5 +30,9 @@ class Slot(models.Model):
         self.status = status
         self.save(update_fields=['status'])
 
+    @property
+    def description(self):
+        return "{} - {}".format(self.date, self.time)
+
     def __str__(self):
-        return "{} : {} - {}".format(self.date, self.time, self.instrument)
+        return "{} : {}".format(self.instrument, self.description)
