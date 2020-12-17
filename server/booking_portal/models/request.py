@@ -48,7 +48,7 @@ class Request(models.Model):
         self.save(update_fields=['status'])
 
     def __str__(self):
-        return self.slot
+        return "{}".format(self.slot)
 
 @receiver(signal=post_save, sender=Request)
 def send_email_after_save(sender, instance, **kwargs):

@@ -17,19 +17,30 @@ def slot_list(request):
     instr_name = instr_obj.name
     student_obj = Student.objects.get(id=request.user.id)
 
-    check_prev_slots = Request.objects.filter(
-                                    (Q(status=Slot.STATUS_2) |
-                                    Q(status=Slot.STATUS_3))
-                                    & Q(date__gte=datetime.datetime.today()),
-                                    instrument=instr_obj,
-                                    student=student_obj,
-                                )
-
-    if len(check_prev_slots) >= 1 :
-        return render(request, 'booking_portal/portal_forms/instrument_list.html',
-                      {'form' : IntrumentList(),
-                      "message":'You cannot book a slot for this instrument since you already have a booking !'})
+    if Request.objects.filter(
+        ~(
+            Q(status=Request.STATUS_4) |
+            Q(status=Request.STATUS_5)
+        ),
+        instrument=instr_obj,
+        student=student_obj
+    ).exists():
+        return render(
+            request,
+            'booking_portal/portal_forms/instrument_list.html',
+            {
+                'form' : IntrumentList(),
+                "message":'You cannot book a slot for this instrument since you already have a booking !'
+            }
+        )
     else :
         form = SlotList(instr_id)
-        return render(request, 'booking_portal/portal_forms/slot_list.html',
-                  {'instrument_name': instr_obj.name, 'instrument_id': instr_id, 'form': form})
+        return render(
+            request,
+            'booking_portal/portal_forms/slot_list.html',
+            {
+                'instrument_name': instr_obj.name,
+                'instrument_id': instr_id,
+                'form': form
+            }
+        )
