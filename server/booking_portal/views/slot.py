@@ -5,7 +5,7 @@ from django.db.models import Q
 from django.contrib.auth.decorators import login_required, user_passes_test
 
 from ..forms.portal_forms import IntrumentList, SlotList
-from ..models import Instrument, Slot
+from ..models import Instrument, Slot, Request, Student
 from ..permissions import is_student
 
 
@@ -15,12 +15,14 @@ def slot_list(request):
     instr_id = request.POST['instruments']
     instr_obj = Instrument.objects.get(id=instr_id)
     instr_name = instr_obj.name
+    student_obj = Student.objects.get(id=request.user.id)
 
-    check_prev_slots = Slot.objects.filter(
-                                    Q(instrument=instr_obj) &
+    check_prev_slots = Request.objects.filter(
                                     (Q(status=Slot.STATUS_2) |
                                     Q(status=Slot.STATUS_3))
-                                    & Q(date__gte=datetime.datetime.today())
+                                    & Q(date__gte=datetime.datetime.today()),
+                                    instrument=instr_obj,
+                                    student=student_obj,
                                 )
 
     if len(check_prev_slots) >= 1 :
