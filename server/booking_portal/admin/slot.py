@@ -6,6 +6,7 @@ from django.urls import path
 from django.contrib import admin
 from django.shortcuts import render, redirect
 from django.utils.translation import gettext_lazy
+from rangefilter.filter import DateRangeFilter
 
 from ..models import Instrument, Slot
 from ..forms.adminForms import BulkTimeSlotForm
@@ -41,7 +42,11 @@ class SlotFilterByInstrument(admin.SimpleListFilter):
 
 class SlotAdmin(admin.ModelAdmin):
     change_list_template = "admin/slot_change_list.html"
-    list_filter = ('date', 'status', SlotFilterByInstrument)
+    list_filter = (
+        ('date', DateRangeFilter),
+        'status',
+        SlotFilterByInstrument
+    )
 
     def time_left(self, current, end, duration):
         today = datetime.date.today()

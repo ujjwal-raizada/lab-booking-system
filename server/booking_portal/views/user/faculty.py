@@ -6,16 +6,26 @@ from django.shortcuts import render
 from django.db import transaction
 
 from ... import models, permissions
+from .portal import BasePortalFilter
 
 
 @login_required
 @user_passes_test(permissions.is_faculty)
 def faculty_portal(request):
-    requests_objects = models.Request.objects.filter(
-                                    faculty=request.user,
-                                    status=models.Request.STATUS_1).order_by('slot__date').reverse()
-    return render(request, 'booking_portal/portal_forms/faculty_portal.html',
-                  {'requests': requests_objects, 'usertype': 'faculty'})
+    f = BasePortalFilter(
+            request.GET,
+            queryset= models.Request.objects.filter(
+                faculty=request.user,
+            ))
+
+    return render(
+        request,
+        'booking_portal/portal_forms/faculty_portal.html',
+        {
+            'context_data' : f,
+            'usertype': 'faculty'
+        }
+    )
 
 @login_required
 @user_passes_test(permissions.is_faculty)

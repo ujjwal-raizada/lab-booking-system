@@ -3,56 +3,73 @@
 {% block title %}Faculty Portal{% endblock %}
 
 {% block content %}
-<div class="container pt-4" style="text-align: center;">
-  <div class="card bg-light mb-3" style="max-width: 80rem;">
-    <div class="card-body">
-      <h2 class="card-title">Pending Requests</h2>
-      <p class="card-text">
-          {% csrf_token %}
-          <table class="table">
-            <thead>
-              <tr>
-                <th scope="col">ID</th>
-                <th scope="col">Student Name</th>
-                <th scope="col">Faculty</th>
-                <th scope="col">Instrument</th>
-                <th scope="col">Slot</th>
-                <th scope="col">Status</th>
-                <th scope="col">Application</th>
-                <th scope="col"></th>
-                <th scope="col"></th>
-              </tr>
-            </thead>
-            <tbody>
+<div class="row">
+  <div class="col-9">
+    <div class="container pt-4" style="text-align: center;">
+      <div class="card bg-light mb-3" style="max-width: 80rem;">
+        <div class="card-body">
+          <h2 class="card-title">Pending Requests</h2>
+          <p class="card-text">
+              {% csrf_token %}
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Student Name</th>
+                    <th scope="col">Faculty</th>
+                    <th scope="col">Instrument</th>
+                    <th scope="col">Slot</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Application</th>
+                    <th scope="col" colspan="2">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
 
-              {% for request in requests %}
-                <tr>
-                    <th scope="row">{{request.id}}</th>
-                    <td>{{ request.student }}</td>
-                    <td>{{ request.faculty }}</td>
-                    <td>{{ request.instrument }}</td>
-                    <td>{{ request.slot }}</td>
-                    {% if request.status == 'R1' %} <td>Waiting for Faculty Approval</td>
-                    {% elif request.status == 'R2' %} <td>Waiting for Lab Assistant Approval</td>
-                    {% elif request.status == 'R3' %} <td>Approved</td>
-                    {% elif request.status == 'R4' %} <td>Rejected</td>
-                    {% elif request.status == 'R5' %} <td>Cancelled</td>
-                    {% endif %}
-                    <td> <a href={% url 'view-application' id=request.id %} target="_blank"> View Application </a></td>
-                    <td> <a href="/booking/requests_faculty/accept/{{request.id}}"><button type="button" class="btn btn-success">Accept</button></a> </td>
-                    <td> <a href="/booking/requests_faculty/reject/{{request.id}}"><button type="button" class="btn btn-danger">Reject</button></a> </td>
-                </tr>
-                {% endfor %}
+                  {% for request in context_data.qs %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>{{ request.student }}</td>
+                        <td>{{ request.faculty }}</td>
+                        <td>{{ request.instrument }}</td>
+                        <td>{{ request.slot }}</td>
+                        {% if request.status == 'R1' %} <td>Waiting for Faculty Approval</td>
+                        {% elif request.status == 'R2' %} <td>Waiting for Lab Assistant Approval</td>
+                        {% elif request.status == 'R3' %} <td>Approved</td>
+                        {% elif request.status == 'R4' %} <td>Rejected</td>
+                        {% elif request.status == 'R5' %} <td>Cancelled</td>
+                        {% endif %}
+                        <td> <a href={% url 'view-application' id=request.id %} target="_blank"> View Application </a></td>
+                        {% if request.status == 'R1' %}
+                          <td> <a href="/booking/requests_faculty/accept/{{request.id}}"><button type="button" class="btn btn-success">Accept</button></a> </td>
+                          <td> <a href="/booking/requests_faculty/reject/{{request.id}}"><button type="button" class="btn btn-danger">Reject</button></a> </td>
+                        {% else %}
+                          <td> <button type="button" class="btn btn-success" disabled>Accept</button> </td>
+                          <td> <button type="button" class="btn btn-danger" disabled>Reject</button> </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
 
-            </tbody>
-          </table>
-
-            <!-- {{ form.as_p }} -->
-
-
-          <!-- <button type="submit" class="btn btn-primary">Proceed</button><br /><br /> -->
-
-      </p>
+                </tbody>
+              </table>
+          </p>
+        </div>
+        </div>
+    </div>
+  </div>
+  <div class="col-3">
+    <div class="container pt-4" style="text-align:  center;">
+      <div class="card bg-light mb-3" style="max-width: 80rem;">
+        <div class="card-body">
+          <h3 class="card-title"> Filter </h3>
+          <p2 class="card-text">
+            <form action="" method="GET">
+              {{ context_data.form.as_p }}
+              <button type="submit"> Apply </button>
+            </form>
+          </p2>
+        </div>
+      </div>
     </div>
   </div>
 </div>

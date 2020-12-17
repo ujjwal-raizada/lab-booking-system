@@ -8,14 +8,25 @@ from django.http import HttpResponseRedirect
 from ... import models
 from ... import permissions
 from ... import config
-
+from .portal import BasePortalFilter
 
 @login_required
 @user_passes_test(permissions.is_student)
 def student_portal(request):
-    request_objects = models.Request.objects.filter(student=request.user).order_by('slot__date').reverse()
-    return render(request, 'booking_portal/portal_forms/student_portal.html',
-                  {'requests': request_objects, 'usertype': 'student'})
+    f = BasePortalFilter(
+            request.GET,
+            queryset= models.Request.objects.filter(
+                student=request.user
+            ))
+
+    return render(
+        request,
+        'booking_portal/portal_forms/student_portal.html',
+        {
+            'context_data' : f,
+            'usertype': 'student'
+        }
+    )
 
 
 @login_required

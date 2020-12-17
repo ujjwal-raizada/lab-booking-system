@@ -6,6 +6,7 @@ class StudentAdmin(CustomUserAdmin):
     form = forms.StudentChangeForm
     add_form = forms.StudentCreationForm
 
+    list_filter = CustomUserAdmin.list_filter + ('supervisor', )
     list_display = CustomUserAdmin.list_display + ('supervisor',)
     fieldsets = CustomUserAdmin.fieldsets + (
         (None, {'fields' : ('supervisor',)},),
