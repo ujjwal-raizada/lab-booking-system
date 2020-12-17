@@ -60,11 +60,14 @@ def book_machine(request, id):
                 student_instance = models.Student.objects.filter(id=student_id).first()
                 faculty_instance = models.Faculty.objects.filter(id=faculty_id).first()
 
-                if models.Request.objects.filter(instrument=instr_instance,
-                                                 status= ~(Q(status=models.Request.STATUS_4) |
-                                                           Q(status=models.Request.STATUS_5)),
-                                                 student=student_instance).exists():
-
+                if models.Request.objects.filter(
+                    ~(
+                        Q(status=models.Request.STATUS_4) |
+                        Q(status=models.Request.STATUS_5)
+                    ),
+                    instrument=instr_instance,
+                    student=student_instance
+                ).exists():
                     messages.error(request, "You already have an ongoing application for this machine")
                     return HttpResponseRedirect("/booking/")
 

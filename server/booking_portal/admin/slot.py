@@ -72,7 +72,7 @@ class SlotAdmin(admin.ModelAdmin):
 
         if request.method == 'POST':
             try:
-                instr = Instrument.objects.get(id=request.POST.get('instruments'))
+                instr = Instrument.objects.filter(id=request.POST.get('instruments'))
             except ValueError :
                 instr = Instrument.objects.all()
 
