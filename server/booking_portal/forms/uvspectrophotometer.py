@@ -1,33 +1,46 @@
 from django import forms
 
 from ..models.instrument.form_models import UVSpectrophotometer
-from .userform import UserDetailsForm
+from .userform import UserDetailsForm, UserRemarkForm
 
 
-class UVSpectrophotometerForm(UserDetailsForm):
-    class Meta(UserDetailsForm.Meta):
+class UVSpectrophotometerForm(UserDetailsForm, UserRemarkForm):
+    title = "UV-VIS-NIR Spectrophotometer"
+    subtitle = "UV-VIS-NIR Spectrophotometer-Jasco UV 670"
+    help_text = '''
+    <b>Please provide any other information in other remarks (eg. toxic samples) </b>
+    '''
+
+    class Meta(UserDetailsForm.Meta, UserRemarkForm.Meta):
         model = UVSpectrophotometer
-        fields = UserDetailsForm.Meta.fields + ('sample_code',
-                                                'sample_composition',
-                                                'molecular_weight',
-                                                'analysis_mode',
-                                                'wavelength',
-                                                'ordinate_mode',
-                                                'other_remarks')
-        UserDetailsForm.Meta.labels.update(
-            {
+        fields = UserDetailsForm.Meta.fields + \
+                (
+                  'sample_code',
+                  'sample_composition',
+                  'molecular_weight',
+                  'analysis_mode',
+                  'wavelength',
+                  'ordinate_mode',
+                ) + \
+                UserRemarkForm.Meta.fields
+
+        labels = dict(
+          ** UserDetailsForm.Meta.labels,
+          ** UserRemarkForm.Meta.labels,
+          **             {
                 'sample_code': 'Sample Code',
                 'sample_composition': 'Sample Composition',
                 'molucular_weight': 'Molecular weight of the sample (if mode of analysis is liquid)',
                 'analysis_mode': 'Mode of analysis',
                 'wavelength': 'Wavelength range for analysis',
                 'ordinate_mode': 'Ordinate Mode %A%T%R',
-                'other_remarks': 'Any other relevant information',
             }
         )
-        labels = UserDetailsForm.Meta.labels
-        UserDetailsForm.Meta.widgets.update(
-            {
+
+        widgets = dict(
+          ** UserDetailsForm.Meta.widgets,
+          ** UserRemarkForm.Meta.widgets,
+          ** {
                 'sample_code': forms.TextInput(attrs={
                                                  'class': 'form-control',
                                                }
@@ -52,10 +65,5 @@ class UVSpectrophotometerForm(UserDetailsForm):
                                                    'class': 'form-control',
                                                  }
                 ),
-                'other_remarks': forms.Textarea(attrs={
-                                                  'class': 'form-control',
-                                                }
-                ),
             }
         )
-        widgets = UserDetailsForm.Meta.widgets

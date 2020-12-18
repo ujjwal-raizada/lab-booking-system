@@ -1,61 +1,70 @@
 from django import forms
 
 from ..models.instrument.form_models import XPS
-from .userform import UserDetailsForm
+from .userform import UserDetailsForm, UserRemarkForm
 
 
-class XPSForm(UserDetailsForm):
-    class Meta(UserDetailsForm.Meta):
+class XPSForm(UserDetailsForm, UserRemarkForm):
+    title = "XPS-Thermo Scientific K-Alpha"
+    subtitle = "XPS-Thermo Scientific K-Alpha"
+    help_text = '''
+    <b>Please provide any other information in other remarks (eg. toxic samples) </b><br>
+        <b>Mention any volatile elements like I, S, Hg</b>
+    '''
+
+    class Meta(UserDetailsForm.Meta, UserRemarkForm.Meta):
         model = XPS
-        fields = UserDetailsForm.Meta.fields + ('sample_name',
-                                                'sample_nature',
-                                                'chemical_composition',
-                                                'sample_property',
-                                                'analysed_elements',
-                                                'scan_details',
-                                                'other_remarks')
-        UserDetailsForm.Meta.labels.update(
-            {
+        fields = UserDetailsForm.Meta.fields + \
+            (
+                'sample_name',
+                'sample_nature',
+                'chemical_composition',
+                'sample_property',
+                'analysed_elements',
+                'scan_details',
+            ) + \
+              UserRemarkForm.Meta.fields
+
+        labels = dict(
+          ** UserDetailsForm.Meta.labels,
+          ** UserRemarkForm.Meta.labels,
+          ** {
                 'sample_name': 'Sample Name',
                 'sample_nature': 'Nature of Sample (pellet: 1cm dia with 2-3mm thickness or Thin Film: 1 x 1 cm^2)',
                 'chemical_composition': 'Chemical Composition',
                 'sample_property': 'Sample Property',
                 'analysed_elements': 'Elements to be analysed',
                 'scan_details': 'Scan details specification (Expected B.E.)',
-                'other_remarks': 'Any other relevant information',
             }
         )
-        labels = UserDetailsForm.Meta.labels
-        UserDetailsForm.Meta.widgets.update(
-            {
+
+        widgets = dict(
+          ** UserDetailsForm.Meta.widgets,
+          ** UserRemarkForm.Meta.widgets,
+          **             {
                 'sample_name': forms.TextInput(attrs={
-                                                 'class': 'form-control',
-                                               }
+                    'class': 'form-control',
+                }
                 ),
                 'sample_nature': forms.TextInput(attrs={
-                                                   'class': 'form-control',
-                                                 }
+                    'class': 'form-control',
+                }
                 ),
                 'chemical_composition': forms.TextInput(attrs={
-                                                          'class': 'form-control',
-                                                        }
+                    'class': 'form-control',
+                }
                 ),
                 'sample_property': forms.Select(attrs={
-                                                  'class': 'form-control',
-                                                }
+                    'class': 'form-control',
+                }
                 ),
                 'analysed_elements': forms.TextInput(attrs={
-                                                       'class': 'form-control',
-                                                     }
+                    'class': 'form-control',
+                }
                 ),
                 'scan_details': forms.TextInput(attrs={
-                                                  'class': 'form-control',
-                                                }
-                ),
-                'other_remarks': forms.Textarea(attrs={
-                                                  'class': 'form-control',
-                                                }
+                    'class': 'form-control',
+                }
                 ),
             }
         )
-        widgets = UserDetailsForm.Meta.widgets

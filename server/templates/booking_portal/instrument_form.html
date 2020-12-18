@@ -1,0 +1,34 @@
+{% extends 'instrument_form_base.html' %}
+
+{% block title %} {{ instrument_title }} {% endblock %}
+{% block subtitle %} {{ instrument_subtitle }} {% endblock %}
+
+{% block content %}
+{% if edit %}
+<form action="" method="POST">
+{% elif usertype != 'student' %}
+<form action="" method="POST">
+{% endif%}
+    <script>
+        $('form').submit(function(e) {
+                $(':disabled').each(function(e) {
+                    $(this).removeAttr('disabled');
+                })
+            });
+    </script>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <p style="text-align: justify;">
+        {{ form_notes | safe }}
+    </p>
+    <div style="text-align: center;">
+    {% if edit %}
+        <input type="submit" class="btn btn-primary" value="Submit">
+    {% elif usertype != 'student' %}
+        <input type="submit" class="btn btn-primary" value="Add Your Remarks">
+    </div>
+    {% endif %}
+</form>
+{% endblock %}
+
+{% block facility %} {{ instrument_verbose_name }} {% endblock %}

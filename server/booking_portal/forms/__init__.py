@@ -22,3 +22,4 @@ from .adminForms import (
             CustomUserCreationForm, FacultyChangeForm, FacultyCreationForm,
             StudentChangeForm, StudentCreationForm, DateInput
         )
+from .userform import UserDetailsForm, UserRemarkForm

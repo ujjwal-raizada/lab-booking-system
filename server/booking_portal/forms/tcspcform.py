@@ -1,43 +1,50 @@
 from django import forms
 
 from ..models.instrument.form_models import TCSPC
-from .userform import UserDetailsForm
+from .userform import UserDetailsForm, UserRemarkForm
 
 
-class TCSPCForm(UserDetailsForm):
-    class Meta(UserDetailsForm.Meta):
+class TCSPCForm(UserDetailsForm, UserRemarkForm):
+    title = "TCS-PC"
+    subtitle = "TCS-PC"
+    help_text = '''
+    '''
+
+    class Meta(UserDetailsForm.Meta, UserRemarkForm.Meta):
         model = TCSPC
-        fields = UserDetailsForm.Meta.fields + ('sample_code',
-                                                'sample_nature',
-                                                'chemical_composition',
-                                                'other_remarks')
-        UserDetailsForm.Meta.labels.update(
-            {
+        fields = UserDetailsForm.Meta.fields + \
+            (
+                'sample_code',
+                'sample_nature',
+                'chemical_composition',
+            ) + \
+            UserRemarkForm.Meta.fields
+
+        labels = dict(
+            ** UserDetailsForm.Meta.labels,
+            ** UserRemarkForm.Meta.labels,
+            ** {
                 'sample_code': 'Sample Code',
                 'sample_nature': 'Nature of Sample',
                 'chemical_composition': 'Chemical Composition',
-                'other_remarks': 'Any other relevant information',
             }
         )
-        labels = UserDetailsForm.Meta.labels
-        UserDetailsForm.Meta.widgets.update(
-            {
+
+        widgets = dict(
+            ** UserDetailsForm.Meta.widgets,
+            ** UserRemarkForm.Meta.widgets,
+            ** {
                 'sample_code': forms.TextInput(attrs={
-                                                'class': 'form-control',
-                                            }
+                    'class': 'form-control',
+                }
                 ),
                 'sample_nature': forms.Select(attrs={
-                                                'class': 'form-control',
-                                            }
+                    'class': 'form-control',
+                }
                 ),
                 'chemical_composition': forms.TextInput(attrs={
-                                                        'class': 'form-control',
-                                                        }
-                ),
-                'other_remarks': forms.Textarea(attrs={
-                                                'class': 'form-control',
-                                                }
+                    'class': 'form-control',
+                }
                 ),
             }
         )
-        widgets = UserDetailsForm.Meta.widgets

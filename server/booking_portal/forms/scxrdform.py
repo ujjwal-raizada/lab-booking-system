@@ -1,29 +1,42 @@
 from django import forms
 
 from ..models.instrument.form_models import SCXRD
-from .userform import UserDetailsForm
+from .userform import UserDetailsForm, UserRemarkForm
 
 
-class SCXRDForm(UserDetailsForm):
-    class Meta(UserDetailsForm.Meta):
+class SCXRDForm(UserDetailsForm, UserRemarkForm):
+    title = "Single Crystal X-RAY Diffractometer"
+    subtitle = "Single Crystal X-RAY Diffractometer RIGAKU Oxford XTALAB"
+    help_text = '''
+    <b>Please provide any other information in other remarks (eg. toxic samples) </b>
+    '''
+
+    class Meta(UserDetailsForm.Meta, UserRemarkForm.Meta):
         model = SCXRD
-        fields = UserDetailsForm.Meta.fields + ('sample_code',
-                                                'chemical_composition',
-                                                'scanning_rate',
-                                                'source',
-                                                'any_remarks')
-        UserDetailsForm.Meta.labels.update(
-            {
+        fields = UserDetailsForm.Meta.fields + \
+                 (
+                  'sample_code',
+                  'chemical_composition',
+                  'scanning_rate',
+                  'source',
+                 ) + \
+                 UserRemarkForm.Meta.fields
+
+        labels = dict(
+          ** UserDetailsForm.Meta.labels,
+          ** UserRemarkForm.Meta.labels,
+          ** {
                 'sample_code': 'Sample Code',
                 'chemical_composition': 'Chemical Composition',
                 'scanning_rate': 'Scanning Rate',
                 'source': 'X-ray source to be used (Cu or Mo)',
-                'any_remarks': 'Any other remarks',
             }
         )
-        labels = UserDetailsForm.Meta.labels
-        UserDetailsForm.Meta.widgets.update(
-            {
+
+        widgets = dict(
+          ** UserDetailsForm.Meta.widgets,
+          ** UserRemarkForm.Meta.widgets,
+          ** {
                 'sample_code': forms.TextInput(attrs={
                                                  'class': 'form-control',
                                                }
@@ -40,10 +53,5 @@ class SCXRDForm(UserDetailsForm):
                                          'class': 'form-control',
                                        }
                 ),
-                'any_remarks': forms.Textarea(attrs={
-                                                'class': 'form-control',
-                                              }
-                ),
             }
         )
-        widgets = UserDetailsForm.Meta.widgets
