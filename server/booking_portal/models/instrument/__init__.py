@@ -18,5 +18,5 @@ from .form_models import (AAS,
                           UVSpectrophotometer,
                           UVSpectrophotometer,
                           XPS)
-from .userdetails import UserDetail
+from .userdetails import UserDetail, UserRemark
 from .instrument import Instrument
