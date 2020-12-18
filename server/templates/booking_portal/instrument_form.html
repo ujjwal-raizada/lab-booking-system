@@ -7,7 +7,7 @@
 {% if edit %}
 <form action="" method="POST">
 {% elif usertype != 'student' %}
-<form action="" method="POST">
+<form action={% url 'add_remarks' id=id %} method="POST">
 {% endif%}
     <script>
         $('form').submit(function(e) {
