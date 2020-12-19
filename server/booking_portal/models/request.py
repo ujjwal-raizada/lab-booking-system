@@ -10,6 +10,7 @@ from .instrument import Instrument
 from .slot import Slot
 from .user import Student, Faculty, LabAssistant
 
+
 class Request(models.Model):
     STATUS_1 = "R1"
     STATUS_2 = "R2"
@@ -32,7 +33,8 @@ class Request(models.Model):
     slot = models.ForeignKey(Slot, on_delete=models.CASCADE)
     status = models.CharField(max_length=50, choices=STATUS_CHOICES)
 
-    content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT, blank=True, null=True)
+    content_type = models.ForeignKey(
+        ContentType, on_delete=models.PROTECT, blank=True, null=True)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
 
@@ -48,7 +50,8 @@ class Request(models.Model):
         self.save(update_fields=['status'])
 
     def __str__(self):
-        return "{}".format(self.slot)
+        return "Request: {}".format(self.slot)
+
 
 @receiver(signal=post_save, sender=Request)
 def send_email_after_save(sender, instance, **kwargs):
@@ -58,10 +61,10 @@ def send_email_after_save(sender, instance, **kwargs):
         slot.update_status(Slot.STATUS_2)
         subject = "Waiting for Faculty Approval"
         text = render_to_string('email/faculty_pending.html', {
-            'receipent_name' : instance.faculty.name,
-            'student_name' : instance.student.name,
+            'receipent_name': instance.faculty.name,
+            'student_name': instance.student.name,
             'instrument_name': instance.instrument.name,
-            'slot' : instance.slot.description,
+            'slot': instance.slot.description,
         })
         instance.faculty.send_email(instance, subject,
                                     strip_tags(text),
@@ -69,9 +72,9 @@ def send_email_after_save(sender, instance, **kwargs):
 
         subject = "Pending Lab Booking Request"
         text = render_to_string('email/student_pending.html', {
-            'receipent_name' : instance.student.name,
-            'instrument_name' : instance.instrument.name,
-            'slot' : instance.slot.description,
+            'receipent_name': instance.student.name,
+            'instrument_name': instance.instrument.name,
+            'slot': instance.slot.description,
         })
         instance.student.send_email(instance, subject,
                                     strip_tags(text),
@@ -80,11 +83,11 @@ def send_email_after_save(sender, instance, **kwargs):
     elif instance.status == Request.STATUS_2:
         subject = "Waiting for Lab Assistant Approval"
         text = render_to_string('email/lab_assistant_pending.html', {
-            'receipent_name' : instance.lab_assistant.name,
-            'student_name' : instance.student.name,
-            'instrument_name' : instance.instrument.name,
-            'faculty_name' : instance.faculty.name,
-            'slot' : instance.slot.description,
+            'receipent_name': instance.lab_assistant.name,
+            'student_name': instance.student.name,
+            'instrument_name': instance.instrument.name,
+            'faculty_name': instance.faculty.name,
+            'slot': instance.slot.description,
         })
         instance.lab_assistant.send_email(instance, subject,
                                           strip_tags(text),
@@ -94,8 +97,8 @@ def send_email_after_save(sender, instance, **kwargs):
         slot.update_status(Slot.STATUS_3)
         subject = "Lab Booking Approved"
         text = render_to_string('email/student_accepted.html', {
-            'receipent_name' : instance.student.name,
-            'slot' : instance.slot.description,
+            'receipent_name': instance.student.name,
+            'slot': instance.slot.description,
         })
         instance.student.send_email(instance, subject,
                                     strip_tags(text),
@@ -105,8 +108,10 @@ def send_email_after_save(sender, instance, **kwargs):
         slot.update_status(Slot.STATUS_1)
         subject = "Lab Booking Rejected"
         text = render_to_string('email/student_rejected.html', {
-            'receipent_name' : instance.student.name,
-            'slot' : instance.slot.description,
+            'receipent_name': instance.student.name,
+            'slot': instance.slot.description,
+            'faculty_remarks': instance.content_object.faculty_remarks,
+            'lab_assistant_remarks': instance.content_object.lab_assistant_remarks,
         })
         instance.student.send_email(instance, subject,
                                     strip_tags(text),

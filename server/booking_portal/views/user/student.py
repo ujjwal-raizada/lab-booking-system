@@ -41,21 +41,22 @@ def book_machine(request, id):
         'instrument_subtitle': form.subtitle,
         'instrument_verbose_name': form_model._meta.verbose_name,
         'form_notes': form.help_text,
-        'usertype' : 'student',
+        'usertype': 'student',
+        'status': models.Request.STATUS_1,
     }
 
     try:
         instr_obj = models.Instrument.objects.get(id=id)
         slot_obj = models.Slot.objects.get(
-                                        id=slot_id,
-                                        instrument=instr_obj,
-                                    )
+            id=slot_id,
+            instrument=instr_obj,
+        )
         student_obj = models.Student.objects.get(
-                                        id=request.user.id
-                                        )
+            id=request.user.id
+        )
         sup_obj = models.Faculty.objects.get(
-                                id=student_obj.supervisor.id
-                            )
+            id=student_obj.supervisor.id
+        )
 
     except:
         messages.error(request, "Bad Request")
@@ -82,10 +83,10 @@ def book_machine(request, id):
         try:
             with transaction.atomic():
                 slot_obj = models.Slot.objects.filter(
-                                        id=slot_id,
-                                        status=models.Slot.STATUS_1,
-                                        instrument=instr_obj
-                                    ).first()
+                    id=slot_id,
+                    status=models.Slot.STATUS_1,
+                    instrument=instr_obj
+                ).first()
 
                 if models.Request.objects.filter(
                     ~(
@@ -102,13 +103,13 @@ def book_machine(request, id):
                 if slot_obj and student_obj and sup_obj and instr_obj:
                     model_object = form(request.POST).save()
                     req_instance = models.Request(
-                                            student=student_obj,
-                                            faculty=sup_obj,
-                                            instrument=instr_obj,
-                                            slot=slot_obj,
-                                            status=models.Request.STATUS_1,
-                                            content_object=model_object
-                                        )
+                        student=student_obj,
+                        faculty=sup_obj,
+                        instrument=instr_obj,
+                        slot=slot_obj,
+                        status=models.Request.STATUS_1,
+                        content_object=model_object
+                    )
                     req_instance.save()
                     messages.success(request, 'Form Submission Successful')
                     return HttpResponseRedirect('/booking/')

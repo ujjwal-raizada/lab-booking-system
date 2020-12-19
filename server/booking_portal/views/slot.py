@@ -29,11 +29,11 @@ def slot_list(request):
             request,
             'booking_portal/portal_forms/instrument_list.html',
             {
-                'form' : IntrumentList(),
-                "message":'You cannot book a slot for this instrument since you already have a booking !'
+                'form': IntrumentList(),
+                "message": 'You cannot book a slot for this instrument since you already have a booking !'
             }
         )
-    else :
+    else:
         form = SlotList(instr_id)
         return render(
             request,

@@ -3,6 +3,7 @@ from django_filters import FilterSet, DateFilter, OrderingFilter, DateRangeFilte
 from ... import models
 from ... import forms
 
+
 class BasePortalFilter(FilterSet):
     from_date = DateFilter(
         field_name='slot__date',
@@ -10,7 +11,7 @@ class BasePortalFilter(FilterSet):
         label='From',
         widget=forms.DateInput(
             attrs={
-                'class' : 'datepicker'
+                'class': 'datepicker'
             }
         ),
     )
@@ -20,20 +21,20 @@ class BasePortalFilter(FilterSet):
         label='To',
         widget=forms.DateInput(
             attrs={
-                'class' : 'datepicker'
+                'class': 'datepicker'
             }
         ),
     )
 
     order = OrderingFilter(
         fields=(
-            ('slot','slot__date'),
+            ('slot', 'slot__date'),
         )
     )
 
     class Meta:
         model = models.Request
         fields = {
-            'status' : ['exact'],
-            'instrument' : ['exact'],
+            'status': ['exact'],
+            'instrument': ['exact'],
         }

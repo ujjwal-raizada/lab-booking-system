@@ -32,7 +32,8 @@ class UserRemark(models.Model):
     userremark_id = models.AutoField(primary_key=True)
     student_remarks = models.CharField(max_length=250, blank=True, null=True)
     faculty_remarks = models.CharField(max_length=250, blank=True, null=True)
-    lab_assistant_remarks = models.CharField(max_length=250, blank=True, null=True)
+    lab_assistant_remarks = models.CharField(
+        max_length=250, blank=True, null=True)
 
     class Meta:
         verbose_name = "User Remark"
