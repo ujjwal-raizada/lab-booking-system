@@ -4,6 +4,22 @@
 {% block subtitle %} {{ instrument_subtitle }} {% endblock %}
 
 {% block content %}
+{% if not edit %}
+<div class="card-text" style="text-align: center;">
+    <h6>
+        <strong>
+            Status of your Application:
+        </strong>
+        {% if status == 'R1' %}  Waiting for Faculty Approval
+        {% elif status == 'R2' %} Waiting for Lab Assistant Approval
+        {% elif status == 'R3' %} Approved
+        {% elif status == 'R4' %} Rejected
+        {% elif status == 'R5' %} Cancelled
+        {% endif %}
+    </h6>
+</div>
+{% endif %}
+
 {% if edit %}
 <form action="" method="POST">
 {% elif usertype != 'student' %}
@@ -24,7 +40,11 @@
     <div style="text-align: center;">
     {% if edit %}
         <input type="submit" class="btn btn-primary" value="Submit">
-    {% elif usertype != 'student' %}
+    {% else %}
+      <input type="submt" class="btn btn-secondary" onclick="window.print()" value="Download PDF">
+    {% endif %}
+
+    {% if usertype != 'student' %}
         <input type="submit" class="btn btn-primary" value="Add Your Remarks">
     </div>
     {% endif %}

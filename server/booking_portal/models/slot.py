@@ -1,3 +1,4 @@
+import calendar
 from django.db import models
 
 from .instrument import Instrument
@@ -32,7 +33,12 @@ class Slot(models.Model):
 
     @property
     def description(self):
-        return "{} - {}".format(self.date, self.time)
+        return "{} {} {} - {}".format(
+            str(self.date.day),
+            calendar.month_name[self.date.month],
+            str(self.date.year),
+            str(self.time)
+        )
 
     def __str__(self):
         return "{} : {}".format(self.instrument, self.description)
