@@ -25,7 +25,7 @@ class FESEM(UserDetail, UserRemark):
     ])
 
     def __str__(self):
-        "{} : {}{}{}".format(
+        return "{} : {} {} {}".format(
             "FESEM",
             str(self.date.day),
             calendar.month_name[self.date.month],
@@ -53,7 +53,7 @@ class TCSPC(UserDetail, UserRemark):
     chemical_composition = models.CharField(max_length=75)
 
     def __str__(self):
-        "{} : {}{}{}".format(
+        return "{} : {} {} {}".format(
             "TCSPC",
             str(self.date.day),
             calendar.month_name[self.date.month],
@@ -75,7 +75,7 @@ class FTIR(UserDetail, UserRemark):
     solvent = models.CharField(max_length=75)
 
     def __str__(self):
-        "{} : {}{}{}".format(
+        return "{} : {} {} {}".format(
             "FTIR",
             str(self.date.day),
             calendar.month_name[self.date.month],
@@ -100,7 +100,7 @@ class LCMS(UserDetail, UserRemark):
     ])
 
     def __str__(self):
-        "{} : {}{}{}".format(
+        return "{} : {} {} {}".format(
             "LCMS",
             str(self.date.day),
             calendar.month_name[self.date.month],
@@ -124,7 +124,7 @@ class Rheometer(UserDetail, UserRemark):
     analysis_required = models.CharField(max_length=75)
 
     def __str__(self):
-        "{} : {}{}{}".format(
+        return "{} : {} {} {}".format(
             "Rheometer",
             str(self.date.day),
             calendar.month_name[self.date.month],
@@ -141,7 +141,7 @@ class AAS(UserDetail, UserRemark):
     elements = models.CharField(max_length=75)
 
     def __str__(self):
-        "{} : {}{}{}".format(
+        return "{} : {} {} {}".format(
             "AAS",
             str(self.date.day),
             calendar.month_name[self.date.month],
@@ -172,7 +172,7 @@ class TGA(UserDetail, UserRemark):
     sample_solubility = models.CharField(max_length=75)
 
     def __str__(self):
-        "{} : {}{}{}".format(
+        return "{} : {} {} {}".format(
             "TGA",
             str(self.date.day),
             calendar.month_name[self.date.month],
@@ -192,7 +192,7 @@ class BET(UserDetail, UserRemark):
     surface_area = models.CharField(max_length=75)
 
     def __str__(self):
-        "{} : {}{}{}".format(
+        return "{} : {} {} {}".format(
             "BET",
             str(self.date.day),
             calendar.month_name[self.date.month],
@@ -216,7 +216,7 @@ class CDSpectrophotometer(UserDetail, UserRemark):
     cell_path_length = models.CharField(max_length=75)
 
     def __str__(self):
-        "{} : {}{}{}".format(
+        return "{} : {} {} {}".format(
             "CDSpectrophotometer",
             str(self.date.day),
             calendar.month_name[self.date.month],
@@ -236,7 +236,7 @@ class LSCM(UserDetail, UserRemark):
     analysis_details = models.CharField(max_length=75)
 
     def __str__(self):
-        "{} : {}{}{}".format(
+        return "{} : {} {} {}".format(
             "LSCM",
             str(self.date.day),
             calendar.month_name[self.date.month],
@@ -266,7 +266,7 @@ class DSC(UserDetail, UserRemark):
     heating_rate = models.CharField(max_length=75)
 
     def __str__(self):
-        "{} : {}{}{}".format(
+        return "{} : {} {} {}".format(
             "DSC",
             str(self.date.day),
             calendar.month_name[self.date.month],
@@ -293,7 +293,7 @@ class GC(UserDetail, UserRemark):
     ])
 
     def __str__(self):
-        "{} : {}{}{}".format(
+        return "{} : {} {} {}".format(
             "GC",
             str(self.date.day),
             calendar.month_name[self.date.month],
@@ -318,7 +318,7 @@ class EDXRF(UserDetail, UserRemark):
     elements_present = models.CharField(max_length=75)
 
     def __str__(self):
-        "{} : {}{}{}".format(
+        return "{} : {} {} {}".format(
             "EDXRF",
             str(self.date.day),
             calendar.month_name[self.date.month],
@@ -338,7 +338,7 @@ class HPLC(UserDetail, UserRemark):
     detection_wavelength = models.CharField(max_length=75)
 
     def __str__(self):
-        "{} : {}{}{}".format(
+        return "{} : {} {} {}".format(
             "HPLC",
             str(self.date.day),
             calendar.month_name[self.date.month],
@@ -363,7 +363,7 @@ class NMR(UserDetail, UserRemark):
     spectral_range = models.CharField(max_length=75)
 
     def __str__(self):
-        "{} : {}{}{}".format(
+        return "{} : {} {} {}".format(
             "NMR",
             str(self.date.day),
             calendar.month_name[self.date.month],
@@ -387,7 +387,7 @@ class PXRD(UserDetail, UserRemark):
     scanning_rate = models.CharField(max_length=75)
 
     def __str__(self):
-        "{} : {}{}{}".format(
+        return "{} : {} {} {}".format(
             "PXRD",
             str(self.date.day),
             calendar.month_name[self.date.month],
@@ -409,7 +409,7 @@ class SCXRD(UserDetail, UserRemark):
     ])
 
     def __str__(self):
-        "{} : {}{}{}".format(
+        return "{} : {} {} {}".format(
             "SCXRD",
             str(self.date.day),
             calendar.month_name[self.date.month],
@@ -436,7 +436,7 @@ class XPS(UserDetail, UserRemark):
     scan_details = models.CharField(max_length=75)
 
     def __str__(self):
-        "{} : {}{}{}".format(
+        return "{} : {} {} {}".format(
             "XPS",
             str(self.date.day),
             calendar.month_name[self.date.month],
@@ -461,7 +461,7 @@ class UVSpectrophotometer(UserDetail, UserRemark):
     ordinate_mode = models.CharField(max_length=75)
 
     def __str__(self):
-        "{} : {}{}{}".format(
+        return "{} : {} {} {}".format(
             "UVSpectrophotometer",
             str(self.date.day),
             calendar.month_name[self.date.month],
