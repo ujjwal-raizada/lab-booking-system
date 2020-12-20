@@ -18,7 +18,7 @@ def main():
         ) from exc
     except AssertionError as err:
         raise Exception(
-            "Email username and password empty! " +
+            "Email username and password are empty! " +
             "See onlineCAL/config.py for more info"
         ) from err
     execute_from_command_line(sys.argv)

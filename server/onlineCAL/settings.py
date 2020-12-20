@@ -25,7 +25,8 @@ SECRET_KEY = 'ad!s&8mp+4#oe3b#pbfon2ck&0uyo!88bo-5p5^e@@qk^62)#3'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# Change the value to the production IP address.
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
