@@ -8,6 +8,9 @@ from django.shortcuts import render, redirect
 from django.http import Http404
 from django.contrib import messages
 from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import Group
+from django.contrib.auth.models import Permission
+
 
 from ... import models
 from ... import forms
@@ -39,7 +42,7 @@ class CustomUserAdmin(UserAdmin):
 
     change_list_template = "admin/csv_change_list.html"
 
-    def create_users(self, user_type, records):
+    def create_users(self, user_type, records, staff=False):
         headers = CSV_HEADERS
         if user_type == models.Student:
             headers = CSV_HEADERS_STUDENT
@@ -61,7 +64,10 @@ class CustomUserAdmin(UserAdmin):
             if user_type.objects.filter(email=record['email']).exists():
                 raise Exception(f"User with username \"{record['email']}\" already exists.")
             else:
-                user_type.objects.create(**record)
+                user = user_type.objects.create(**record)
+                if (staff):
+                    user.is_staff = True
+                    user.save()
 
     def get_urls(self):
         urls = super().get_urls()
@@ -84,15 +90,18 @@ class CustomUserAdmin(UserAdmin):
                 self.message_user(request, "Error: {}".format(err))
                 return redirect("..")
             try:
+                staff = False
                 if '/student/' in request.path:
                     user_type = models.Student
                 elif '/faculty/' in request.path:
                     user_type = models.Faculty
                 elif '/labassistant/' in request.path:
                     user_type = models.LabAssistant
+                    staff = True
                 else:
                     raise Http404
-                self.create_users(user_type, reader)
+                self.create_users(user_type, reader, staff)
+
             except Exception as err:
                 messages.error(request, f'Error on row number {reader.line_num}: {err}')
             else:

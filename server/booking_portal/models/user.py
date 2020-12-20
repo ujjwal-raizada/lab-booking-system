@@ -24,10 +24,17 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()
 
     def has_perm(self, perm, obj=None):
-        return self.is_superuser
+        
+        if (self.is_superuser):
+            return True
+        
+        if (self.is_staff and ('student' in perm or 'faculty' in perm or 'labassistant' in perm or 'slot' in perm)):
+            return True
+
+        return False
 
     def has_module_perms(self, app_label):
-        return self.is_superuser
+        return self.is_staff
 
     def _create_email_obj(self, request, subject, message):
         EmailModel(receiver=self.email,
