@@ -2,7 +2,7 @@ import random
 
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.db import transaction
 
 from ... import models, permissions
@@ -42,7 +42,7 @@ def faculty_request_accept(request, id):
                 request_object.lab_assistant = random.choice(
                     models.LabAssistant.objects.all())
                 request_object.save()
-                return faculty_portal(request)
+                return redirect('faculty_portal')
             else:
                 return HttpResponse("Bad Request")
     except Exception as e:
@@ -61,7 +61,7 @@ def faculty_request_reject(request, id):
             if (faculty == models.Faculty.objects.get(id=request.user.id)):
                 request_object.status = models.Request.STATUS_4
                 request_object.save()
-                return faculty_portal(request)
+                return redirect('faculty_portal')
             else:
                 return HttpResponse("Bad Request")
     except Exception as e:
