@@ -64,7 +64,17 @@
           <h3 class="card-title"> Filter </h3>
           <p2 class="card-text">
             <form action="" method="GET">
-              {{ context_data.form.as_p }}
+              <table>
+                {% for hidden_field in context_data.form.hidden_fields %}
+                  {{ hidden_field }}
+                {% endfor %}
+                {% for field in context_data.form.visible_fields %}
+                  <tr>
+                   <td><div style="text-align: left;">{{ field.label_tag }}</div></td>
+                   <td><div style="width: fit-content;">{{ field }}</div></td>
+                  </tr>
+                {% endfor %}
+              </table>              
               <button type="submit"> Apply </button>
             </form>
           </p2>
