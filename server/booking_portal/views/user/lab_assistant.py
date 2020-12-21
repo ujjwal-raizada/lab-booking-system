@@ -1,5 +1,5 @@
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db import transaction
 
@@ -38,7 +38,7 @@ def lab_assistant_accept(request, id):
                 id=request.user.id)
             request_object.status = models.Request.STATUS_3
             request_object.save()
-            return lab_assistant_portal(request)
+            return redirect('lab_assistant')
     except:
         raise Http404("Page Not Found")
 
@@ -57,6 +57,6 @@ def lab_assistant_reject(request, id):
                 id=request.user.id)
             request_object.status = models.Request.STATUS_4
             request_object.save()
-            return lab_assistant_portal(request)
+            return redirect('lab_assistant')
     except:
         raise Http404("Page Not Found")
