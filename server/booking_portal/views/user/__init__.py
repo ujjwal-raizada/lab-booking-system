@@ -10,4 +10,4 @@ from .lab_assistant import (
                 lab_assistant_reject
 )
 from .user import change_password
-
+from .admin import admin_portal
