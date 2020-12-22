@@ -23,5 +23,6 @@ urlpatterns = [
          views.show_application, name='view-application'),
     path('application/edit/remarks/<int:id>',
          views.add_remarks, name='add_remarks'),
-    path('change-password/', views.change_password, name="change_password")     
+    path('change-password/', views.change_password, name="change_password"),
+    path('admin-portal/', views.admin_portal, name='admin_portal')
 ]
