@@ -32,7 +32,7 @@
                         <td>{{ request.student }}</td>
                         <td>{{ request.faculty }}</td>
                         <td>{{ request.instrument }}</td>
-                        <td>{{ request.slot }}</td>
+                        <td>{{ request.slot.description }}</td>
                         {% if request.status == 'R1' %} <td>Waiting for Faculty Approval</td>
                         {% elif request.status == 'R2' %} <td>Waiting for Lab Assistant Approval</td>
                         {% elif request.status == 'R3' %} <td>Approved</td>
@@ -74,7 +74,7 @@
                    <td><div style="width: fit-content;">{{ field }}</div></td>
                   </tr>
                 {% endfor %}
-              </table>              
+              </table>
               <button type="submit"> Apply </button>
             </form>
           </p2>
