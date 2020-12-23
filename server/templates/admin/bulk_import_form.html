@@ -1,11 +1,25 @@
 {% extends 'admin/base.html' %}
 
 {% block content %}
-    <div>
-        <form action="." method="POST" enctype="multipart/form-data">
-            {{ form.as_p }}
-            {% csrf_token %}
-            <input type="submit" value="Upload CSV"></input>
-        </form>
-    </div>
+<div>
+    <form action="." method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <table>
+            {% for hidden_field in form.hidden_fields %}
+            {{ hidden_field }}
+            {% endfor %}
+            {% for field in form.visible_fields %}
+            <tr>
+                <td>
+                    <div style="text-align: left;">{{ field.label_tag }}</div>
+                </td>
+                <td>
+                    <div style="width: fit-content;">{{ field }}</div>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        <input type="submit" value="Upload CSV"></input>
+    </form>
+</div>
 {% endblock %}
