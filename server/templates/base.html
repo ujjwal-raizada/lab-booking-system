@@ -34,25 +34,41 @@
         </li>
         <li class="nav-item active">
           {% if usertype == 'faculty' %}
-            <a class="nav-link" href="{% url 'faculty_portal' %}">Profile<span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="{% url 'faculty_portal' %}">Requests<span class="sr-only">(current)</span></a>
           {% elif usertype == 'student' %}
-            <a class="nav-link" href="{% url 'student' %}">Profile<span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="{% url 'student' %}">Requests<span class="sr-only">(current)</span></a>
           {% elif usertype == 'lab' %}
-            <a class="nav-link" href="{% url 'lab_assistant' %}">Profile<span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="{% url 'lab_assistant' %}">Requests<span class="sr-only">(current)</span></a>
           {% else %}
-            <a class="nav-link" href="{% url 'index' %}">Profile<span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="{% url 'index' %}">Requests<span class="sr-only">(current)</span></a>
           {% endif %}
         </li>
+        
         <li class="nav-item active">
-          <a class="nav-link" href="{% url 'admin_portal' %}">Admin<span class="sr-only">(current)</span></a>
+          <a class="nav-link" href="{% url 'about_us' %}">About Us<span class="sr-only">(current)</span></a>
         </li>
       </ul>
       <ul class="navbar-nav ml-auto">
         <li class="nav-item active">
           <a class="nav-link" href="{% url 'change_password' %}">Change Password<span class="sr-only">(current)</span></a>
         </li>
+
+        {% if user.is_authenticated %}
         <li class="nav-item active">
           <a class="nav-link" href="{% url 'logout' %}">Logout<span class="sr-only">(current)</span></a>
+        </li>
+        {% else %}
+        <li class="nav-item active">
+          <a class="nav-link" href="{% url 'login' %}">Login<span class="sr-only">(current)</span></a>
+        </li>
+        
+
+        {% endif %}
+        <li class="nav-item active">
+          <a class="nav-link" href="#">|<span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="{% url 'admin_portal' %}">Admin<span class="sr-only">(current)</span></a>
         </li>
       </ul>
     </div>
