@@ -7,6 +7,7 @@ class UserDetail(models.Model):
     user_name = models.ForeignKey('Student', on_delete=models.CASCADE)
     date = models.DateField()
     time = models.TimeField()
+    duration = models.CharField(max_length=75)
     sup_name = models.ForeignKey('Faculty', on_delete=models.CASCADE)
     sup_dept = models.CharField(max_length=75)
     sample_from_outside = models.CharField(max_length=3, choices=[('Yes', 'Yes'),

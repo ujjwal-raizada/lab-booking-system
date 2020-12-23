@@ -34,11 +34,11 @@ class Slot(models.Model):
     @property
     def duration_verbose(self):
         hr, _, _ = self.duration.split(':')
-        return "Duration: {} hr".format(hr)
+        return "{} hr".format(hr)
 
     @property
     def description(self):
-        return "{} {} {} - {} ({})".format(
+        return "{} {} {} - {} (Duration: {})".format(
             str(self.date.day),
             calendar.month_name[self.date.month],
             str(self.date.year),

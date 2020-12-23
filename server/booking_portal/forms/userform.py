@@ -34,9 +34,10 @@ class UserDetailsForm(forms.ModelForm):
         super(UserDetailsForm, self).__init__(*args, **kwargs)
         self.fields['user_name'].widget.attrs['disabled'] = True
         self.fields['sup_name'].widget.attrs['disabled'] = True
-        self.fields['sup_dept'].widget.attrs['readonly'] = True
         self.fields['time'].widget.attrs['disabled'] = True
         self.fields['date'].widget.attrs['disabled'] = True
+        self.fields['duration'].widget.attrs['readonly'] = True
+        self.fields['sup_dept'].widget.attrs['readonly'] = True
 
     class Meta:
         model = UserDetail
@@ -44,6 +45,7 @@ class UserDetailsForm(forms.ModelForm):
             'user_name',
             'date',
             'time',
+            'duration',
             'sup_name',
             'sup_dept',
             'sample_from_outside',
@@ -52,6 +54,7 @@ class UserDetailsForm(forms.ModelForm):
         )
         labels = {
             'user_name': 'Username',
+            'duration' : 'Slot Duration',
             'sup_name': 'Supervisor Name',
             'sup_dept': 'Supervisor Department',
             'sample_from_outside': 'Is the sample obtained from outside BITS through collaboration?',
@@ -67,6 +70,11 @@ class UserDetailsForm(forms.ModelForm):
             'time': forms.TimeInput(
                 attrs={
                     'type': 'time',
+                    'class': 'form-control',
+                }
+            ),
+            'duration': forms.TextInput(
+                attrs={
                     'class': 'form-control',
                 }
             ),

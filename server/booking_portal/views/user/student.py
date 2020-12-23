@@ -74,6 +74,7 @@ def book_machine(request, id):
                     'sup_dept': sup_obj.department,
                     'date': slot_obj.date,
                     'time': slot_obj.time,
+                    'duration' : slot_obj.duration_verbose,
                 }),
                 ** default_context,
             }
