@@ -41,8 +41,8 @@
                         {% endif %}
                         <td> <a href={% url 'view-application' id=request.id %} target="_blank"> View Application </a></td>
                         {% if request.status == 'R2' %}
-                          <td> <a href="/booking/requests_assistant/accept/{{request.id}}"><button type="button" class="btn btn-success">Accept</button></a> </td>
-                          <td> <a href="/booking/requests_assistant/reject/{{request.id}}"><button type="button" class="btn btn-danger">Reject</button></a> </td>
+                          <td> <a href="/requests_assistant/accept/{{request.id}}"><button type="button" class="btn btn-success">Accept</button></a> </td>
+                          <td> <a href="/requests_assistant/reject/{{request.id}}"><button type="button" class="btn btn-danger">Reject</button></a> </td>
                         {% else %}
                           <td> <button type="button" class="btn btn-success" disabled>Accept</button> </td>
                           <td> <button type="button" class="btn btn-danger" disabled>Reject</button> </td>

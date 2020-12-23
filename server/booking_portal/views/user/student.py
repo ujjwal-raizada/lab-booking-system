@@ -60,7 +60,7 @@ def book_machine(request, id):
 
     except:
         messages.error(request, "Bad Request")
-        return HttpResponseRedirect("/booking/")
+        return HttpResponseRedirect("/")
 
     if request.method == 'GET':
 
@@ -99,7 +99,7 @@ def book_machine(request, id):
                 ).exists():
                     messages.error(
                         request, "You already have an ongoing application for this machine")
-                    return HttpResponseRedirect("/booking/")
+                    return HttpResponseRedirect("/")
 
                 if slot_obj and student_obj and sup_obj and instr_obj:
                     model_object = form(request.POST).save()
@@ -113,17 +113,17 @@ def book_machine(request, id):
                     )
                     req_instance.save()
                     messages.success(request, 'Form Submission Successful')
-                    return HttpResponseRedirect('/booking/')
+                    return HttpResponseRedirect('/')
 
                 elif not slot_obj:
                     messages.error(
                         request, "Sorry, This slot is not available anymore.")
-                    return HttpResponseRedirect('/booking/')
+                    return HttpResponseRedirect('/')
 
         except DatabaseError:
             messages.error(
                 request, "Could not proccess your request, please try again.")
-            return HttpResponseRedirect('/booking/')
+            return HttpResponseRedirect('/')
 
     else:
         return render(
