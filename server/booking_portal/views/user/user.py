@@ -21,3 +21,7 @@ def change_password(request):
     return render(request, 'accounts/change_password.html', {
         'form': form
     })
+
+
+def about_us(request):
+    return render(request, 'about_us.html')
