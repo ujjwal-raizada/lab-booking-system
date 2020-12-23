@@ -8,9 +8,10 @@ from ..models.instrument import Instrument
 from ..models.user import CustomUser, Student, Faculty, LabAssistant
 
 
-class BulkImportForm(forms.Form):
-    csv_file = forms.FileField()
-
+EMAIL_CHOICES = (
+    ("Yes", "Yes"),
+    ("No", "No"),
+)
 
 START_TIME_CHOICES = (
     ('00:00:00', '12 AM (Midnight)'),
@@ -53,6 +54,24 @@ DELTA_DAYS = (
     ('30', '1-month'),
     ('60', '2-month'),
 )
+
+
+class BulkImportForm(forms.Form):
+    csv_file = forms.FileField()
+    send_email = forms.ChoiceField(
+        choices=EMAIL_CHOICES, initial=EMAIL_CHOICES[1])
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_val in self.Meta.fields:
+            self.fields[field_val].label = self.Meta.labels.get(field_val)
+
+    class Meta:
+        fields = ('csv_file', 'send_email')
+        labels = {
+            'csv_file': 'Upload CSV File',
+            'send_email': 'Do you want to send password details to users?',
+        }
 
 
 class DateInput(forms.DateInput):

@@ -125,6 +125,7 @@ def book_machine(request, id):
                 request, "Could not proccess your request, please try again.")
             return HttpResponseRedirect('/')
 
+
     else:
         return render(
             request,

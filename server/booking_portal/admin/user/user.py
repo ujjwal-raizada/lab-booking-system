@@ -3,21 +3,26 @@ import datetime
 from io import TextIOWrapper
 
 from django.urls import path
-from django.contrib.auth.hashers import make_password
 from django.shortcuts import render, redirect
 from django.http import Http404
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.admin import UserAdmin
-from django.contrib.auth.models import Group
-from django.contrib.auth.models import Permission
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import Group, Permission
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 
 from ... import models
 from ... import forms
+from ... import permissions
 
 CSV_HEADERS = ('name', 'email', 'password')
 CSV_HEADERS_STUDENT = CSV_HEADERS + ('supervisor',)
 CSV_HEADERS_FACULTY = CSV_HEADERS + ('department', )
+
 
 class CustomUserAdmin(UserAdmin):
     form = forms.CustomUserChangeForm
@@ -42,7 +47,7 @@ class CustomUserAdmin(UserAdmin):
 
     change_list_template = "admin/csv_change_list.html"
 
-    def create_users(self, user_type, records, staff=False):
+    def create_users(self, user_type, records, staff=False, notify_user=False):
         headers = CSV_HEADERS
         if user_type == models.Student:
             headers = CSV_HEADERS_STUDENT
@@ -50,24 +55,46 @@ class CustomUserAdmin(UserAdmin):
             headers = CSV_HEADERS_FACULTY
 
         if set(records.fieldnames) != set(headers):
-            raise Exception(f"Invalid CSV headers/columns. Expected: {headers}")
+            raise Exception(
+                f"Invalid CSV headers/columns. Expected: {headers}")
 
         for record in records:
+            pswd_text = record['password']
             record['password'] = make_password(record['password'])
             if user_type == models.Student:
-                obj = models.Faculty.objects.filter(email=record['supervisor']).first()
+                obj = models.Faculty.objects.filter(
+                    email=record['supervisor']).first()
                 if not obj:
-                    raise Exception(f"Invalid Supervisor Name: \"{record['supervisor']}\"")
+                    raise Exception(
+                        f"Invalid Supervisor Name: \"{record['supervisor']}\"")
                 else:
                     record['supervisor'] = obj
 
             if user_type.objects.filter(email=record['email']).exists():
-                raise Exception(f"User with username \"{record['email']}\" already exists.")
+                raise Exception(
+                    f"User with username \"{record['email']}\" already exists.")
             else:
                 user = user_type.objects.create(**record)
                 if (staff):
                     user.is_staff = True
                     user.save()
+
+            if notify_user:
+                text = render_to_string('email/welcome.html', {
+                    'receipent_name': user.name,
+                    'email': user.email,
+                    'password': pswd_text,
+                    'user_type': permissions.get_user_type(user),
+                })
+
+                send_mail(
+                    subject="Welcome to OnlineCAL !",
+                    message=strip_tags(text),
+                    from_email=settings.EMAIL_HOST_USER,
+                    recipient_list=[user.email, ],
+                    fail_silently=settings.DEBUG,
+                    html_message=text,
+                )
 
     def get_urls(self):
         urls = super().get_urls()
@@ -100,15 +127,22 @@ class CustomUserAdmin(UserAdmin):
                     staff = True
                 else:
                     raise Http404
-                self.create_users(user_type, reader, staff)
+
+                send_email = False if request.POST.get(
+                    'send_email') == "No" else True
+
+                self.create_users(user_type, reader, staff, send_email)
 
             except Exception as err:
-                messages.error(request, f'Error on row number {reader.line_num}: {err}')
+                messages.error(
+                    request, f'Error on row number {reader.line_num}: {err}')
             else:
                 messages.success(request, "Your csv file has been imported")
             return redirect("..")
-        form = forms.BulkImportForm()
-        payload = {"form": form}
-        return render(
-            request, "admin/bulk_import_form.html", payload
-        )
+
+        else:
+            form = forms.BulkImportForm()
+            payload = {"form": form}
+            return render(
+                request, "admin/bulk_import_form.html", payload
+            )
