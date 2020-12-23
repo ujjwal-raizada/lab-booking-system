@@ -15,11 +15,11 @@ class Slot(models.Model):
         (STATUS_3, "Filled"),
         (STATUS_4, "Passed")
     ]
-    slot_name = models.CharField(max_length=50)
+    duration = models.CharField(max_length=50)
     instrument = models.ForeignKey(Instrument, on_delete=models.PROTECT)
     status = models.CharField(max_length=50, choices=STATUS_CHOICES)
     date = models.DateField()
-    time = models.TimeField(null=True)
+    time = models.TimeField()
 
     def update_status(self, status):
         assert status in (
@@ -32,12 +32,18 @@ class Slot(models.Model):
         self.save(update_fields=['status'])
 
     @property
+    def duration_verbose(self):
+        hr, _, _ = self.duration.split(':')
+        return "Duration: {} hr".format(hr)
+
+    @property
     def description(self):
-        return "{} {} {} - {}".format(
+        return "{} {} {} - {} ({})".format(
             str(self.date.day),
             calendar.month_name[self.date.month],
             str(self.date.year),
-            str(self.time)
+            str(self.time),
+            self.duration_verbose,
         )
 
     def __str__(self):
