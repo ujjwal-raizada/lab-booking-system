@@ -49,6 +49,9 @@ class SlotAdmin(admin.ModelAdmin):
         SlotFilterByInstrument
     )
 
+    def has_add_permission(self, request):
+        return False
+
     def time_left(self, current, end, duration):
         today = datetime.date.today()
         diff = (datetime.datetime.combine(today, end) -
@@ -67,8 +70,10 @@ class SlotAdmin(admin.ModelAdmin):
         INTERVAL_CHOICES = {
             "1-hour": datetime.timedelta(hours=1),
             "2-hour": datetime.timedelta(hours=2),
-            '3-hour': datetime.timedelta(hours=3),
-            '4-hour': datetime.timedelta(hours=4),
+            "3-hour": datetime.timedelta(hours=3),
+            "4-hour": datetime.timedelta(hours=4),
+            "6-hour": datetime.timedelta(hours=6),
+            "8-hour": datetime.timedelta(hours=8),
         }
 
         if request.method == 'POST':

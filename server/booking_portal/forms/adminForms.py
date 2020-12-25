@@ -45,6 +45,8 @@ DURATION = (
     ('2-hour', '2-hour'),
     ('3-hour', '3-hour'),
     ('4-hour', '4-hour'),
+    ('6-hour', '6-hour'),
+    ('8-hour', '8-hour'),
 )
 
 DELTA_DAYS = (
