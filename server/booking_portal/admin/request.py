@@ -3,11 +3,10 @@ from rangefilter.filter import DateRangeFilter
 
 from ..models import Request
 
+
 class RequestAdmin(admin.ModelAdmin):
     list_filter = (
         ('slot__date', DateRangeFilter),
-        'student',
-        'faculty',
         'lab_assistant',
         'status',
         'instrument',
