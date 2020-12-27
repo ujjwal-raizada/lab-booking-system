@@ -48,6 +48,7 @@ class SlotAdmin(admin.ModelAdmin):
         'status',
         SlotFilterByInstrument
     )
+    list_display = admin.ModelAdmin.list_display + ('status',)
 
     def has_add_permission(self, request):
         return False

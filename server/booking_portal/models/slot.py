@@ -1,7 +1,6 @@
 import calendar
 from django.db import models
 
-from .instrument import Instrument
 
 class Slot(models.Model):
     STATUS_1 = "S1"
@@ -16,7 +15,7 @@ class Slot(models.Model):
         (STATUS_4, "Passed")
     ]
     duration = models.CharField(max_length=50)
-    instrument = models.ForeignKey(Instrument, on_delete=models.PROTECT)
+    instrument = models.ForeignKey("Instrument", on_delete=models.PROTECT)
     status = models.CharField(max_length=50, choices=STATUS_CHOICES)
     date = models.DateField()
     time = models.TimeField()

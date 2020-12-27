@@ -17,7 +17,17 @@ def slot_list(request):
     instr_name = instr_obj.name
     student_obj = Student.objects.get(id=request.user.id)
 
-    if Request.objects.filter(
+    if not instr_obj.status:
+        return render(
+            request,
+            'booking_portal/portal_forms/instrument_list.html',
+            {
+                'form': IntrumentList(),
+                "message": 'Instrument unavailable due to technical/maintainence reasons'
+            }
+        )
+
+    elif Request.objects.filter(
         ~(
             Q(status=Request.STATUS_4) |
             Q(status=Request.STATUS_5)
