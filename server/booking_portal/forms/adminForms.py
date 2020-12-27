@@ -13,6 +13,11 @@ EMAIL_CHOICES = (
     ("No", "No"),
 )
 
+BOOL_CHOICES = (
+    (True, 'Yes'),
+    (False, 'No'),
+)
+
 START_TIME_CHOICES = (
     ('00:00:00', '12 AM (Midnight)'),
     ('01:00:00', '01 AM'),
@@ -146,3 +151,37 @@ class FacultyChangeForm(CustomUserChangeForm):
     class Meta:
         model = Faculty
         fields = ('department',)
+
+
+class InstrumentCreateForm(forms.ModelForm):
+
+    class Meta:
+        model = Instrument
+        fields = ('name', 'desc', 'status')
+        widgets = {
+            'status': forms.Select(
+                choices=BOOL_CHOICES
+            ),
+        }
+
+
+class InstrumentChangeForm(forms.ModelForm):
+
+    class Meta:
+        model = Instrument
+        fields = ('name', 'desc', 'status',)
+        widgets = {
+            'name' : forms.TextInput(
+                attrs={
+                    'readonly' : True,
+                }
+            ),
+            'desc' : forms.TextInput(
+                attrs={
+                    'readonly' : True,
+                }
+            ),
+            'status' : forms.Select(
+                choices=BOOL_CHOICES
+            ),
+        }

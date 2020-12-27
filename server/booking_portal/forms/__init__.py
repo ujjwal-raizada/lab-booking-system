@@ -20,6 +20,7 @@ from .uvspectrophotometer import UVSpectrophotometerForm
 from .adminForms import (
             BulkImportForm, BulkTimeSlotForm, CustomUserChangeForm,
             CustomUserCreationForm, FacultyChangeForm, FacultyCreationForm,
-            StudentChangeForm, StudentCreationForm, DateInput
+            StudentChangeForm, StudentCreationForm, DateInput,
+            InstrumentCreateForm, InstrumentChangeForm,
         )
 from .userform import UserDetailsForm, UserRemarkForm
