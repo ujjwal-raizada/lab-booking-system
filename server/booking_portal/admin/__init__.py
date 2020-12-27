@@ -1,6 +1,7 @@
 from django.contrib import admin
 
 from .slot import SlotAdmin
+from .instrument import InstrumentAdmin
 from .user import (
         StudentAdmin,
         FacultyAdmin,
@@ -20,7 +21,7 @@ admin.site.register(Student, StudentAdmin)
 admin.site.register(Faculty, FacultyAdmin)
 admin.site.register(EmailModel, EmailAdmin)
 admin.site.register(LabAssistant, CustomUserAdmin)
-admin.site.register(Instrument)
+admin.site.register(Instrument, InstrumentAdmin)
 admin.site.register(Request, RequestAdmin)
 admin.site.register(Slot, SlotAdmin)
 admin.site.register(CustomUser, CustomUserAdmin)

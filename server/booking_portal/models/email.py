@@ -1,8 +1,6 @@
 from django.db import models
 from django.core.mail import send_mail
 
-from .slot import Slot
-
 
 class EmailModel(models.Model):
     receiver = models.EmailField(null=True, blank=False)

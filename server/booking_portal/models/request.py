@@ -6,7 +6,6 @@ from django.db.models.signals import post_save
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
-from .instrument import Instrument
 from .slot import Slot
 from .user import Student, Faculty, LabAssistant
 
@@ -29,7 +28,7 @@ class Request(models.Model):
     faculty = models.ForeignKey(Faculty, on_delete=models.PROTECT)
     lab_assistant = models.ForeignKey(LabAssistant, on_delete=models.PROTECT,
                                       blank=True, null=True)
-    instrument = models.ForeignKey(Instrument, on_delete=models.PROTECT)
+    instrument = models.ForeignKey("Instrument", on_delete=models.PROTECT)
     slot = models.ForeignKey(Slot, on_delete=models.CASCADE)
     status = models.CharField(max_length=50, choices=STATUS_CHOICES)
 
