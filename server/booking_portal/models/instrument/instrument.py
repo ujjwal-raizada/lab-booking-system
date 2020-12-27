@@ -50,7 +50,12 @@ def handle_requests(sender, instance, **kwargs):
 
         for req in req_objects:
             req.status = Request.STATUS_5
-            req.content_object.student_remarks += \
-                """\nThis slot has been cancelled due to technical/maintainence reasons."""
+
+            previous_remarks = req.content_object.lab_assistant_remarks
+            new_remarks = "This slot has been cancelled due to technical/maintainence reasons."
+            if previous_remarks is not None:
+                new_remarks = previous_remarks + '\n' + new_remarks
+
+            req.content_object.lab_assistant_remarks = new_remarks
             req.content_object.save()
             req.save()

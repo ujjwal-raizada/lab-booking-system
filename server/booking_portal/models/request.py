@@ -55,6 +55,7 @@ class Request(models.Model):
 @receiver(signal=post_save, sender=Request)
 def send_email_after_save(sender, instance, **kwargs):
     slot = Slot.objects.get(id=instance.slot.id)
+    print(instance.status)
 
     if instance.status == Request.STATUS_1:
         slot.update_status(Slot.STATUS_2)
@@ -106,6 +107,18 @@ def send_email_after_save(sender, instance, **kwargs):
     elif instance.status == Request.STATUS_4:
         slot.update_status(Slot.STATUS_1)
         subject = "Lab Booking Rejected"
+        text = render_to_string('email/student_rejected.html', {
+            'receipent_name': instance.student.name,
+            'slot': instance.slot.description,
+            'faculty_remarks': instance.content_object.faculty_remarks,
+            'lab_assistant_remarks': instance.content_object.lab_assistant_remarks,
+        })
+        instance.student.send_email(instance, subject,
+                                    strip_tags(text),
+                                    html_message=text)
+
+    elif instance.status == Request.STATUS_5:
+        subject = "Lab Booking Cancelled"
         text = render_to_string('email/student_rejected.html', {
             'receipent_name': instance.student.name,
             'slot': instance.slot.description,
