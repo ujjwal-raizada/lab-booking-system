@@ -1,6 +1,7 @@
 import datetime
 from django.db import models
 from django.dispatch import receiver
+from django.db.models import Q
 from django.db.models.signals import post_save
 
 from .. import Slot, Request
@@ -35,11 +36,16 @@ def handle_requests(sender, instance, **kwargs):
             slot.save()
     else:
         slot_objects = Slot.objects.filter(
+            ~(Q(status=Slot.STATUS_4)),
             instrument=instance,
             date__gte=datetime.datetime.today(),
         )
 
         req_objects = Request.objects.filter(
+            ~(
+                Q(status=Request.STATUS_4) |
+                Q(status=Request.STATUS_5)
+            ),
             instrument=instance,
             slot__date__gte=datetime.datetime.today(),
         )
