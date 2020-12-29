@@ -34,7 +34,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
                 'faculty' in perm or
                 'labassistant' in perm or
                 'slot' in perm or
-                'instrument' in perm
+                'instrument' in perm or
+                'announcement' in perm
             )):
             return True
 
