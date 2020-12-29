@@ -7,3 +7,8 @@ class InstrumentAdmin(admin.ModelAdmin):
     add_form = InstrumentCreateForm
 
     list_filter = admin.ModelAdmin.list_filter + ('status',)
+
+    def has_add_permission(self, request):
+        if request.user.is_superuser:
+            return True
+        return False

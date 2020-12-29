@@ -27,8 +27,15 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         
         if (self.is_superuser):
             return True
-        
-        if (self.is_staff and ('student' in perm or 'faculty' in perm or 'labassistant' in perm or 'slot' in perm)):
+        if (
+            self.is_staff and
+            (
+                'student' in perm or
+                'faculty' in perm or
+                'labassistant' in perm or
+                'slot' in perm or
+                'instrument' in perm
+            )):
             return True
 
         return False
