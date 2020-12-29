@@ -51,6 +51,8 @@ class SlotAdmin(admin.ModelAdmin):
     list_display = admin.ModelAdmin.list_display + ('status',)
 
     def has_add_permission(self, request):
+        if request.user.is_superuser:
+            return True
         return False
 
     def time_left(self, current, end, duration):
