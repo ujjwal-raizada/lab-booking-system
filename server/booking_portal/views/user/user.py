@@ -4,6 +4,8 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 
+from booking_portal.models import Announcement
+
 
 @login_required
 def change_password(request):
@@ -25,3 +27,11 @@ def change_password(request):
 
 def about_us(request):
     return render(request, 'about_us.html')
+
+
+def announcements(request):
+    announcements = Announcement.objects.all().order_by('-date')
+    context = {
+        'announcements': announcements,
+    }
+    return render(request, 'announcements.html', context=context)

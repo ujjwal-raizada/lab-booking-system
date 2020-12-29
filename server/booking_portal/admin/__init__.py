@@ -10,7 +10,7 @@ from .user import (
 from ..models import (
                 CustomUser, Student, Faculty,
                 EmailModel, LabAssistant, Instrument,
-                Request, Slot, UserDetail,
+                Request, Slot, UserDetail, Announcement
 )
 from .email import EmailAdmin
 from .request import RequestAdmin
@@ -45,3 +45,4 @@ admin.site.register(PXRD)
 admin.site.register(SCXRD)
 admin.site.register(XPS)
 admin.site.register(UVSpectrophotometer)
+admin.site.register(Announcement)

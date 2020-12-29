@@ -9,5 +9,5 @@ from .lab_assistant import (
                 lab_assistant_accept,
                 lab_assistant_reject
 )
-from .user import change_password, about_us
+from .user import change_password, about_us, announcements
 from .admin import admin_portal

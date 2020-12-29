@@ -25,5 +25,6 @@ urlpatterns = [
          views.add_remarks, name='add_remarks'),
     path('change-password/', views.change_password, name="change_password"),
     path('admin-portal/', views.admin_portal, name='admin_portal'),
-    path('about-us/', views.about_us, name='about_us')
+    path('about-us/', views.about_us, name='about_us'),
+    path('announcements/', views.announcements, name='announcements')
 ]
