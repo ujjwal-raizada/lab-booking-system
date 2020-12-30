@@ -1,9 +1,12 @@
+import datetime
+
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render
 from django.db import transaction, DatabaseError
 from django.contrib import messages
 from django.db.models import Q
 from django.http import HttpResponseRedirect
+from django.utils.timezone import now
 
 from ... import models
 from ... import permissions
@@ -50,6 +53,8 @@ def book_machine(request, id):
         slot_obj = models.Slot.objects.get(
             id=slot_id,
             instrument=instr_obj,
+            status=models.Slot.STATUS_1,
+            date__gte=now().date(),
         )
         student_obj = models.Student.objects.get(
             id=request.user.id
@@ -74,7 +79,7 @@ def book_machine(request, id):
                     'sup_dept': sup_obj.department,
                     'date': slot_obj.date,
                     'time': slot_obj.time,
-                    'duration' : slot_obj.duration_verbose,
+                    'duration': slot_obj.duration_verbose,
                 }),
                 ** default_context,
             }
@@ -86,7 +91,8 @@ def book_machine(request, id):
                 slot_obj = models.Slot.objects.filter(
                     id=slot_id,
                     status=models.Slot.STATUS_1,
-                    instrument=instr_obj
+                    instrument=instr_obj,
+                    date__gte=now().date(),
                 ).first()
 
                 if models.Request.objects.filter(
@@ -96,9 +102,12 @@ def book_machine(request, id):
                     ),
                     instrument=instr_obj,
                     student=student_obj,
+                    slot__date__gte=now().date(),
                 ).exists():
                     messages.error(
-                        request, "You already have an ongoing application for this machine")
+                        request,
+                        "You already have an ongoing application for this machine"
+                    )
                     return HttpResponseRedirect("/")
 
                 if slot_obj and student_obj and sup_obj and instr_obj:
@@ -124,7 +133,6 @@ def book_machine(request, id):
             messages.error(
                 request, "Could not proccess your request, please try again.")
             return HttpResponseRedirect('/')
-
 
     else:
         return render(
