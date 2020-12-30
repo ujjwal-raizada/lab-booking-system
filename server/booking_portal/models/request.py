@@ -55,7 +55,6 @@ class Request(models.Model):
 @receiver(signal=post_save, sender=Request)
 def send_email_after_save(sender, instance, **kwargs):
     slot = Slot.objects.get(id=instance.slot.id)
-    print(instance.status)
 
     if instance.status == Request.STATUS_1:
         slot.update_status(Slot.STATUS_2)

@@ -1,5 +1,6 @@
-from django import forms
 import datetime
+from django import forms
+from django.utils.timezone import now
 
 from ..models.instrument import Instrument
 from ..models.slot import Slot
@@ -24,4 +25,6 @@ class SlotList(forms.Form):
         self.fields['slots'] = SlotModelChoiceField(
             queryset=Slot.objects.filter(instrument=instr_id,
                                          status=Slot.STATUS_1,
-                                         date__gte=datetime.date.today()))
+                                         date__gte=now().date()
+                                        )
+        )
