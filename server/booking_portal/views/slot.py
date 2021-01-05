@@ -35,6 +35,8 @@ def slot_list(request):
             }
         )
 
+    # Check if a student has already one booking for the specified instrument, if yes then
+    # he / she is not allowed another booking until the slot is consumed 
     elif Request.objects.filter(
         ~(
             Q(status=Request.STATUS_4) |

@@ -84,6 +84,7 @@ def book_machine(request, id):
             }
         )
 
+    # Checks for form submission with valid data and then proceeds
     elif request.method == "POST" and form(request.POST).is_valid():
         try:
             with transaction.atomic():
@@ -122,6 +123,7 @@ def book_machine(request, id):
                     messages.success(request, 'Form Submission Successful')
                     return HttpResponseRedirect('/')
 
+                # Slot got consumed by another person while filling the details
                 elif not slot_obj:
                     messages.error(
                         request, "Sorry, This slot is not available anymore.")
