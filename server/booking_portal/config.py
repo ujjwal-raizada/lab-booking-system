@@ -1,6 +1,12 @@
 from .forms import *
 from .models.instrument.form_models import *
 
+# Important: In case of a database reset, the instruments have to be added
+# in the order in which they are mentioned below For eg. first FESEM instrument
+#  will be registered on portal then TCSPC and so on
+#
+# New instruments should be appended at the last of the list
+
 form_template_dict = {
     1: (FESEMForm, FESEM),
     2: (TCSPCForm, TCSPC),

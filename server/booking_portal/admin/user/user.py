@@ -48,6 +48,9 @@ class CustomUserAdmin(UserAdmin):
     change_list_template = "admin/csv_change_list.html"
 
     def create_users(self, user_type, records, staff=False, notify_user=False):
+        """
+        Function to create users in bulk from a set of records
+        """
         headers = CSV_HEADERS
         if user_type == models.Student:
             headers = CSV_HEADERS_STUDENT
@@ -104,6 +107,10 @@ class CustomUserAdmin(UserAdmin):
         return my_urls + urls
 
     def import_csv(self, request):
+        """
+        Function to bulk import user details from a CSV file
+        """
+
         if request.method == "POST":
             try:
                 csv_file = TextIOWrapper(

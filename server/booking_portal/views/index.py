@@ -38,6 +38,8 @@ def show_application(request, id):
     data['sup_name'] = Faculty.objects.get(id=data['sup_name_id'])
     form_object = form(data)
 
+    # Check if Faculty and Assistant remarks are filled once, if yes
+    # then these are made read-only
     for field_val, val in form_object.fields.items():
         form_field_value = form_object[field_val].value()
         if (
