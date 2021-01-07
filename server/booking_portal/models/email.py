@@ -25,4 +25,4 @@ class EmailModel(models.Model):
 
 class FailedEmailAttempt(Exception):
     def __str__(self):
-        return "Attempt to Send Email failed !"
+        return "Attempt to Send Email failed!"

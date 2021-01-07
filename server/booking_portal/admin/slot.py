@@ -50,6 +50,7 @@ class SlotAdmin(admin.ModelAdmin):
     )
     list_display = admin.ModelAdmin.list_display + ('status',)
 
+    # 'Add Slot' button is only visible to the admin
     def has_add_permission(self, request):
         if request.user.is_superuser:
             return True
@@ -70,6 +71,7 @@ class SlotAdmin(admin.ModelAdmin):
         return my_urls + urls
 
     def generate_slots(self, request):
+        # TODO: Explain the algorithm to generate slots
         INTERVAL_CHOICES = {
             "1-hour": datetime.timedelta(hours=1),
             "2-hour": datetime.timedelta(hours=2),

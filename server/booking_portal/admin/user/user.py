@@ -19,6 +19,7 @@ from ... import models
 from ... import forms
 from ... import permissions
 
+# Allowed headers for different CSV files
 CSV_HEADERS = ('name', 'email', 'password')
 CSV_HEADERS_STUDENT = CSV_HEADERS + ('supervisor',)
 CSV_HEADERS_FACULTY = CSV_HEADERS + ('department', )
@@ -124,6 +125,8 @@ class CustomUserAdmin(UserAdmin):
                 self.message_user(request, "Error: {}".format(err))
                 return redirect("..")
             try:
+
+                # This flag sets "is_staff" boolean
                 staff = False
                 if '/student/' in request.path:
                     user_type = models.Student
@@ -135,6 +138,7 @@ class CustomUserAdmin(UserAdmin):
                 else:
                     raise Http404
 
+                # If send_email is true, then the new user will receive email
                 send_email = False if request.POST.get(
                     'send_email') == "No" else True
 

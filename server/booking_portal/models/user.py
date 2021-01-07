@@ -37,6 +37,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
                 'instrument' in perm or
                 'announcement' in perm
             )):
+            # Models accessible by lab assistants
+            # TODO: Find a better way to add these permissions
             return True
 
         return False
