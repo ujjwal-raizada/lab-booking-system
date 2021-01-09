@@ -8,7 +8,10 @@ class FESEMForm (UserDetailsForm, UserRemarkForm):
     title = "Field Emission Scanning Electron Microscope"
     subtitle = "Field Emission Scanning Electron Microscope"
     help_text = '''
+    <strong>Note:</strong> 1. Morning slot samples submit 9.00am to 9.15am(from 9.30  to 1.00pm slot's) <br>
+    2. Afternoon slot samples submit 12.00pm ( from 2.00pm to 5.00 pm slot's).
     '''
+
     class Meta(UserDetailsForm.Meta, UserRemarkForm.Meta):
         model = FESEM
         fields = UserDetailsForm.Meta.fields + \
