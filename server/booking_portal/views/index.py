@@ -8,6 +8,7 @@ from ..permissions import get_user_type, is_faculty, is_lab_assistant
 
 
 def index(request):
+    """Returns homepage for users"""
     context = {}
     faculty_instance = Faculty.objects.filter(id=request.user.id).first()
     student_instance = Student.objects.filter(id=request.user.id).first()
@@ -26,6 +27,8 @@ def index(request):
 
 @login_required
 def show_application(request, id):
+    """Displays application details of a user.
+    Can be accessed from the Requests Page"""
     try:
         request_obj = Request.objects.get(id=id)
     except:
@@ -78,6 +81,11 @@ def show_application(request, id):
 @user_passes_test(lambda user: is_faculty(user) or is_lab_assistant(user))
 @login_required
 def add_remarks(request, id):
+    """View for saving remarks entered by Faculty/Lab Assistant.
+    Remark once added cannot be updated again
+
+    :returns
+        HttpResponse object from `show_applicaton` view"""
     try:
         request_obj = Request.objects.get(id=id)
     except:

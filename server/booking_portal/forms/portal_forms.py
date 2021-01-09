@@ -16,10 +16,13 @@ class SlotModelChoiceField(forms.ModelChoiceField):
 
 
 class IntrumentList(forms.Form):
+    """Form for selecting instruments for booking"""
     instruments = forms.ModelChoiceField(queryset=Instrument.objects.all())
 
 
 class SlotList(forms.Form):
+    """Form for selecting an empty slot of a given
+    instrument"""
     def __init__(self, instr_id, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['slots'] = SlotModelChoiceField(

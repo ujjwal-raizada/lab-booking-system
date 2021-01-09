@@ -5,6 +5,8 @@ from ... import forms
 
 
 class BasePortalFilter(FilterSet):
+    """Filters on user requests portal"""
+
     from_date = DateFilter(
         field_name='slot__date',
         lookup_expr=('gt'),

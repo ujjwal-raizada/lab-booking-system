@@ -26,6 +26,10 @@ CSV_HEADERS_FACULTY = CSV_HEADERS + ('department', )
 
 
 class CustomUserAdmin(UserAdmin):
+    """CustomUser Admin Portal.
+    Student/Faculty/Lab Assistant inherit this admin
+    class
+    """
     form = forms.CustomUserChangeForm
     add_form = forms.CustomUserCreationForm
 

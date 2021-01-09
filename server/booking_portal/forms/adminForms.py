@@ -64,6 +64,8 @@ DELTA_DAYS = (
 
 
 class BulkImportForm(forms.Form):
+    """Form for importing users from CSV"""
+
     csv_file = forms.FileField()
     send_email = forms.ChoiceField(
         choices=EMAIL_CHOICES, initial=EMAIL_CHOICES[1])
@@ -86,6 +88,8 @@ class DateInput(forms.DateInput):
 
 
 class BulkTimeSlotForm(forms.Form):
+    """Form for bulk time slot creation"""
+
     instruments = forms.ModelChoiceField(
         queryset=Instrument.objects.all(),
         empty_label="Select All",
@@ -171,16 +175,6 @@ class InstrumentChangeForm(forms.ModelForm):
         model = Instrument
         fields = ('name', 'desc', 'status',)
         widgets = {
-            'name' : forms.TextInput(
-                attrs={
-                    'readonly' : True,
-                }
-            ),
-            'desc' : forms.TextInput(
-                attrs={
-                    'readonly' : True,
-                }
-            ),
             'status' : forms.Select(
                 choices=BOOL_CHOICES
             ),
