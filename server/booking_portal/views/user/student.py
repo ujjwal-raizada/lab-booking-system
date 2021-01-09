@@ -21,7 +21,7 @@ def student_portal(request):
         request.GET,
         queryset=models.Request.objects.filter(
             student=request.user
-        ))
+        ).order_by('-slot__date').reverse())
 
     return render(
         request,
@@ -36,6 +36,9 @@ def student_portal(request):
 @login_required
 @user_passes_test(permissions.is_student)
 def book_machine(request, id):
+    """View for booking machine"""
+
+    # Retrieve form/form_model from template_dict
     form, form_model = config.form_template_dict.get(id)
     slot_id = request.GET['slots']
     default_context = {
@@ -49,12 +52,14 @@ def book_machine(request, id):
     }
 
     try:
+        ## Check if the instrument id and slot id match
         instr_obj = models.Instrument.objects.get(id=id)
         slot_obj = models.Slot.objects.get(
             id=slot_id,
             instrument=instr_obj,
             status=models.Slot.STATUS_1,
         )
+        ## Check for student and supervisor
         student_obj = models.Student.objects.get(
             id=request.user.id
         )
@@ -67,7 +72,7 @@ def book_machine(request, id):
         return HttpResponseRedirect("/")
 
     if request.method == 'GET':
-
+        ## Render form with initial data
         return render(
             request,
             'booking_portal/instrument_form.html',
@@ -87,6 +92,7 @@ def book_machine(request, id):
     # Checks for form submission with valid data and then proceeds
     elif request.method == "POST" and form(request.POST).is_valid():
         try:
+            ## Avoid multiple edits for same instrument slot
             with transaction.atomic():
                 slot_obj = models.Slot.objects.filter(
                     id=slot_id,
@@ -119,6 +125,8 @@ def book_machine(request, id):
                         status=models.Request.STATUS_1,
                         content_object=model_object
                     )
+                    ## Save request object and send email to users
+                    ## Check Request post_save signal for more details
                     req_instance.save()
                     messages.success(request, 'Form Submission Successful')
                     return HttpResponseRedirect('/')
@@ -130,11 +138,17 @@ def book_machine(request, id):
                     return HttpResponseRedirect('/')
 
         except DatabaseError:
+            ## When more than one user is trying for the same
+            ## slot, this error is raised for the user who
+            ## submitted the form later.
             messages.error(
                 request, "Could not proccess your request, please try again.")
             return HttpResponseRedirect('/')
 
     else:
+        ## There's an error in your form, render the form again
+        ## Currently no other HTTP methods are supported, so this
+        ## block will be called when there is some error in the form
         return render(
             request,
             'booking_portal/instrument_form.html',
