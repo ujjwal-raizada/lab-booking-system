@@ -57,6 +57,8 @@ class SlotAdmin(admin.ModelAdmin):
         return False
 
     def time_left(self, current, end, duration):
+        """Checks if a slot can be made with `current time` and
+        `duration` before the `end time`"""
         today = datetime.date.today()
         diff = (datetime.datetime.combine(today, end) -
                 datetime.datetime.combine(today, current))
@@ -71,7 +73,11 @@ class SlotAdmin(admin.ModelAdmin):
         return my_urls + urls
 
     def generate_slots(self, request):
-        # TODO: Explain the algorithm to generate slots
+        """Bulk Import Slots has a form for creating slots.
+        This form is restricted to staff.
+        """
+        ## TODO: Check time slot overlap
+
         INTERVAL_CHOICES = {
             "1-hour": datetime.timedelta(hours=1),
             "2-hour": datetime.timedelta(hours=2),
@@ -82,12 +88,17 @@ class SlotAdmin(admin.ModelAdmin):
         }
 
         if request.method == 'POST':
+
+            ## get the queryset for instruments
             try:
                 instr = Instrument.objects.filter(
                     id=request.POST.get('instruments'))
             except ValueError:
                 instr = Instrument.objects.all()
 
+
+            ## preproces the form fields to desired objects
+            ## `today` the starting day for slot creation
             today = datetime.datetime.strptime(
                 request.POST.get('date'), '%Y-%m-%d')
             start_time = int(request.POST.get('start_time').split(':')[0])
@@ -95,7 +106,9 @@ class SlotAdmin(admin.ModelAdmin):
             duration = INTERVAL_CHOICES.get(
                 request.POST.get('lab_duration'), None)
             delta = int(request.POST.get('for_the_next'))
+            ## number of days for which the timeslot has to be made
 
+            ## handle exceptional cases and return to previous page
             if start_time >= end_time:
                 return redirect('..')
             if duration == None:
@@ -103,10 +116,12 @@ class SlotAdmin(admin.ModelAdmin):
             if today.date() < datetime.date.today():
                 return redirect('..')
 
+            # get the next `delta` days after `today`
             today_weekday = today.weekday()
             next_days = [
                 today + datetime.timedelta(days=var) for var in range(0, delta)]
 
+            ## generate datetime objects for the next `delta` days
             all_slots = {}
             for day in next_days:
                 day_wise = []
@@ -118,9 +133,11 @@ class SlotAdmin(admin.ModelAdmin):
                         hour=(datetime.datetime.combine(day, current) + duration).hour)
                 all_slots[day] = day_wise
 
+            ## Interate over the queryset and create slots
             for temp_instr in instr:
                 for day, time_slots in all_slots.items():
                     for time_slot in time_slots:
+                        ## Check if the slot already exists
                         if not Slot.objects.filter(
                                 duration=INTERVAL_CHOICES.get(
                                     request.POST.get('lab_duration')

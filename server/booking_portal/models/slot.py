@@ -14,11 +14,13 @@ class Slot(models.Model):
         (STATUS_3, "Filled"),
         (STATUS_4, "Passed")
     ]
+    ## TODO: Update Duration to TimeField
     duration = models.CharField(max_length=50)
     instrument = models.ForeignKey("Instrument", on_delete=models.PROTECT)
     status = models.CharField(max_length=50, choices=STATUS_CHOICES)
     date = models.DateField()
     time = models.TimeField()
+    ## Remove date and time and combine it to DateTimeField
 
     def update_status(self, status):
         assert status in (

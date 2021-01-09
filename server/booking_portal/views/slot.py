@@ -26,6 +26,7 @@ def slot_list(request):
 
 
     if not instr_obj.status:
+        ## If the instrument has been cancelled by the user
         return render(
             request,
             'booking_portal/portal_forms/instrument_list.html',
@@ -36,7 +37,7 @@ def slot_list(request):
         )
 
     # Check if a student has already one booking for the specified instrument, if yes then
-    # he / she is not allowed another booking until the slot is consumed 
+    # he / she is not allowed another booking until the slot is consumed
     elif Request.objects.filter(
         ~(
             Q(status=Request.STATUS_4) |
