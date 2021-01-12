@@ -2,3 +2,5 @@ __pycache__/
 .vscode
 *.sqlite3
 server/onlineCAL/config.py
+backups/*
+
