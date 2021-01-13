@@ -21,7 +21,7 @@ def student_portal(request):
         request.GET,
         queryset=models.Request.objects.filter(
             student=request.user
-        ).order_by('-slot__date').reverse())
+        ).order_by('-slot__date'))
 
     return render(
         request,

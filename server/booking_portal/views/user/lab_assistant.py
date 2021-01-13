@@ -12,7 +12,7 @@ from .portal import BasePortalFilter
 def lab_assistant_portal(request):
     f = BasePortalFilter(
         request.GET,
-        queryset=models.Request.objects.all().order_by('-slot__date').reverse()
+        queryset=models.Request.objects.all().order_by('-slot__date')
     )
 
     return render(
