@@ -2,13 +2,10 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
-from onlineCAL.config import email_username, email_password
-
 
 def main():
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'onlineCAL.settings')
     try:
-        assert ' ' not in (email_username, email_password)
         from django.core.management import execute_from_command_line
     except ImportError as exc:
         raise ImportError(
