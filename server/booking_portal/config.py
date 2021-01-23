@@ -27,6 +27,7 @@ form_template_dict = {
     17: (SCXRDForm, SCXRD),
     18: (XPSForm, XPS),
     19: (UVSpectrophotometerForm, UVSpectrophotometer),
+    20: (HPLC_FDForm, HPLC_FD)
 }
 
 view_application_dict = {model: form

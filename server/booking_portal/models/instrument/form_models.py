@@ -330,12 +330,24 @@ class EDXRF(UserDetail, UserRemark):
         verbose_name_plural = 'EDXRF'
 
 
-class HPLC(UserDetail, UserRemark):
+class HLPC_Base(models.Model):
+    """Abstract base model for HLPC type instruments
+
+    HLPC-type instruments (HLPC and HLPC-FD) uses the
+    same form. This abstract model provides the common
+    fields.
+    """
     sample_code = models.CharField(max_length=75)
     sample_information = models.CharField(max_length=75)
     mobile_phase = models.CharField(max_length=75)
     column_for_lc = models.CharField(max_length=75)
     detection_wavelength = models.CharField(max_length=75)
+
+    class Meta:
+        abstract = True
+
+
+class HPLC(UserDetail, UserRemark, HLPC_Base):
 
     def __str__(self):
         return "{} : {} {} {}".format(
@@ -348,6 +360,22 @@ class HPLC(UserDetail, UserRemark):
     class Meta:
         verbose_name = 'HPLC'
         verbose_name_plural = 'HPLC'
+
+
+class HPLC_FD(UserDetail, UserRemark, HLPC_Base):
+
+    def __str__(self):
+        return "{} : {} {} {}".format(
+            "HPLC-FD",
+            str(self.date.day),
+            calendar.month_name[self.date.month],
+            str(self.date.year)
+        )
+
+    class Meta:
+        verbose_name = 'HPLC-FD'
+        verbose_name_plural = 'HPLC-FD'
+
 
 
 class NMR(UserDetail, UserRemark):

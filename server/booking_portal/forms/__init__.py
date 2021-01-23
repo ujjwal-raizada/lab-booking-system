@@ -17,6 +17,8 @@ from .pxrdform import PXRDForm
 from .scxrdform import SCXRDForm
 from .xpsform import XPSForm
 from .uvspectrophotometer import UVSpectrophotometerForm
+from .hplc_fdform import HPLC_FDForm
+
 from .adminForms import (
             BulkImportForm, BulkTimeSlotForm, CustomUserChangeForm,
             CustomUserCreationForm, FacultyChangeForm, FacultyCreationForm,
