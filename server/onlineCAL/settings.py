@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+import os.path
+
 from .config import email_password, email_username
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -19,8 +21,20 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'ad!s&8mp+4#oe3b#pbfon2ck&0uyo!88bo-5p5^e@@qk^62)#3'
+# SECURITY CONFIGURATION
+SECRET_FILE = os.path.normpath(os.path.join(BASE_DIR, 'SECRET.key'))
+try:
+    SECRET_KEY = open(SECRET_FILE).read().strip()
+except IOError:
+    try:
+        from django.utils.crypto import get_random_string
+        chars = 'abcdefghijklmnopqrstuvwxyz0123456789!$%&()=+-_'
+        SECRET_KEY = get_random_string(50, chars)
+        with open(SECRET_FILE, 'w') as f:
+            f.write(SECRET_KEY)
+    except IOError:
+        raise Exception('Could not open %s for writing!' % SECRET_FILE)
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
