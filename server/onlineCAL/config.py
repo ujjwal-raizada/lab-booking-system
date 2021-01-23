@@ -1,3 +1,4 @@
-# Enter official CAL gmail and password details here
-email_username = ' '
-email_password = ' '
+import os
+
+email_username = os.getenv('EMAIL_USERNAME', 'test@email.com')
+email_password = os.getenv('EMAIL_PASSWORD', 'test@123')
