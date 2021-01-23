@@ -1,6 +1,6 @@
 from django import forms
 
-from ..models.instrument.form_models import HPLC
+from ..models.instrument.form_models import HPLC_FD
 from .userform import UserDetailsForm, UserRemarkForm
 from .hplcform import HPLCForm
 
@@ -13,7 +13,7 @@ class HPLC_FDForm(HPLCForm):
     '''
 
     class Meta(UserDetailsForm.Meta, UserRemarkForm.Meta):
-        model = HPLC
+        model = HPLC_FD
         fields = UserDetailsForm.Meta.fields + \
                  (
                      'sample_code',
