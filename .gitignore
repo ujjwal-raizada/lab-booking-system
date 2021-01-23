@@ -1,6 +1,7 @@
 __pycache__/
 .vscode
+.idea
 *.sqlite3
-server/onlineCAL/config.py
+server/SECRET.key
 backups/*
 
