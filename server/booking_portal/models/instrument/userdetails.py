@@ -5,6 +5,7 @@ import calendar
 
 class UserDetail(models.Model):
     user_name = models.ForeignKey('Student', on_delete=models.CASCADE)
+    phone_number = models.CharField(max_length=10)
     date = models.DateField()
     time = models.TimeField()
     duration = models.CharField(max_length=75)

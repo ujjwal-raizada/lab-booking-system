@@ -43,6 +43,7 @@ class UserDetailsForm(forms.ModelForm):
         model = UserDetail
         fields = (
             'user_name',
+            'phone_number',
             'date',
             'time',
             'duration',
@@ -62,6 +63,11 @@ class UserDetailsForm(forms.ModelForm):
             'req_discussed': 'Have the sampling modalities and requirements been discussed with the operator?',
         }
         widgets = {
+            'phone_number': forms.TextInput(
+                attrs={
+                    'class': 'form-control'
+                }
+            ),
             'date': forms.SelectDateWidget(
                 attrs={
                     'class': 'form-control',
