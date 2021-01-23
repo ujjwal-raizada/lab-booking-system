@@ -23,6 +23,9 @@ class Instrument(models.Model):
     def __str__(self):
         return f"{self.name}"
 
+    class Meta:
+        ordering = ['name', ]
+
 
 @receiver(post_save, sender=Instrument)
 def handle_requests(sender, instance, **kwargs):
