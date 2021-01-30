@@ -56,7 +56,7 @@ class UserDetailsForm(forms.ModelForm):
         )
         labels = {
             'user_name': 'Username',
-            'duration' : 'Slot Duration',
+            'duration': 'Slot Duration',
             'sup_name': 'Supervisor Name',
             'sup_dept': 'Supervisor Department',
             'sample_from_outside': 'Is the sample obtained from outside BITS through collaboration?',
