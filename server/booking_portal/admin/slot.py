@@ -117,6 +117,14 @@ class SlotAdmin(admin.ModelAdmin):
 
             # get the next `delta` days after `today`
             next_days = [start_date + datetime.timedelta(days=var) for var in range(0, delta)]
+            # remove the sundays, these two lines can be merged using the walrus op
+            next_days = [day for day in next_days if not day.weekday() == 6]
+
+            if not next_days:
+                messages.error(request, "The list of days to create slots is empty! Note that slots that fall on "
+                                        "Sunday are removed.")
+                return self.render_bulk_slots_form(request, form)
+
 
             # generate datetime objects for the next `delta` days
             all_slots = {}
