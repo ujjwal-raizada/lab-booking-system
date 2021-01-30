@@ -92,8 +92,6 @@ class BulkTimeSlotForm(forms.Form):
 
     instruments = forms.ModelChoiceField(
         queryset=Instrument.objects.all(),
-        empty_label="Select All",
-        required=False,
         label="Select Instrument",
     )
     start_date = forms.DateField(

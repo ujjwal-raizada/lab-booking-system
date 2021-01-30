@@ -96,7 +96,7 @@ class SlotAdmin(admin.ModelAdmin):
                 messages.error(request, "Invalid form data!")
                 return self.render_bulk_slots_form(request, form)
 
-            instr = [form.cleaned_data['instruments']]
+            instr = form.cleaned_data['instruments']
             start_date = form.cleaned_data['start_date']
             start_time = int(form.cleaned_data['start_time'].split(':')[0])
             end_time = int(form.cleaned_data['end_time'].split(':')[0])
@@ -129,24 +129,23 @@ class SlotAdmin(admin.ModelAdmin):
                     current = datetime.time(hour=(datetime.datetime.combine(day, current) + duration).hour)
                 all_slots[day] = day_wise
 
-            for temp_instr in instr:
-                for day, time_slots in all_slots.items():
-                    for time_slot in time_slots:
-                        # Check if the slot already exists
-                        if not Slot.objects.filter(
-                                duration=duration,
-                                instrument=temp_instr,
-                                date=day,
-                                time=time_slot.time(),
-                        ).exists():
-                            slot_obj = Slot(
-                                duration=duration,
-                                instrument=temp_instr,
-                                status=Slot.STATUS_1,
-                                date=day,
-                                time=time_slot.time()
-                            )
-                            slot_obj.save()
+            for day, time_slots in all_slots.items():
+                for time_slot in time_slots:
+                    # Check if the slot already exists
+                    if not Slot.objects.filter(
+                            duration=duration,
+                            instrument=instr,
+                            date=day,
+                            time=time_slot.time(),
+                    ).exists():
+                        slot_obj = Slot(
+                            duration=duration,
+                            instrument=instr,
+                            status=Slot.STATUS_1,
+                            date=day,
+                            time=time_slot.time()
+                        )
+                        slot_obj.save()
 
             messages.success(request, "Slots successfully created!")
             return redirect("..")
