@@ -93,32 +93,35 @@ class BulkTimeSlotForm(forms.Form):
     instruments = forms.ModelChoiceField(
         queryset=Instrument.objects.all(),
         empty_label="Select All",
-        required=False
+        required=False,
+        label="Select Instrument",
     )
-    date = forms.DateField(initial=datetime.date.today, widget=DateInput)
-    for_the_next = forms.ChoiceField(choices=DELTA_DAYS)
+    start_date = forms.DateField(
+        initial=datetime.date.today,
+        widget=DateInput,
+        label="Date from/on which the slot has to be made",
+    )
+    for_the_next = forms.ChoiceField(
+        choices=DELTA_DAYS,
+        label="For how many days do you want to add the slots?",
+    )
     start_time = forms.ChoiceField(
-        choices=START_TIME_CHOICES, initial=START_TIME_CHOICES[8])
+        choices=START_TIME_CHOICES,
+        initial=START_TIME_CHOICES[8],
+        label="Start Time",
+    )
     end_time = forms.ChoiceField(
-        choices=START_TIME_CHOICES, initial=START_TIME_CHOICES[9])
-    lab_duration = forms.ChoiceField(choices=DURATION)
+        choices=START_TIME_CHOICES,
+        initial=START_TIME_CHOICES[9],
+        label="End Time",
+    )
+    lab_duration = forms.ChoiceField(
+        choices=DURATION,
+        label="Slot Duration",
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field_val in self.Meta.fields:
-            self.fields[field_val].label = self.Meta.labels.get(field_val)
-
-    class Meta:
-        fields = ('instruments', 'date', 'for_the_next',
-                  'start_time', 'end_time', 'lab_duration')
-        labels = {
-            "instruments": "Select Instrument",
-            "date": "Date on which the slot has to be made",
-            "for_the_next": "For how many days do you want to add the slots?",
-            "start_time": "Start Time",
-            "end_time": "End Time",
-            "lab_duration": "Slot Duration",
-        }
 
 
 class CustomUserCreationForm(UserCreationForm):

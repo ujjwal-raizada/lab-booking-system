@@ -71,11 +71,15 @@ class SlotAdmin(admin.ModelAdmin):
         ]
         return my_urls + urls
 
+    def render_bulk_slots_form(self, request, form):
+        payload = {"form": form}
+        return render(request, "admin/bulk_import_slots_form.html", payload)
+
     def generate_slots(self, request):
         """Bulk Import Slots has a form for creating slots.
         This form is restricted to staff.
         """
-        ## TODO: Check time slot overlap
+        # TODO: Check time slot overlap
 
         INTERVAL_CHOICES = {
             "1-hour": datetime.timedelta(hours=1),
@@ -87,80 +91,65 @@ class SlotAdmin(admin.ModelAdmin):
         }
 
         if request.method == 'POST':
-            ## get the queryset for instruments
-            try:
-                instr = Instrument.objects.filter(
-                    id=request.POST.get('instruments'))
-            except ValueError:
-                instr = Instrument.objects.all()
+            form = BulkTimeSlotForm(request.POST)
+            if not form.is_valid():
+                messages.error(request, "Invalid form data!")
+                return self.render_bulk_slots_form(request, form)
 
-            ## preprocess the form fields to desired objects
-            ## `today` the starting day for slot creation
-            start_date = datetime.datetime.strptime(
-                request.POST.get('date'), '%Y-%m-%d')
-            start_time = int(request.POST.get('start_time').split(':')[0])
-            end_time = int(request.POST.get('end_time').split(':')[0])
-            duration = INTERVAL_CHOICES.get(
-                request.POST.get('lab_duration'), None)
-            delta = int(request.POST.get('for_the_next'))
-            ## number of days for which the timeslot has to be made
+            instr = [form.cleaned_data['instruments']]
+            start_date = form.cleaned_data['start_date']
+            start_time = int(form.cleaned_data['start_time'].split(':')[0])
+            end_time = int(form.cleaned_data['end_time'].split(':')[0])
+            duration = INTERVAL_CHOICES.get(form.cleaned_data['lab_duration'], None)
+            # number of days for which the timeslot has to be made
+            delta = int(form.cleaned_data['for_the_next'])
 
-            ## handle exceptional cases and return to previous page
+            # handle exceptional cases
             if start_time >= end_time:
                 messages.error(request, "Start time cannot be greater than end time!")
-                return redirect('.')
-            elif duration == None:
+                return self.render_bulk_slots_form(request, form)
+            elif duration is None:
                 messages.error(request, "Duration cannot be empty!")
-                return redirect('.')
-            elif start_date.date() < datetime.date.today():
-                messages.error(request, "Start date cannot be before today" )
-                return redirect('.')
+                return self.render_bulk_slots_form(request, form)
+            elif start_date < datetime.date.today():
+                messages.error(request, "Start date cannot be before today")
+                return self.render_bulk_slots_form(request, form)
 
             # get the next `delta` days after `today`
-            today_weekday = start_date.weekday()
-            next_days = [
-                start_date + datetime.timedelta(days=var) for var in range(0, delta)]
+            next_days = [start_date + datetime.timedelta(days=var) for var in range(0, delta)]
 
-            ## generate datetime objects for the next `delta` days
+            # generate datetime objects for the next `delta` days
             all_slots = {}
             for day in next_days:
                 day_wise = []
                 current = datetime.time(hour=start_time)
                 end = datetime.time(hour=end_time)
-                while current < end and self.time_left(current, end, duration) == True:
+                while current < end and self.time_left(current, end, duration):
                     day_wise.append(datetime.datetime.combine(day, current))
-                    current = datetime.time(
-                        hour=(datetime.datetime.combine(day, current) + duration).hour)
+                    current = datetime.time(hour=(datetime.datetime.combine(day, current) + duration).hour)
                 all_slots[day] = day_wise
 
-            ## Interate over the queryset and create slots
             for temp_instr in instr:
                 for day, time_slots in all_slots.items():
                     for time_slot in time_slots:
-                        ## Check if the slot already exists
+                        # Check if the slot already exists
                         if not Slot.objects.filter(
-                                duration=INTERVAL_CHOICES.get(
-                                    request.POST.get('lab_duration')
-                                ),
+                                duration=duration,
                                 instrument=temp_instr,
                                 date=day,
-                                time=time_slot.time()).exists():
-
+                                time=time_slot.time(),
+                        ).exists():
                             slot_obj = Slot(
-                                duration=INTERVAL_CHOICES.get(
-                                    request.POST.get('lab_duration')
-                                ),
+                                duration=duration,
                                 instrument=temp_instr,
                                 status=Slot.STATUS_1,
                                 date=day,
-                                time=time_slot.time())
+                                time=time_slot.time()
+                            )
                             slot_obj.save()
 
             messages.success(request, "Slots successfully created!")
             return redirect("..")
         else:
             form = BulkTimeSlotForm()
-            payload = {"form": form}
-            return render(
-                request, "admin/bulk_import_slots_form.html", payload
-            )
+            return self.render_bulk_slots_form(request, form)

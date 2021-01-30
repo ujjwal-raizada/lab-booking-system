@@ -5,21 +5,13 @@
     <form action="." method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <table>
-            {% for hidden_field in form.hidden_fields %}
-            {{ hidden_field }}
-            {% endfor %}
-            {% for field in form.visible_fields %}
+            {{ form.as_table }}
             <tr>
-                <td>
-                    <div style="text-align: left;">{{ field.label_tag }}</div>
-                </td>
-                <td>
-                    <div style="width: fit-content;">{{ field }}</div>
+                <td colspan="2" align="center">
+                    <input type="submit" value="Add Slots"/>
                 </td>
             </tr>
-            {% endfor %}
         </table>
-        <input type="submit" value="Add Slots"/>
     </form>
 </div>
 {% endblock %}
