@@ -49,6 +49,7 @@ class UserDetailsForm(forms.ModelForm):
             'duration',
             'sup_name',
             'sup_dept',
+            'number_of_samples',
             'sample_from_outside',
             'origin_of_sample',
             'req_discussed'
@@ -85,6 +86,11 @@ class UserDetailsForm(forms.ModelForm):
                 }
             ),
             'sup_dept': forms.TextInput(
+                attrs={
+                    'class': 'form-control',
+                }
+            ),
+            'number_of_samples': forms.NumberInput(
                 attrs={
                     'class': 'form-control',
                 }

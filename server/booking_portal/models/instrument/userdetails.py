@@ -11,6 +11,7 @@ class UserDetail(models.Model):
     duration = models.CharField(max_length=75)
     sup_name = models.ForeignKey('Faculty', on_delete=models.CASCADE)
     sup_dept = models.CharField(max_length=75)
+    number_of_samples = models.IntegerField()
     sample_from_outside = models.CharField(max_length=3, choices=[('Yes', 'Yes'),
                                                                   ('No', 'No')])
     origin_of_sample = models.CharField(max_length=75)
