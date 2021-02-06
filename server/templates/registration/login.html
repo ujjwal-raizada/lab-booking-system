@@ -1,22 +1,19 @@
-{% extends 'base.html' %}
+{% extends 'base_card_content.html' %}
+{% load crispy_forms_field %}
 
 {% block title %}Login{% endblock %}
+{% block card-title %}Login{% endblock %}
 
-{% block content %}
-<div class="container pt-4" style="text-align: center;">
-  <div class="card bg-light mb-3">
-    <div class="card-title"><br><h3>Central Analytical Laboratory</h3><br></div>
-    <div class="card-text">
-      <form method="post">
-        {% csrf_token %}
-        <div class="form-group">
-          {{ form.as_p }}
-        </div>
-        <button type="submit" class="btn btn-primary">Login</button>
-      </form>
-      <a class="btn btn-default" href="/auth/password_reset">Reset Password</a>
-    </div>
+{% block cardcontent %}
+  <div class="panel-body mt-3">
+    <form id="register-form" role="form" autocomplete="off" class="form" method="post">
+      {% csrf_token %}
+      {% crispy_addon form.username prepend='<i class="fas fa-envelope"></i>' %}
+      {% crispy_addon form.password prepend='<i class="fas fa-key"></i>' %}
+      <div class="form-group">
+        <input name="recover-submit" class="btn btn-lg btn-primary btn-block" value="Login" type="submit">
+      </div>
+    </form>
+    <div class='text-center'><a class="btn btn-default" href="/auth/password_reset">Reset Password</a></div>
   </div>
-  <br>
-</div>
 {% endblock %}

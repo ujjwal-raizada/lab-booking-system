@@ -1,10 +1,18 @@
 {% extends 'base.html' %}
 
+{% block head %}
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"
+        integrity="sha512-HK5fgLBL+xu6dm/Ii3z4xhlSUyZgTT9tuc/hSrtw6uzJOvgRr2a9jyxxT1ely+B+xFAmJKVSTbpM/CuL7qxO8w=="
+        crossorigin="anonymous" />
+{% endblock %}
+
 {% block content %}
-<div class="container pt-4 col-md-4" style="text-align: center; margin: auto">
+<div class="container pt-4 col-md-4" style="margin: auto">
   <div class="card bg-light" style="margin: auto">
-    <div class="card-body" style="">
-      <div class="card-title"><h4>Central Analytical Laboratory</h4></div>
+    <div class="card-body">
+      <div class="card-title text-center"><h4>Central Analytical Laboratory</h4></div>
+      <h5 class="text-center">{% block card-title %}{% endblock %}</h5>
       {% block messages %}
         {% if messages %}
           <ul class="messagelist">{% for message in messages %}
@@ -13,7 +21,7 @@
         {% endif %}
       {% endblock messages %}
 
-      <div class="card-text" style="">
+      <div class="card-text">
         {% block cardcontent %} {% endblock %}
       </div>
     </div>
