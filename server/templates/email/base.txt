@@ -1,0 +1,14 @@
+Dear {{ receipent_name}},
+
+Greetings from Central Analytical Laboratory!
+
+{% block message %} {% endblock %}
+
+Portal Link: https://onlinecal.bits-hyderabad.ac.in
+
+Regards,
+Central Analytical Laboratory
+BITS Pilani Hyderabad Campus
+
+Note: This is a system generated mail. Please do not reply to this message.
+For more information, please contact Dr. Ramkrishnan Ganesan (ram.ganesan@hyderabad.bits-pilani.ac.in)
