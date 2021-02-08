@@ -1,8 +1,10 @@
 import datetime
 
 from django import forms
-from django.contrib.admin import widgets
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Field, Submit, ButtonHolder
+from crispy_forms.bootstrap import PrependedAppendedText
 
 from ..models.instrument import Instrument
 from ..models.user import CustomUser, Student, Faculty, LabAssistant
@@ -87,6 +89,18 @@ class DateInput(forms.DateInput):
     input_type = 'date'
 
 
+class CrispyTimeField(Field):
+    def __init__(self, *args, **kwargs):
+        kwargs['template'] = 'widgets/time_input.html'
+        kwargs['css_class'] = 'datetimepicker-input'
+        super().__init__(*args, **kwargs)
+
+
+class MinuteDurationField(forms.DurationField):
+    def to_python(self, value):
+        return datetime.timedelta(minutes=int(value))
+
+
 class BulkTimeSlotForm(forms.Form):
     """Form for bulk time slot creation"""
 
@@ -103,23 +117,40 @@ class BulkTimeSlotForm(forms.Form):
         choices=DELTA_DAYS,
         label="For how many days do you want to add the slots?",
     )
-    start_time = forms.ChoiceField(
-        choices=START_TIME_CHOICES,
-        initial=START_TIME_CHOICES[8],
+    start_time = forms.TimeField(
         label="Start Time",
     )
-    end_time = forms.ChoiceField(
-        choices=START_TIME_CHOICES,
-        initial=START_TIME_CHOICES[9],
+    end_time = forms.TimeField(
         label="End Time",
     )
-    lab_duration = forms.ChoiceField(
-        choices=DURATION,
+    slot_duration = MinuteDurationField(
         label="Slot Duration",
+        help_text="The duration of each slot specified in minutes. If a whole number"
+                  " of slots cannot be created between the start and"
+                  " end time, no slots will be created.",
     )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper(self)
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-sm-2'
+        self.helper.field_class = 'col-sm-3'
+        self.helper.layout = Layout(
+            'instruments',
+            'start_date',
+            'for_the_next',
+            CrispyTimeField('start_time'),
+            CrispyTimeField('end_time'),
+            PrependedAppendedText(
+                'slot_duration',
+                appended_text='minutes'
+            ),
+            ButtonHolder(
+                Submit('add_slots', value="Add Slots")
+            )
+        )
 
 
 class CustomUserCreationForm(UserCreationForm):

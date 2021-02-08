@@ -95,7 +95,7 @@ TEMPLATES = [
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
-
+CRISPY_FAIL_SILENTLY = not DEBUG
 WSGI_APPLICATION = 'onlineCAL.wsgi.application'
 
 DATABASES = {
