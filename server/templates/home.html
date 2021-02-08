@@ -19,11 +19,13 @@
   </div>
 
   {% else %}
-  <div class="container pt-4" style="text-align: center;">
-    <div class="card bg-light mb-3" style="max-width: 60rem;">
-      <div class="card-text">
-        <br><h3>You are not logged in, kindly login</h3><br>
-        <br><a href="{% url 'login' %}" class="btn btn-primary btn-active btn-lg" >Login</a><br><br>
+  <div class="container pt-4 col-md-auto" style="text-align: center;">
+    <div class="card bg-light mb-3 text-align">
+      <div class="card-text pt-4">
+        <h3>You are not logged in, kindly login</h3>
+        <div class="pt-2 pb-4">
+          <a href="{% url 'login' %}" class="btn btn-primary btn-active btn-lg">Login</a>
+        </div>
       </div>
     </div>
     <br>
