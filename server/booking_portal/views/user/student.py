@@ -103,11 +103,12 @@ def book_machine(request, id):
                 if models.Request.objects.filter(
                     ~(
                         Q(status=models.Request.REJECTED) |
-                        Q(status=models.Request.CANCELLED)
+                        Q(status=models.Request.CANCELLED) |
+                        Q(status=models.Request.APPROVED)
                     ),
                     instrument=instr_obj,
                     student=student_obj,
-                    slot__date__gt=now().date(),
+                    slot__date__gte=now().date(),
                 ).exists():
                     messages.error(
                         request,

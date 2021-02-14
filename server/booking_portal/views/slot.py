@@ -41,18 +41,19 @@ def slot_list(request):
     elif Request.objects.filter(
         ~(
             Q(status=Request.REJECTED) |
-            Q(status=Request.CANCELLED)
+            Q(status=Request.CANCELLED) |
+            Q(status=Request.APPROVED)
         ),
         instrument=instr_obj,
         student=student_obj,
-        slot__date__gt=now().date(),
+        slot__date__gte=now().date(),
     ).exists():
         return render(
             request,
             'booking_portal/portal_forms/instrument_list.html',
             {
                 'form': IntrumentList(),
-                "message": "Error. You already have a pending/approved request."
+                "message": "Error. You already have a pending request."
             }
         )
     else:
