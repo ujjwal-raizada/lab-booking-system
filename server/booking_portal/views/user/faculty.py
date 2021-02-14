@@ -35,10 +35,10 @@ def faculty_request_accept(request, id):
         with transaction.atomic():
             request_object = models.Request.objects.get(
                 id=id,
-                status=models.Request.STATUS_1)
+                status=models.Request.WAITING_FOR_FACULTY)
             faculty = request_object.faculty
             if (faculty == models.Faculty.objects.get(id=request.user.id)):
-                request_object.status = models.Request.STATUS_2
+                request_object.status = models.Request.WAITING_FOR_LAB_ASST
                 request_object.lab_assistant = random.choice(
                     models.LabAssistant.objects.all())
                 request_object.save()
@@ -56,10 +56,10 @@ def faculty_request_reject(request, id):
         with transaction.atomic():
             request_object = models.Request.objects.get(
                 id=id,
-                status=models.Request.STATUS_1)
+                status=models.Request.WAITING_FOR_FACULTY)
             faculty = request_object.faculty
             if (faculty == models.Faculty.objects.get(id=request.user.id)):
-                request_object.status = models.Request.STATUS_4
+                request_object.status = models.Request.REJECTED
                 request_object.save()
                 return redirect('faculty_portal')
             else:

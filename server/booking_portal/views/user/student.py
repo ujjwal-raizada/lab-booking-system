@@ -48,7 +48,7 @@ def book_machine(request, id):
         'instrument_verbose_name': form_model._meta.verbose_name,
         'form_notes': form.help_text,
         'usertype': 'student',
-        'status': models.Request.STATUS_1,
+        'status': models.Request.WAITING_FOR_FACULTY,
     }
 
     try:
@@ -102,8 +102,8 @@ def book_machine(request, id):
 
                 if models.Request.objects.filter(
                     ~(
-                        Q(status=models.Request.STATUS_4) |
-                        Q(status=models.Request.STATUS_5)
+                        Q(status=models.Request.REJECTED) |
+                        Q(status=models.Request.CANCELLED)
                     ),
                     instrument=instr_obj,
                     student=student_obj,
@@ -122,7 +122,7 @@ def book_machine(request, id):
                         faculty=sup_obj,
                         instrument=instr_obj,
                         slot=slot_obj,
-                        status=models.Request.STATUS_1,
+                        status=models.Request.WAITING_FOR_FACULTY,
                         content_object=model_object
                     )
                     ## Save request object and send email to users

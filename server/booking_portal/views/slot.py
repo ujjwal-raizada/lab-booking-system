@@ -40,8 +40,8 @@ def slot_list(request):
     # he / she is not allowed another booking until the slot is consumed
     elif Request.objects.filter(
         ~(
-            Q(status=Request.STATUS_4) |
-            Q(status=Request.STATUS_5)
+            Q(status=Request.REJECTED) |
+            Q(status=Request.CANCELLED)
         ),
         instrument=instr_obj,
         student=student_obj,

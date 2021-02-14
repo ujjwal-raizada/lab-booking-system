@@ -32,11 +32,11 @@ def lab_assistant_accept(request, id):
         with transaction.atomic():
             request_object = models.Request.objects.get(
                 id=id,
-                status=models.Request.STATUS_2
+                status=models.Request.WAITING_FOR_LAB_ASST
             )
             request_object.lab_assistant = models.LabAssistant.objects.get(
                 id=request.user.id)
-            request_object.status = models.Request.STATUS_3
+            request_object.status = models.Request.APPROVED
             request_object.save()
             return redirect('lab_assistant')
     except:
@@ -51,11 +51,11 @@ def lab_assistant_reject(request, id):
         with transaction.atomic():
             request_object = models.Request.objects.get(
                 id=id,
-                status=models.Request.STATUS_2
+                status=models.Request.WAITING_FOR_LAB_ASST
             )
             request_object.lab_assistant = models.LabAssistant.objects.get(
                 id=request.user.id)
-            request_object.status = models.Request.STATUS_4
+            request_object.status = models.Request.REJECTED
             request_object.save()
             return redirect('lab_assistant')
     except:

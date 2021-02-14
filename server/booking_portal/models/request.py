@@ -11,18 +11,18 @@ from .user import Student, Faculty, LabAssistant
 
 
 class Request(models.Model):
-    STATUS_1 = "R1"
-    STATUS_2 = "R2"
-    STATUS_3 = "R3"
-    STATUS_4 = "R4"
-    STATUS_5 = "R5"
+    WAITING_FOR_FACULTY = "R1"
+    WAITING_FOR_LAB_ASST = "R2"
+    APPROVED = "R3"
+    REJECTED = "R4"
+    CANCELLED = "R5"
 
     STATUS_CHOICES = [
-        (STATUS_1, "Waiting for faculty approval."),
-        (STATUS_2, "Waiting for lab assistant approval."),
-        (STATUS_3, "Approved"),
-        (STATUS_4, "Rejected"),
-        (STATUS_5, "Cancelled")
+        (WAITING_FOR_FACULTY, "Waiting for faculty approval."),
+        (WAITING_FOR_LAB_ASST, "Waiting for lab assistant approval."),
+        (APPROVED, "Approved"),
+        (REJECTED, "Rejected"),
+        (CANCELLED, "Cancelled")
     ]
     student = models.ForeignKey(Student, on_delete=models.PROTECT)
     faculty = models.ForeignKey(Faculty, on_delete=models.PROTECT)
@@ -41,11 +41,11 @@ class Request(models.Model):
 
     def update_status(self, status):
         assert status in (
-            Request.STATUS_1,
-            Request.STATUS_2,
-            Request.STATUS_3,
-            Request.STATUS_4,
-            Request.STATUS_5,
+            Request.WAITING_FOR_FACULTY,
+            Request.WAITING_FOR_LAB_ASST,
+            Request.APPROVED,
+            Request.REJECTED,
+            Request.CANCELLED,
         )
         self.status = status
         self.save(update_fields=['status'])
@@ -58,7 +58,7 @@ class Request(models.Model):
 def send_email_after_save(sender, instance, **kwargs):
     slot = Slot.objects.get(id=instance.slot.id)
 
-    if instance.status == Request.STATUS_1:
+    if instance.status == Request.WAITING_FOR_FACULTY:
         slot.update_status(Slot.STATUS_2)
         subject = "Waiting for Faculty Approval"
         text = render_to_string('email/faculty_pending.html', {
@@ -81,7 +81,7 @@ def send_email_after_save(sender, instance, **kwargs):
                                     strip_tags(text),
                                     html_message=text)
 
-    elif instance.status == Request.STATUS_2:
+    elif instance.status == Request.WAITING_FOR_LAB_ASST:
         subject = "Waiting for Lab Assistant Approval"
         text = render_to_string('email/lab_assistant_pending.html', {
             'receipent_name': instance.lab_assistant.name,
@@ -94,7 +94,7 @@ def send_email_after_save(sender, instance, **kwargs):
                                           strip_tags(text),
                                           html_message=text)
 
-    elif instance.status == Request.STATUS_3:
+    elif instance.status == Request.APPROVED:
         slot.update_status(Slot.STATUS_3)
         subject = "Lab Booking Approved"
         text = render_to_string('email/student_accepted.html', {
@@ -105,7 +105,7 @@ def send_email_after_save(sender, instance, **kwargs):
                                     strip_tags(text),
                                     html_message=text)
 
-    elif instance.status == Request.STATUS_4:
+    elif instance.status == Request.REJECTED:
         slot.update_status(Slot.STATUS_1)
         subject = "Lab Booking Rejected"
         text = render_to_string('email/student_rejected.html', {
@@ -118,7 +118,7 @@ def send_email_after_save(sender, instance, **kwargs):
                                     strip_tags(text),
                                     html_message=text)
 
-    elif instance.status == Request.STATUS_5:
+    elif instance.status == Request.CANCELLED:
         subject = "Lab Booking Cancelled"
         text = render_to_string('email/student_rejected.html', {
             'receipent_name': instance.student.name,

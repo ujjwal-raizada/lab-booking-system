@@ -46,8 +46,8 @@ def handle_requests(sender, instance, **kwargs):
 
         req_objects = Request.objects.filter(
             ~(
-                Q(status=Request.STATUS_4) |
-                Q(status=Request.STATUS_5)
+                Q(status=Request.REJECTED) |
+                Q(status=Request.CANCELLED)
             ),
             instrument=instance,
             slot__date__gte=datetime.datetime.today(),
@@ -58,7 +58,7 @@ def handle_requests(sender, instance, **kwargs):
             slot.save()
 
         for req in req_objects:
-            req.status = Request.STATUS_5
+            req.status = Request.CANCELLED
 
             previous_remarks = req.content_object.lab_assistant_remarks
             new_remarks = "This slot has been cancelled due to technical/maintainence reasons."
