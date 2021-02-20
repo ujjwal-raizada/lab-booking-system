@@ -1,9 +1,8 @@
-from django.contrib.auth.forms import (AuthenticationForm, PasswordResetForm,
-                                       SetPasswordForm, PasswordChangeForm)
-
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, ButtonHolder, Submit
 from crispy_forms.bootstrap import PrependedAppendedText
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import ButtonHolder, Layout, Submit
+from django.contrib.auth.forms import (AuthenticationForm, PasswordChangeForm,
+                                       PasswordResetForm, SetPasswordForm)
 
 
 class CustomLoginForm(AuthenticationForm):
