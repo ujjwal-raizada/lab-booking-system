@@ -71,3 +71,32 @@ class CustomSetPasswordForm(SetPasswordForm):
                 Submit('submit', value="Set New Password", css_class='btn-lg btn-block')
             ),
         )
+
+
+class CustomPasswordChangeForm(PasswordChangeForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['old_password'].widget.attrs['placeholder'] = 'Old Password'
+        self.fields['new_password1'].widget.attrs['placeholder'] = 'New Password'
+        self.fields['new_password2'].widget.attrs['placeholder'] = 'Confirm Password'
+
+        self.helper = FormHelper(self)
+        self.helper.form_show_labels = False
+        self.helper.layout = Layout(
+            PrependedAppendedText(
+                'old_password',
+                prepended_text='<i class="fas fa-key"></i>'
+            ),
+            PrependedAppendedText(
+                'new_password1',
+                prepended_text='<i class="fas fa-key"></i>'
+            ),
+            PrependedAppendedText(
+                'new_password2',
+                prepended_text='<i class="fas fa-key"></i>'
+            ),
+            ButtonHolder(
+                Submit('submit', value="Set New Password", css_class='btn-lg btn-block')
+            ),
+        )

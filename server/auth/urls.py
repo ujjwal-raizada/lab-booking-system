@@ -3,11 +3,16 @@ from django.contrib.auth.views import (LoginView, LogoutView, PasswordResetConfi
 from django.urls import path, include
 
 from .forms import (CustomLoginForm, CustomPasswordResetForm,
-                    CustomSetPasswordForm)
+                    CustomSetPasswordForm, CustomPasswordChangeForm)
 
 urlpatterns = [
     path('login/', LoginView.as_view(form_class=CustomLoginForm), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
+    path(
+        'password_change/',
+        PasswordChangeView.as_view(form_class=CustomPasswordChangeForm),
+        name='password_change'
+    ),
     path(
         'password_reset/',
         PasswordResetView.as_view(
