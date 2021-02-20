@@ -1,0 +1,12 @@
+{% extends 'base_card_content.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Login{% endblock %}
+{% block card-title %}Login{% endblock %}
+
+{% block cardcontent %}
+  <div class="panel-body mt-3">
+    {% crispy form %}
+    <div class='text-center'><a class="btn btn-default" href="{% url "password_reset" %}">Reset Password</a></div>
+  </div>
+{% endblock %}
