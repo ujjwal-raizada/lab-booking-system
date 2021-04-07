@@ -67,7 +67,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "django"
-version = "3.0.13"
+version = "3.0.14"
 description = "A high-level Python Web framework that encourages rapid development and clean, pragmatic design."
 category = "main"
 optional = false
@@ -367,8 +367,8 @@ colorama = [
     {file = "colorama-0.4.4.tar.gz", hash = "sha256:5941b2b48a20143d2267e95b1c2a7603ce057ee39fd88e7329b0c292aa16869b"},
 ]
 django = [
-    {file = "Django-3.0.13-py3-none-any.whl", hash = "sha256:2afe4900667bcceac792fa34b4fb25448c4fd950d8b32c5508b3442c4b10442a"},
-    {file = "Django-3.0.13.tar.gz", hash = "sha256:6f13c3e8109236129c49d65a42fbf30c928e66b05ca6862246061b9343ecbaf2"},
+    {file = "Django-3.0.14-py3-none-any.whl", hash = "sha256:9bc7aa619ed878fedba62ce139abe663a147dccfd20e907725ec11e02a1ca225"},
+    {file = "Django-3.0.14.tar.gz", hash = "sha256:d58d8394036db75a81896037d757357e79406e8f68816c3e8a28721c1d9d4c11"},
 ]
 django-admin-rangefilter = [
     {file = "django-admin-rangefilter-0.6.4.tar.gz", hash = "sha256:137eff542bbb9208501d794a0ef5bd103365c9f9505bdeab612e553aaf00bbd1"},
