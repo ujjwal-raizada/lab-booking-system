@@ -15,7 +15,7 @@ backup_dir.mkdir(parents=True, exist_ok=True)
 date = datetime.datetime.now().strftime("%Y-%m-%d")
 
 source = pathlib.Path('server/db.sqlite3')
-dest = pathlib.Path('backups/db_backup_' + date)
+dest = pathlib.Path('backups/db_backup_' + date + '.sqlite3')
 
 copyfile(source, dest)
 print("database backup created: ", dest)
