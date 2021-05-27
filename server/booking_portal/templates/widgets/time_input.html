@@ -11,6 +11,7 @@
       <div class="input-group-append" data-target="#div2_{{ field.id_for_label }}" data-toggle="datetimepicker">
           <div class="input-group-text"><i class="fa fa-clock"></i></div>
       </div>
+    {% include 'bootstrap4/layout/field_errors.html' %}
   </div>
   <script type="text/javascript">
       $(function () {
@@ -22,4 +23,3 @@
       });
   </script>
 </div>
-{% include 'bootstrap3/layout/help_text_and_errors.html' %}
