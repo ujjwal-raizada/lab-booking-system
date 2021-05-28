@@ -1,14 +1,15 @@
 import datetime
 
-from django import forms
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from crispy_forms.bootstrap import PrependedAppendedText
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Submit, ButtonHolder
-from crispy_forms.bootstrap import PrependedAppendedText
+from django import forms
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django.core.exceptions import ValidationError
 
 from ..models.instrument import Instrument
-from ..models.user import CustomUser, Student, Faculty, LabAssistant
-
+from ..models.slot import SlotManager
+from ..models.user import CustomUser, Student, Faculty
 
 EMAIL_CHOICES = (
     ("Yes", "Yes"),
@@ -97,14 +98,29 @@ class CrispyTimeField(Field):
 
 
 class MinuteDurationField(forms.DurationField):
+    default_error_messages = {
+        'invalid': 'The duration in minutes must be a positive integer.'
+    }
+
     def to_python(self, value):
-        return datetime.timedelta(minutes=int(value))
+        validation_error = ValidationError(self.error_messages['invalid'])
+        if isinstance(value, datetime.timedelta):
+            return value
+
+        try:
+            value = int(value)
+        except (ValueError, TypeError):
+            raise validation_error
+        else:
+            if value > 0:
+                return datetime.timedelta(minutes=int(value))
+            raise validation_error
 
 
-class BulkTimeSlotForm(forms.Form):
+class BulkCreateSlotsForm(forms.Form):
     """Form for bulk time slot creation"""
 
-    instruments = forms.ModelChoiceField(
+    instrument = forms.ModelChoiceField(
         queryset=Instrument.objects.all(),
         label="Select Instrument",
     )
@@ -126,8 +142,8 @@ class BulkTimeSlotForm(forms.Form):
     slot_duration = MinuteDurationField(
         label="Slot Duration",
         help_text="The duration of each slot specified in minutes. If a whole number"
-                  " of slots cannot be created between the start and"
-                  " end time, no slots will be created.",
+                  " of slots cannot be created between the start and end time, no"
+                  " slots will be created.",
     )
 
     def __init__(self, *args, **kwargs):
@@ -151,6 +167,45 @@ class BulkTimeSlotForm(forms.Form):
                 Submit('add_slots', value="Add Slots")
             )
         )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        start_date: datetime.date = cleaned_data.get('start_date')
+        start_time: datetime.time = cleaned_data.get('start_time')
+        end_time: datetime.time = cleaned_data.get('end_time')
+        duration: datetime.timedelta = cleaned_data.get('slot_duration')
+        day_count = int(cleaned_data.get('for_the_next'))
+
+        if start_time >= end_time:
+            self.add_error(
+                'start_time',
+                ValidationError("Start time cannot be after end time.")
+            )
+
+        if start_date < datetime.date.today():
+            self.add_error(
+                "start_date",
+                ValidationError("Start date cannot be before today.")
+            )
+
+        combined_start_time = datetime.datetime.combine(start_date, start_time)
+        combined_end_time = datetime.datetime.combine(start_date, end_time)
+        if duration and not float.is_integer((combined_end_time - combined_start_time) / duration):
+            self.add_error(
+                None,
+                ValidationError("Cannot create whole number of slots between "
+                                "specified start and end time with the given duration.")
+            )
+
+        next_days = SlotManager.get_valid_slot_days(start_date, day_count)
+        if not next_days:
+            self.add_error(
+                None,
+                ValidationError("No days available to create slots! Note that "
+                                "slots cannot be created on Sundays.")
+            )
+
+        return cleaned_data
 
 
 class CustomUserCreationForm(UserCreationForm):

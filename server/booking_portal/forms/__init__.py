@@ -20,9 +20,9 @@ from .uvspectrophotometer import UVSpectrophotometerForm
 from .hplc_fdform import HPLC_FDForm
 
 from .adminForms import (
-            BulkImportForm, BulkTimeSlotForm, CustomUserChangeForm,
-            CustomUserCreationForm, FacultyChangeForm, FacultyCreationForm,
-            StudentChangeForm, StudentCreationForm, DateInput,
-            InstrumentCreateForm, InstrumentChangeForm,
+    BulkImportForm, BulkCreateSlotsForm, CustomUserChangeForm,
+    CustomUserCreationForm, FacultyChangeForm, FacultyCreationForm,
+    StudentChangeForm, StudentCreationForm, DateInput,
+    InstrumentCreateForm, InstrumentChangeForm,
         )
 from .userform import UserDetailsForm, UserRemarkForm

@@ -8,7 +8,7 @@ from django.urls import path
 from django.utils.translation import gettext_lazy
 from rangefilter.filter import DateRangeFilter
 
-from ..forms.adminForms import BulkTimeSlotForm
+from ..forms.adminForms import BulkCreateSlotsForm
 from ..models import Instrument, Slot
 
 
@@ -92,104 +92,24 @@ class SlotAdmin(admin.ModelAdmin):
         }
 
         if request.method == 'POST':
-            form = BulkTimeSlotForm(request.POST)
+            form = BulkCreateSlotsForm(request.POST)
             if not form.is_valid():
-                messages.error(request, "Invalid form data!")
                 return self.render_bulk_slots_form(request, form)
 
-            instr = form.cleaned_data['instruments']
+            instr = form.cleaned_data['instrument']
             start_date = form.cleaned_data['start_date']
             start_time = form.cleaned_data['start_time']
             end_time = form.cleaned_data['end_time']
             duration = form.cleaned_data['slot_duration']
-            # number of days for which the timeslot has to be made
-            delta = int(form.cleaned_data['for_the_next'])
+            day_count = int(form.cleaned_data['for_the_next'])
 
-            # handle exceptional cases
-            if start_time >= end_time:
-                messages.error(request, "Start time cannot be greater than end time!")
-                return self.render_bulk_slots_form(request, form)
-            elif start_date < datetime.date.today():
-                messages.error(request, "Start date cannot be before today")
-                return self.render_bulk_slots_form(request, form)
+            total, created = Slot.objects.bulk_create_slots(instr, start_date, start_time, end_time, duration, day_count)
 
-            # Check if we can make a whole number of slots between start and end time
-            combined_start_time = datetime.datetime.combine(start_date, start_time)
-            combined_end_time = datetime.datetime.combine(start_date, end_time)
-            if not float.is_integer((combined_end_time - combined_start_time) / duration):
-                messages.error(request, "Cannot create whole number of slots between "
-                                        "specified start and end time with the given duration")
-                return self.render_bulk_slots_form(request, form)
-
-            # get the next `delta` days after `today`
-            next_days = [start_date + datetime.timedelta(days=var) for var in range(0, delta)]
-            # remove the sundays, these two lines can be merged using the walrus op
-            next_days = [day for day in next_days if not day.weekday() == 6]
-
-            if not next_days:
-                messages.error(request, "The list of days to create slots is empty! Note that slots that fall on "
-                                        "Sunday are removed.")
-                return self.render_bulk_slots_form(request, form)
-
-
-            # generate datetime objects for the next `delta` days
-            all_slots = {}
-            for day in next_days:
-                day_wise = []
-                current = datetime.datetime.combine(day, start_time)
-                end = datetime.datetime.combine(day, end_time)
-                while current < end:
-                    day_wise.append(current.time())
-                    current = current + duration
-                all_slots[day] = day_wise
-
-            total_slots, slots_created = 0, 0
-            for day, time_slots in all_slots.items():
-                for slot_begin in time_slots:
-                    slot_end = (datetime.datetime.combine(day, slot_begin) +
-                                duration).time()
-                    total_slots += 1
-
-                    # Check if an existing slot overlaps with new one
-                    big_q = (
-                        Q(
-                            # Completely inside existing slot
-                            start_time__lte=slot_begin,
-                            end_time__gte=slot_end,
-                        ) |
-                        Q(
-                            # Begins before existing slot ends
-                            end_time__gt=slot_begin,
-                            end_time__lt=slot_end,
-                        ) |
-                        Q(
-                            # Ends after existing slot begins
-                            start_time__gt=slot_begin,
-                            start_time__lt=slot_end,
-                        ) |
-                        Q(
-                            # Subsume existing slot
-                            start_time__gte=slot_begin,
-                            end_time__lte=slot_end,
-                        )
-                    )
-
-                    if not Slot.objects.filter(big_q, instrument=instr, date=day).exists():
-                        slot_obj = Slot(
-                            instrument=instr,
-                            status=Slot.STATUS_1,
-                            date=day,
-                            start_time=slot_begin,
-                            end_time=slot_end,
-                        )
-                        slot_obj.save()
-                        slots_created += 1
-
-            if total_slots == slots_created:
+            if total == created:
                 messages.success(request, "All slots were created successfully.")
             else:
                 messages.warning(request, "Some slots were not created due to clashes with existing slots.")
             return redirect("..")
         else:
-            form = BulkTimeSlotForm()
+            form = BulkCreateSlotsForm()
             return self.render_bulk_slots_form(request, form)
