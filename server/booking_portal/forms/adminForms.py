@@ -154,7 +154,7 @@ class BulkCreateSlotsForm(forms.Form):
         self.helper.label_class = 'col-sm-2'
         self.helper.field_class = 'col-sm-3'
         self.helper.layout = Layout(
-            'instruments',
+            'instrument',
             'start_date',
             'for_the_next',
             CrispyTimeField('start_time'),
