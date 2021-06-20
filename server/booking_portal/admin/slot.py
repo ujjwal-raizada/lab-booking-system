@@ -69,8 +69,10 @@ class SlotAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super().get_urls()
+        info = self.model._meta.app_label, self.model._meta.model_name
+
         my_urls = [
-            path("bulk-slots/", SlotAdmin.generate_slots)
+            path("bulk-slots/", SlotAdmin.generate_slots, name='%s_%s_bulk-slots_create' % info)
         ]
         return my_urls + urls
 
@@ -107,7 +109,8 @@ class SlotAdmin(admin.ModelAdmin):
             if total == created:
                 messages.success(request, "All slots were created successfully.")
             else:
-                messages.warning(request, "Some slots were not created due to clashes with existing slots.")
+                messages.warning(request, f"{created} out of {total} slots created. Some slots may not have been created"
+                                          f" due to clashes with existing slots.")
             return redirect("..")
         else:
             form = BulkCreateSlotsForm()

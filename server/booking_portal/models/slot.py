@@ -2,10 +2,13 @@ from __future__ import annotations
 
 import calendar
 import datetime
-from typing import List, Tuple
+from typing import List, Tuple, TYPE_CHECKING
 
 from django.db import models
 from django.db.models import Q
+
+if TYPE_CHECKING:
+    from ..models.instrument import Instrument
 
 
 class SlotManager(models.Manager):
@@ -42,7 +45,8 @@ class SlotManager(models.Manager):
         return self.filter(q, instrument=slot.instrument, date=slot.date).exists()
 
     def bulk_create_slots(self, instr: Instrument, start_date: datetime.date, start_time: datetime.time,
-                          end_time: datetime.time, duration: datetime.timedelta, day_count: int) -> Tuple[int, int]:
+                          end_time: datetime.time, duration: datetime.timedelta,
+                          day_count: int) -> Tuple[int, int]:
         next_days = SlotManager.get_valid_slot_days(start_date, day_count)
 
         all_slots = {}
