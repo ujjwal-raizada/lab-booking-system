@@ -1,23 +1,23 @@
 from django import forms
 
-from ..models.instrument.form_models import EDXRF
-from .userform import UserDetailsForm, UserRemarkForm
+from booking_portal.models.instrument.requests import TCSPC
+
+from .base import UserDetailsForm, UserRemarkForm
 
 
-class EDXRFForm(UserDetailsForm, UserRemarkForm):
-    title = "Energy Dispersive X-RAY Fluorescence"
-    subtitle = "Energy Dispersive X-RAY Fluorescence"
+class TCSPCForm(UserDetailsForm, UserRemarkForm):
+    title = "TCS-PC"
+    subtitle = "TCS-PC"
     help_text = '''
-    <b>Please provide any other information in other remarks (eg. toxic samples) </b>
     '''
 
     class Meta(UserDetailsForm.Meta, UserRemarkForm.Meta):
-        model = EDXRF
+        model = TCSPC
         fields = UserDetailsForm.Meta.fields + \
             (
                 'sample_code',
                 'sample_nature',
-                'elements_present',
+                'chemical_composition',
             ) + \
             UserRemarkForm.Meta.fields
 
@@ -27,7 +27,7 @@ class EDXRFForm(UserDetailsForm, UserRemarkForm):
             ** {
                 'sample_code': 'Sample Code',
                 'sample_nature': 'Nature of Sample',
-                'elements_present': 'Elements Present',
+                'chemical_composition': 'Chemical Composition',
             }
         )
 
@@ -43,7 +43,7 @@ class EDXRFForm(UserDetailsForm, UserRemarkForm):
                     'class': 'form-control',
                 }
                 ),
-                'elements_present': forms.TextInput(attrs={
+                'chemical_composition': forms.TextInput(attrs={
                     'class': 'form-control',
                 }
                 ),

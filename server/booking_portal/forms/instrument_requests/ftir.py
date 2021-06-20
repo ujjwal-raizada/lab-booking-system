@@ -1,7 +1,8 @@
 from django import forms
 
-from ..models.instrument.form_models import FTIR
-from .userform import UserDetailsForm, UserRemarkForm
+from booking_portal.models.instrument.requests import FTIR
+
+from .base import UserDetailsForm, UserRemarkForm
 
 
 class FTIRForm(UserDetailsForm, UserRemarkForm):

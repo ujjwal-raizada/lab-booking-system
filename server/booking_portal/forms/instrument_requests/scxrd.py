@@ -1,7 +1,8 @@
 from django import forms
 
-from ..models.instrument.form_models import SCXRD
-from .userform import UserDetailsForm, UserRemarkForm
+from booking_portal.models.instrument.requests import SCXRD
+
+from .base import UserDetailsForm, UserRemarkForm
 
 
 class SCXRDForm(UserDetailsForm, UserRemarkForm):

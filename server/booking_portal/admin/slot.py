@@ -1,15 +1,14 @@
 import datetime
 
-from django.contrib import admin
-from django.contrib import messages
+from django.contrib import admin, messages
 from django.contrib.auth.decorators import user_passes_test
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect, render
 from django.urls import path
 from django.utils.translation import gettext_lazy
 from rangefilter.filter import DateRangeFilter
 
 from .. import permissions
-from ..forms.adminForms import BulkCreateSlotsForm
+from ..forms.admin import BulkCreateSlotsForm
 from ..models import Instrument, Slot
 
 

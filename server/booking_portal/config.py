@@ -1,5 +1,5 @@
-from .forms import *
-from .models.instrument.form_models import *
+from .forms.instrument_requests import *
+from .models.instrument.requests import *
 
 # Important: In case of a database reset, the instruments have to be added
 # in the order in which they are mentioned below For eg. first FESEM instrument

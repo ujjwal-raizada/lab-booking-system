@@ -2,14 +2,14 @@ import datetime
 
 from crispy_forms.bootstrap import PrependedAppendedText
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Field, Submit, ButtonHolder
+from crispy_forms.layout import ButtonHolder, Field, Layout, Submit
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django.core.exceptions import ValidationError
 
 from ..models.instrument import Instrument
 from ..models.slot import SlotManager
-from ..models.user import CustomUser, Student, Faculty
+from ..models.user import CustomUser, Faculty, Student
 
 EMAIL_CHOICES = (
     ("Yes", "Yes"),

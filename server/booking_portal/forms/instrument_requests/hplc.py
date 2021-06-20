@@ -1,7 +1,8 @@
 from django import forms
 
-from ..models.instrument.form_models import HPLC
-from .userform import UserDetailsForm, UserRemarkForm
+from booking_portal.models.instrument.requests import HPLC
+
+from .base import UserDetailsForm, UserRemarkForm
 
 
 class HPLCForm(UserDetailsForm, UserRemarkForm):

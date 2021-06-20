@@ -1,7 +1,8 @@
 from django import forms
 
-from ..models.instrument.form_models import TGA
-from .userform import UserDetailsForm, UserRemarkForm
+from booking_portal.models.instrument.requests import TGA
+
+from .base import UserDetailsForm, UserRemarkForm
 
 
 class TGAForm(UserDetailsForm, UserRemarkForm):

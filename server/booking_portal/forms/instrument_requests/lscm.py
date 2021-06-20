@@ -1,7 +1,8 @@
 from django import forms
 
-from ..models.instrument.form_models import LSCM
-from .userform import UserDetailsForm, UserRemarkForm
+from booking_portal.models.instrument.requests import LSCM
+
+from .base import UserDetailsForm, UserRemarkForm
 
 
 class LSCMForm(UserDetailsForm, UserRemarkForm):

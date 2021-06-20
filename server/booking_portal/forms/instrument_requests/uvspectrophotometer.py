@@ -1,7 +1,8 @@
 from django import forms
 
-from ..models.instrument.form_models import UVSpectrophotometer
-from .userform import UserDetailsForm, UserRemarkForm
+from booking_portal.models.instrument.requests import UVSpectrophotometer
+
+from .base import UserDetailsForm, UserRemarkForm
 
 
 class UVSpectrophotometerForm(UserDetailsForm, UserRemarkForm):

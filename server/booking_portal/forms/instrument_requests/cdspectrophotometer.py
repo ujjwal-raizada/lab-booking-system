@@ -1,7 +1,8 @@
 from django import forms
 
-from ..models.instrument.form_models import CDSpectrophotometer
-from .userform import UserDetailsForm, UserRemarkForm
+from booking_portal.models.instrument.requests import CDSpectrophotometer
+
+from .base import UserDetailsForm, UserRemarkForm
 
 
 class CDSpectrophotometerForm(UserDetailsForm, UserRemarkForm):

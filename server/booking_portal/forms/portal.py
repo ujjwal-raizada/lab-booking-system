@@ -1,4 +1,3 @@
-import datetime
 from django import forms
 from django.utils.timezone import now
 
@@ -15,7 +14,7 @@ class SlotModelChoiceField(forms.ModelChoiceField):
         return obj.description
 
 
-class IntrumentList(forms.Form):
+class InstrumentList(forms.Form):
     """Form for selecting instruments for booking"""
     instruments = forms.ModelChoiceField(queryset=Instrument.objects.all())
 
@@ -26,8 +25,9 @@ class SlotList(forms.Form):
     def __init__(self, instr_id, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['slots'] = SlotModelChoiceField(
-            queryset=Slot.objects.filter(instrument=instr_id,
-                                         status=Slot.STATUS_1,
-                                         date__gte=now().date()
-                                        )
-        )
+            queryset=Slot.objects.filter(
+                instrument=instr_id,
+                status=Slot.STATUS_1,
+                date__gte=now().date()
+            )
+)

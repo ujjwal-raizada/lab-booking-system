@@ -1,15 +1,15 @@
 import datetime
 
-from django.shortcuts import render
-from django.db.models import Q
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.db.models import Q
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
 from django.utils.timezone import now
 
-from ..forms.portal_forms import IntrumentList, SlotList
-from ..models import Instrument, Slot, Request, Student
+from ..forms.portal import InstrumentList, SlotList
+from ..models import Instrument, Request, Slot, Student
 from ..permissions import is_student
-from django.http import HttpResponseRedirect
-from django.contrib import messages
 
 
 @login_required
@@ -31,7 +31,7 @@ def slot_list(request):
             request,
             'booking_portal/portal_forms/instrument_list.html',
             {
-                'form': IntrumentList(),
+                'form': InstrumentList(),
                 "message": 'Instrument unavailable due to technical/maintainence reasons'
             }
         )
@@ -52,7 +52,7 @@ def slot_list(request):
             request,
             'booking_portal/portal_forms/instrument_list.html',
             {
-                'form': IntrumentList(),
+                'form': InstrumentList(),
                 "message": "Error. You already have a pending request."
             }
         )

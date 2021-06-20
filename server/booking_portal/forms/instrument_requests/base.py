@@ -1,7 +1,7 @@
 from django import forms
 
-from ..models.user import Faculty, Student
-from ..models.instrument.userdetails import UserDetail, UserRemark
+from booking_portal.models import UserDetail, UserRemark
+from booking_portal.models import Faculty, Student
 
 
 class MyModelChoiceField(forms.ModelChoiceField):

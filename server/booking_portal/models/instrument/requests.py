@@ -1,8 +1,46 @@
-from django.db import models
-import datetime
 import calendar
 
-from .userdetails import UserDetail, UserRemark
+from django.db import models
+
+
+class UserDetail(models.Model):
+    user_name = models.ForeignKey('Student', on_delete=models.CASCADE)
+    phone_number = models.CharField(max_length=10)
+    date = models.DateField()
+    time = models.TimeField()
+    duration = models.CharField(max_length=75)
+    sup_name = models.ForeignKey('Faculty', on_delete=models.CASCADE)
+    sup_dept = models.CharField(max_length=75)
+    number_of_samples = models.IntegerField()
+    sample_from_outside = models.CharField(max_length=3, choices=[('Yes', 'Yes'),
+                                                                  ('No', 'No')])
+    origin_of_sample = models.CharField(max_length=75)
+    req_discussed = models.CharField(max_length=3, choices=[('Yes', 'Yes'),
+                                                            ('No', 'No')])
+
+    def __str__(self):
+        return "UserDetail: {} {} {} - {}".format(
+            str(self.date.day),
+            calendar.month_name[self.date.month],
+            str(self.date.year),
+            str(self.time)
+        )
+
+    class Meta:
+        verbose_name = 'User Detail'
+        verbose_name_plural = 'User Details'
+
+
+class UserRemark(models.Model):
+    userremark_id = models.AutoField(primary_key=True)
+    student_remarks = models.CharField(max_length=250, blank=True, null=True)
+    faculty_remarks = models.CharField(max_length=250, blank=True, null=True)
+    lab_assistant_remarks = models.CharField(
+        max_length=250, blank=True, null=True)
+
+    class Meta:
+        verbose_name = "User Remark"
+        verbose_name_plural = "User Remarks"
 
 
 class FESEM(UserDetail, UserRemark):
@@ -81,6 +119,7 @@ class FTIR(UserDetail, UserRemark):
             calendar.month_name[self.date.month],
             str(self.date.year)
         )
+
     class Meta:
         verbose_name = 'FTIR'
         verbose_name_plural = 'FTIR'
@@ -330,7 +369,7 @@ class EDXRF(UserDetail, UserRemark):
         verbose_name_plural = 'EDXRF'
 
 
-class HLPC_Base(models.Model):
+class HLPCBase(models.Model):
     """Abstract base model for HLPC type instruments
 
     HLPC-type instruments (HLPC and HLPC-FD) uses the
@@ -347,7 +386,7 @@ class HLPC_Base(models.Model):
         abstract = True
 
 
-class HPLC(UserDetail, UserRemark, HLPC_Base):
+class HPLC(UserDetail, UserRemark, HLPCBase):
 
     def __str__(self):
         return "{} : {} {} {}".format(
@@ -362,8 +401,7 @@ class HPLC(UserDetail, UserRemark, HLPC_Base):
         verbose_name_plural = 'HPLC'
 
 
-class HPLC_FD(UserDetail, UserRemark, HLPC_Base):
-
+class HPLC_FD(UserDetail, UserRemark, HLPCBase):
     def __str__(self):
         return "{} : {} {} {}".format(
             "HPLC-FD",
@@ -375,7 +413,6 @@ class HPLC_FD(UserDetail, UserRemark, HLPC_Base):
     class Meta:
         verbose_name = 'HPLC-FD'
         verbose_name_plural = 'HPLC-FD'
-
 
 
 class NMR(UserDetail, UserRemark):

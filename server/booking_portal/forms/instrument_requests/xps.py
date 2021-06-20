@@ -1,7 +1,8 @@
 from django import forms
 
-from ..models.instrument.form_models import XPS
-from .userform import UserDetailsForm, UserRemarkForm
+from booking_portal.models.instrument.requests import XPS
+
+from .base import UserDetailsForm, UserRemarkForm
 
 
 class XPSForm(UserDetailsForm, UserRemarkForm):

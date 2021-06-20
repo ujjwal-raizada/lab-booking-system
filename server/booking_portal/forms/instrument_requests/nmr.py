@@ -1,7 +1,8 @@
 from django import forms
 
-from ..models.instrument.form_models import NMR
-from .userform import UserDetailsForm, UserRemarkForm
+from booking_portal.models.instrument.requests import NMR
+
+from .base import UserDetailsForm, UserRemarkForm
 
 
 class NMRForm(UserDetailsForm, UserRemarkForm):

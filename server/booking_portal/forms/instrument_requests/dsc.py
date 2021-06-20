@@ -1,7 +1,8 @@
 from django import forms
 
-from ..models.instrument.form_models import DSC
-from .userform import UserDetailsForm, UserRemarkForm
+from booking_portal.models.instrument.requests import DSC
+
+from .base import UserDetailsForm, UserRemarkForm
 
 
 class DSCForm(UserDetailsForm, UserRemarkForm):

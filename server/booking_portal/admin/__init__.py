@@ -1,21 +1,13 @@
 from django.contrib import admin
 
-from .slot import SlotAdmin
-from .instrument import InstrumentAdmin
-from .user import (
-        StudentAdmin,
-        FacultyAdmin,
-        CustomUserAdmin,
-)
-from ..models import (
-                CustomUser, Student, Faculty,
-                EmailModel, LabAssistant, Instrument,
-                Request, Slot, UserDetail, Announcement
-)
 from .email import EmailAdmin
+from .instrument import InstrumentAdmin
 from .request import RequestAdmin
-from ..models.instrument.form_models import *
-
+from .slot import SlotAdmin
+from .user import CustomUserAdmin, FacultyAdmin, StudentAdmin
+from ..models import (Announcement, CustomUser, EmailModel, Faculty,
+                      Instrument, LabAssistant, Request, Slot, Student)
+from ..models.instrument.requests import *
 
 admin.site.register(Student, StudentAdmin)
 admin.site.register(Faculty, FacultyAdmin)

@@ -1,7 +1,8 @@
 from django import forms
 
-from ..models.instrument.form_models import GC
-from .userform import UserDetailsForm, UserRemarkForm
+from booking_portal.models.instrument.requests import GC
+
+from .base import UserDetailsForm, UserRemarkForm
 
 
 class GCForm(UserDetailsForm, UserRemarkForm):
