@@ -14,6 +14,7 @@ import os
 import os.path
 
 from dotenv import load_dotenv
+from django.contrib import messages
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -127,6 +128,14 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Add the Bootstrap classes in addition to the default Django ones.
+MESSAGE_TAGS = {
+    messages.DEBUG: 'info alert-info',
+    messages.INFO: 'info alert-info',
+    messages.SUCCESS: 'success alert-success',
+    messages.WARNING: 'warning alert-warning',
+    messages.ERROR: 'error alert-danger',
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/

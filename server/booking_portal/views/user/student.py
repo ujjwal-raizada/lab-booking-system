@@ -112,8 +112,7 @@ def book_machine(request, instr_id):
         except (ObjectDoesNotExist, ValueError) as e:
             # \\n to escape Javascript
             messages.error(request,
-                           f"Could not proccess your request, please try again.\\n"
-                           f"Error Desc: {str(e)}")
+                           f"Could not proccess your request, please try again. ({str(e)})")
             return HttpResponseRedirect(reverse('instrument-list'))
     else:
         messages.error(request, "Bad Request")
