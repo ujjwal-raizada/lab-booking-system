@@ -1,24 +1,11 @@
-{% extends 'base.html' %}
+{% extends 'base_card_content.html' %}
+{% load crispy_forms_tags %}
 
-{% block title %}Intrument List{% endblock %}
+{% block title %}CAL BPHC - Instrument List{% endblock %}
+{% block card-title %}Choose an instrument{% endblock %}
 
-{% block content %}
-<div style="height: 100vh; background-color: whitesmoke">
-  <div class="container pt-4" style="text-align: center;">
-    <div class="card bg-light mb-3" style="max-width: 60rem;">
-      <div class="card-body">
-        <h2 class="card-title">Instrument List</h2>
-        <p class="card-text">
-          <form method="POST" action={% url 'slot-list' %}>
-            {% csrf_token %}
-            <div class="form-group">
-              {{ form.as_p }}
-            </div>
-            <button type="submit" class="btn btn-primary">Proceed</button><br /><br />
-          </form>
-        </p>
-      </div>
-    </div>
+{% block cardcontent %}
+  <div class="panel-body mt-3 text-center">
+    {% crispy form %}
   </div>
-</div>
 {% endblock %}

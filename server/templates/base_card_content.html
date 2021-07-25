@@ -6,13 +6,6 @@
     <div class="card-body">
       <div class="card-title text-center"><h4>Central Analytical Laboratory</h4></div>
       <h5 class="text-center">{% block card-title %}{% endblock %}</h5>
-      {% block messages %}
-        {% if messages %}
-          <ul class="messagelist">{% for message in messages %}
-            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|capfirst }}</li>
-          {% endfor %}</ul>
-        {% endif %}
-      {% endblock messages %}
 
       <div class="card-text">
         {% block cardcontent %} {% endblock %}

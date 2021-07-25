@@ -1,24 +1,11 @@
-{% extends 'base.html' %}
+{% extends 'base_card_content.html' %}
+{% load crispy_forms_tags %}
 
-{% block title %}Instrument Slot List{% endblock %}
+{% block title %}CAL BPHC - Slots for {{ instrument_name }}{% endblock %}
+{% block card-title %}Viewing slots for {{ instrument_name }}{% endblock %}
 
-{% block content %}
-<div style="height: 100vh; background-color:whitesmoke;">
-  <div class="container pt-4" style="text-align: center;">
-    <div class="card bg-light mb-3" style="max-width: 60rem;">
-      <div class="card-body">
-        <h2 clas="card-title">Available Slots: {{ instrument_name }}</h2>
-        <p class="card-text">
-          <form method="GET" action={% url 'book-machine' instr_id=instrument_id %}>
-            {% csrf_token %}
-            <div class="form-group">
-              {{ form.as_p }}
-            </div>
-            <button type="submit" class="btn btn-dark">Proceed</button><br /><br />
-          </form>
-        </p>
-      </div>
-    </div>
+{% block cardcontent %}
+  <div class="panel-body mt-3 text-center">
+    {% crispy form %}
   </div>
-</div>
 {% endblock %}
