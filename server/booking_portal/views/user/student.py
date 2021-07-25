@@ -1,17 +1,14 @@
-import datetime
-
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.shortcuts import render
-from django.db import transaction, DatabaseError
 from django.contrib import messages
-from django.db.models import Q
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect
-from django.utils.timezone import now
+from django.shortcuts import render
+from django.urls import reverse
 
-from ... import models
-from ... import permissions
-from ... import config
 from .portal import BasePortalFilter
+from ... import config
+from ... import permissions
+from ...models import Slot, Request, Student
 
 
 @login_required
@@ -19,7 +16,7 @@ from .portal import BasePortalFilter
 def student_portal(request):
     f = BasePortalFilter(
         request.GET,
-        queryset=models.Request.objects.filter(
+        queryset=Request.objects.filter(
             student=request.user
         ).order_by('-slot__date'))
 
@@ -35,126 +32,89 @@ def student_portal(request):
 
 @login_required
 @user_passes_test(permissions.is_student)
-def book_machine(request, id):
+def book_machine(request, instr_id):
     """View for booking machine"""
 
     # Retrieve form/form_model from template_dict
-    form, form_model = config.form_template_dict.get(id)
-    slot_id = request.GET['slots']
+    form_class, form_model_class = config.form_template_dict.get(instr_id, (None, None))
+    if not form_class or not form_model_class:
+        messages.error(request, "Bad Request")
+        return HttpResponseRedirect(reverse('instrument-list'))
+
+    slot_id = request.GET.get('slots', None)
+    if not slot_id:
+        messages.error(request, "Bad Request")
+        return HttpResponseRedirect(reverse('instrument-list'))
+
+    student = Student.objects.select_related('supervisor').get(id=request.user.id)
+    supervisor = student.supervisor
+
     default_context = {
         'edit': True,
-        'instrument_title': form.title,
-        'instrument_subtitle': form.subtitle,
-        'instrument_verbose_name': form_model._meta.verbose_name,
-        'form_notes': form.help_text,
+        'instrument_title': form_class.title,
+        'instrument_subtitle': form_class.subtitle,
+        'instrument_verbose_name': form_model_class._meta.verbose_name,
+        'form_notes': form_class.help_text,
         'usertype': 'student',
-        'status': models.Request.WAITING_FOR_FACULTY,
+        'status': Request.WAITING_FOR_FACULTY,
     }
 
-    try:
-        ## Check if the instrument id and slot id match
-        instr_obj = models.Instrument.objects.get(id=id)
-        slot_obj = models.Slot.objects.get(
-            id=slot_id,
-            instrument=instr_obj,
-            status=models.Slot.STATUS_1,
-        )
-        ## Check for student and supervisor
-        student_obj = models.Student.objects.get(
-            id=request.user.id
-        )
-        sup_obj = models.Faculty.objects.get(
-            id=student_obj.supervisor.id
-        )
-
-    except:
-        messages.error(request, "Bad Request")
-        return HttpResponseRedirect("/")
-
     if request.method == 'GET':
-        ## Render form with initial data
-        return render(
-            request,
-            'booking_portal/instrument_form.html',
-            {
-                'form': form(initial={
-                    'user_name': student_obj.id,
-                    'sup_name': sup_obj.id,
-                    'sup_dept': sup_obj.department,
-                    'date': slot_obj.date,
-                    'time': slot_obj.start_time,
-                    'duration': slot_obj.duration_verbose,
-                }),
-                ** default_context,
-            }
-        )
+        slot, instr = Slot.objects.get_instr_from_slot_id(slot_id)
+        if not instr or not slot:
+            messages.error(request, "Invalid slot or instrument.")
+            return HttpResponseRedirect(reverse('instrument-list'))
 
-    # Checks for form submission with valid data and then proceeds
-    elif request.method == "POST" and form(request.POST).is_valid():
-        try:
-            ## Avoid multiple edits for same instrument slot
-            with transaction.atomic():
-                slot_obj = models.Slot.objects.filter(
-                    id=slot_id,
-                    status=models.Slot.STATUS_1,
-                    instrument=instr_obj,
-                ).first()
+        if not slot.is_available_for_booking():
+            messages.error(request, "Sorry, This slot is not available anymore.")
+            return HttpResponseRedirect(reverse('instrument-list'))
 
-                if models.Request.objects.filter(
-                    ~(
-                        Q(status=models.Request.REJECTED) |
-                        Q(status=models.Request.CANCELLED) |
-                        Q(status=models.Request.APPROVED)
-                    ),
-                    instrument=instr_obj,
-                    student=student_obj,
-                    slot__date__gte=now().date(),
-                ).exists():
-                    messages.error(
-                        request,
-                        "You already have an ongoing application for this machine"
-                    )
-                    return HttpResponseRedirect("/")
-
-                if slot_obj and student_obj and sup_obj and instr_obj:
-                    model_object = form(request.POST).save()
-                    req_instance = models.Request(
-                        student=student_obj,
-                        faculty=sup_obj,
-                        instrument=instr_obj,
-                        slot=slot_obj,
-                        status=models.Request.WAITING_FOR_FACULTY,
-                        content_object=model_object
-                    )
-                    ## Save request object and send email to users
-                    ## Check Request post_save signal for more details
-                    req_instance.save()
-                    messages.success(request, 'Form Submission Successful')
-                    return HttpResponseRedirect('/')
-
-                # Slot got consumed by another person while filling the details
-                elif not slot_obj:
-                    messages.error(
-                        request, "Sorry, This slot is not available anymore.")
-                    return HttpResponseRedirect('/')
-
-        except DatabaseError:
-            ## When more than one user is trying for the same
-            ## slot, this error is raised for the user who
-            ## submitted the form later.
+        if Request.objects.has_student_booked_upcoming_instrument_slot(instr, student):
             messages.error(
-                request, "Could not proccess your request, please try again.")
-            return HttpResponseRedirect('/')
+                request,
+                "You already have an ongoing application for this machine."
+            )
+            return HttpResponseRedirect(reverse('instrument-list'))
 
-    else:
-        ## There's an error in your form, render the form again
-        ## Currently no other HTTP methods are supported, so this
-        ## block will be called when there is some error in the form
+        # Render form with initial data
         return render(
             request,
             'booking_portal/instrument_form.html',
             {
-                'form': form(request.POST),
-                ** default_context
+                'form': form_class(initial={
+                    'user_name': student.id,
+                    'sup_name': supervisor.id,
+                    'sup_dept': supervisor.department,
+                    'date': slot.date,
+                    'time': slot.start_time,
+                    'duration': slot.duration_verbose,
+                }),
+                **default_context,
             }
         )
+    elif request.method == "POST":
+        # Validate and process the form
+        form = form_class(request.POST)
+        if not form.is_valid():
+            return render(
+                request,
+                'booking_portal/instrument_form.html',
+                {
+                    'form': form,
+                    **default_context
+                }
+            )
+
+        try:
+            Request.objects.create_request(form, slot_id, student)
+            messages.success(request, "Slot booked successfully.")
+            return HttpResponseRedirect(reverse('student'))
+        except (ObjectDoesNotExist, ValueError) as e:
+            # \\n to escape Javascript
+            messages.error(request,
+                           f"Could not proccess your request, please try again.\\n"
+                           f"Error Desc: {str(e)}")
+            return HttpResponseRedirect(reverse('instrument-list'))
+    else:
+        messages.error(request, "Bad Request")
+        return HttpResponseRedirect('/')

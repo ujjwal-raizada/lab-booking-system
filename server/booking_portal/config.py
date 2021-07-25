@@ -7,6 +7,10 @@ from .models.instrument.requests import *
 #
 # New instruments should be appended at the last of the list
 
+# NOTE: This is a very, very brittle way of doing things. They key for
+# `form_template_dict` is the primary key of the 'Instrument' model. An
+# alternative method needs to be found.
+
 form_template_dict = {
     1: (FESEMForm, FESEM),
     2: (TCSPCForm, TCSPC),

@@ -3,7 +3,6 @@
 from django import forms
 
 from booking_portal.models.instrument.requests import AAS
-
 from .base import UserDetailsForm, UserRemarkForm
 
 
@@ -23,7 +22,7 @@ class AASForm(UserDetailsForm, UserRemarkForm):
             *UserDetailsForm.Meta.fields,
             'sample_code',
             'elements',
-            *UserDetailsForm.Meta.fields,
+            *UserRemarkForm.Meta.fields,
         )
 
         labels = dict(

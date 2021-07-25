@@ -79,6 +79,14 @@ class SlotManager(models.Manager):
         self.bulk_create(slots)
         return total_slots, slots_created
 
+    def get_instr_from_slot_id(self, slot_id, lock=False):
+        slot = self.select_related('instrument').filter(pk=slot_id)
+        if lock:
+            slot.select_for_update(of='self')
+        if slot:
+            return slot[0], slot[0].instrument
+        return None, None
+
 
 class Slot(models.Model):
     STATUS_1 = "S1"
@@ -103,6 +111,9 @@ class Slot(models.Model):
     end_time = models.TimeField()
 
     ## Remove date and time and combine it to DateTimeField
+
+    def is_available_for_booking(self):
+        return self.status == Slot.STATUS_1
 
     def update_status(self, status):
         assert status in (

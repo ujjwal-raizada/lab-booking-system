@@ -9,7 +9,7 @@
       <div class="card-body">
         <h2 clas="card-title">Available Slots: {{ instrument_name }}</h2>
         <p class="card-text">
-          <form method="GET" action={% url 'book-machine' id=instrument_id %}>
+          <form method="GET" action={% url 'book-machine' instr_id=instrument_id %}>
             {% csrf_token %}
             <div class="form-group">
               {{ form.as_p }}

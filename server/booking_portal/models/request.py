@@ -1,13 +1,55 @@
-from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from django.dispatch import receiver
+from django.core.exceptions import ObjectDoesNotExist
+from django.db import models, transaction
+from django.db.models import Q
 from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django.utils.timezone import now
 
 from .slot import Slot
 from .user import Student, Faculty, LabAssistant
+
+
+class RequestManager(models.Manager):
+    def create_request(self, form_instance, slot_id, student):
+        with transaction.atomic():
+            slot, instr = Slot.objects.get_instr_from_slot_id(slot_id, True)
+            if not instr or not slot:
+                raise ObjectDoesNotExist("Requested slot or instrument does not exist.")
+
+            if not slot.is_available_for_booking():
+                raise ValueError("Slot is not available for booking.")
+
+            if Request.objects.has_student_booked_upcoming_instrument_slot(instr, student):
+                raise ValueError("Upcoming slot for instrument already booked.")
+
+            form_saved = form_instance.save()
+            self.create(
+                student=student,
+                faculty=student.supervisor,
+                instrument=instr,
+                slot=slot,
+                status=Request.WAITING_FOR_FACULTY,
+                content_object=form_saved,
+            )
+            slot.update_status(Slot.STATUS_2)
+
+    @staticmethod
+    def has_student_booked_upcoming_instrument_slot(instr, student, date=now().date()):
+        """Check if a student has booked an upcoming slot for an instrument"""
+        return Request.objects.filter(
+            ~(
+                    Q(status=Request.REJECTED) |
+                    Q(status=Request.CANCELLED) |
+                    Q(status=Request.APPROVED)
+            ),
+            instrument=instr,
+            student=student,
+            slot__date__gte=date,
+        ).exists()
 
 
 class Request(models.Model):
@@ -24,6 +66,9 @@ class Request(models.Model):
         (REJECTED, "Rejected"),
         (CANCELLED, "Cancelled")
     ]
+
+    objects = RequestManager()
+
     student = models.ForeignKey(Student, on_delete=models.PROTECT)
     faculty = models.ForeignKey(Faculty, on_delete=models.PROTECT)
     lab_assistant = models.ForeignKey(LabAssistant, on_delete=models.PROTECT,

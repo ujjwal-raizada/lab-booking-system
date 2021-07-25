@@ -22,11 +22,11 @@ class InstrumentList(forms.Form):
 class SlotList(forms.Form):
     """Form for selecting an empty slot of a given
     instrument"""
-    def __init__(self, instr_id, *args, **kwargs):
+    def __init__(self, instr, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['slots'] = SlotModelChoiceField(
             queryset=Slot.objects.filter(
-                instrument=instr_id,
+                instrument=instr,
                 status=Slot.STATUS_1,
                 date__gte=now().date()
             )
