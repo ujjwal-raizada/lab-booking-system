@@ -5,10 +5,9 @@ from django.test import Client
 from django.test import TestCase
 
 from booking_portal.factories import StudentFactory, LabAssistantFactory, InstrumentFactory
-from booking_portal.models import Slot
-# A valid date time will not fall on Sunday
-from models import Request
+from booking_portal.models import Slot, Request
 
+# A valid date time will not fall on Sunday
 _VALID_DATE_TIME = datetime.datetime.now()
 if _VALID_DATE_TIME.date().weekday() == 6:
     _VALID_DATE_TIME += timedelta(days=1)
@@ -21,7 +20,7 @@ class SlotBookRequestTestCase(TestCase):
         self.faculty = self.student.supervisor
 
         self.instrument = InstrumentFactory()
-        self.slot = Slot(
+        self.slot = Slot.objects.create(
             instrument=self.instrument,
             status=Slot.STATUS_1,  # Empty
             date=_VALID_DATE_TIME.date(),
@@ -36,30 +35,22 @@ class SlotBookRequestTestCase(TestCase):
         Request.objects.create(
             student=self.student,
             faculty=self.faculty,
-            lab_assistance=self.lab_assistant,
+            lab_assistant=self.lab_assistant,
             instrument=self.instrument,
             slot=self.slot,
             status=Request.WAITING_FOR_FACULTY,
+            # There is no DB type constraint for `content_object`. Therefore,
+            # we hack this field to be a Slot type. However, this should be
+            # an instance of a model in models.instrument.requests
+            content_object=self.slot,
+
         )
 
-        self.assertFalse(Request.objects.has_student_booked_upcoming_instrument_slot(self.instrument, self.student,
+        self.assertTrue(Request.objects.has_student_booked_upcoming_instrument_slot(self.instrument, self.student,
                                                                                      _VALID_DATE_TIME.date()))
 
-    def test_student_booking_when_invalid_request_exists(self):
-        Request.objects.create(
-            student=self.student,
-            faculty=self.faculty,
-            lab_assistance=self.lab_assistant,
-            instrument=self.instrument,
-            slot=self.slot,
-            status=Request.WAITING_FOR_FACULTY,
-        )
-
-        self.assertTrue(Request.objects.has_student_booked_upcoming_instrument_slot(self.instrument, self.student,
-                                                                                    _VALID_DATE_TIME.date()))
-
     def test_student_booking_when_no_request_exists(self):
-        self.assertTrue(Request.objects.has_student_booked_upcoming_instrument_slot(self.instrument, self.student,
+        self.assertFalse(Request.objects.has_student_booked_upcoming_instrument_slot(self.instrument, self.student,
                                                                                     _VALID_DATE_TIME.date()))
 
     def test_student_booking_when_slot_not_unavailable(self):

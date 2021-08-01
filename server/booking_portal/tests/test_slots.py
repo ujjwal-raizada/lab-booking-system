@@ -1,10 +1,12 @@
 import datetime
 from datetime import timedelta
 
+from django.conf import settings
+from django.contrib.messages import get_messages
+from django.contrib import messages
 from django.test import Client
 from django.test import TestCase
 from django.urls import reverse
-from django.contrib.messages import get_messages
 
 from ..factories import InstrumentFactory, LabAssistantFactory
 from ..forms import BulkCreateSlotsForm
@@ -166,10 +168,10 @@ class BulkCreateSlotsTestCase(TestCase):
             }
         )
 
-        messages = [(x.message, x.level_tag) for x in get_messages(response.wsgi_request)]
+        message_list = [(x.message, x.level_tag) for x in get_messages(response.wsgi_request)]
         self.assertIn(
-            ("All slots were created successfully.", 'success'),
-            messages,
+            ("All slots were created successfully.", settings.MESSAGE_TAGS[messages.SUCCESS]),
+            message_list,
         )
 
     def test_partially_successful_slot_creation(self):
@@ -200,10 +202,10 @@ class BulkCreateSlotsTestCase(TestCase):
         expected_message = (f"{expected_created_slots} out of {expected_total_slots} slots created. Some slots may not "
                             f"have been created due to clashes with existing slots.")
 
-        messages = [(x.message, x.level_tag) for x in get_messages(response.wsgi_request)]
+        message_list = [(x.message, x.level_tag) for x in get_messages(response.wsgi_request)]
         self.assertIn(
-            (expected_message, 'warning'),
-            messages
+            (expected_message, settings.MESSAGE_TAGS[messages.WARNING]),
+            message_list,
         )
 
     def test_unsuccessful_slot_creation(self):
@@ -234,8 +236,8 @@ class BulkCreateSlotsTestCase(TestCase):
         expected_message = (f"{expected_created_slots} out of {expected_total_slots} slots created. Some slots may not "
                             f"have been created due to clashes with existing slots.")
 
-        messages = [(x.message, x.level_tag) for x in get_messages(response.wsgi_request)]
+        message_list = [(x.message, x.level_tag) for x in get_messages(response.wsgi_request)]
         self.assertIn(
-            (expected_message, 'warning'),
-            messages
+            (expected_message, settings.MESSAGE_TAGS[messages.WARNING]),
+            message_list,
         )
