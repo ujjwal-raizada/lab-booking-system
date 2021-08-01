@@ -169,3 +169,5 @@ EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
 FILTERS_EMPTY_CHOICE_LABEL='Any'
+
+DEFAULT_AUTO_FIELD='django.db.models.AutoField' 
