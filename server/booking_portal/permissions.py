@@ -24,7 +24,7 @@ def is_lab_assistant(user: CustomUser):
 def get_user_type(user: CustomUser):
     return (
         "faculty" if is_faculty(user) else
-        "lab" if is_lab_assistant(user) else
+        "assistant" if is_lab_assistant(user) else
         "student" if is_student(user) else
         None
     )

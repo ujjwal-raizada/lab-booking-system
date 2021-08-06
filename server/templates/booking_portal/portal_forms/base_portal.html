@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load crispy_forms_filters %}
+{% load query_utils %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+  <div class="row container-fluid">
+    <!-- Filter -->
+    <div class="col-lg-3 order-lg-1">
+      <div class="container-fluid pt-4">
+        <div class="card bg-light mb-3">
+          <div class="card-body">
+            <h3 class="card-title text-center"> Filter </h3>
+            <div class="card-text">
+              <div class="panel-body">
+                {% crispy filter_form %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Requests -->
+    <div class="col-lg-9 order-sm-1 order-lg-0">
+      <div class="container-fluid pt-4 text-center">
+        <div class="card bg-light mb-3">
+          <div class="card-body">
+            <h2 class="card-title">Pending Requests</h2>
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Student Name</th>
+                    <th scope="col">Faculty</th>
+                    <th scope="col">Instrument</th>
+                    <th scope="col">Slot</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Application</th>
+                    {% if not user_is_student %}
+                      <th scope="col" colspan="2">Actions</th>
+                    {% endif %}
+                  </tr>
+                </thead>
+                <tbody>
+
+                {% for request in page_obj %}
+                  <tr>
+                    <th scope="row">{{ request.pk }}</th>
+                    <td>{{ request.student }}</td>
+                    <td>{{ request.faculty }}</td>
+                    <td>{{ request.instrument }}</td>
+                    <td>{{ request.slot.description }}</td>
+                    {% if request.status == 'R1' %}
+                      <td>Waiting for Faculty Approval</td>
+                    {% elif request.status == 'R2' %}
+                      <td>Waiting for Lab Assistant Approval</td>
+                    {% elif request.status == 'R3' %}
+                      <td>Approved</td>
+                    {% elif request.status == 'R4' %}
+                      <td>Rejected</td>
+                    {% elif request.status == 'R5' %}
+                      <td>Cancelled</td>
+                    {% endif %}
+                    <td><a href={% url 'view-application' id=request.id %} target="_blank"> View Application </a></td>
+                    {% if not user_is_student %}
+                      {% if request.status == modifiable_request_status %}
+                        <td><a href="/requests_{{ user_type }}/accept/{{request.id}}">
+                          <button type="button" class="btn btn-success">Accept</button>
+                        </a></td>
+                        <td><a href="/requests_{{  user_type }}/reject/{{request.id}}">
+                          <button type="button" class="btn btn-danger">Reject</button>
+                        </a></td>
+                      {% else %}
+                        <td>
+                          <button type="button" class="btn btn-success" disabled>Accept</button>
+                        </td>
+                        <td>
+                          <button type="button" class="btn btn-danger" disabled>Reject</button>
+                        </td>
+                      {% endif %}
+                    {% endif %}
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Pagination controls -->
+          <nav aria-label="Page Navigation">
+            <ul class="pagination justify-content-center">
+              <!-- Previous Button -->
+              <li class="page-item {% if not page_obj.has_previous %} disabled {% endif %}">
+                <a class="page-link"
+                    {% if page_obj.has_previous %}
+                     href="?{% update_query_params page=page_obj.previous_page_number %}"
+                   {% else %}
+                     href="#" tabindex="-1"
+                   {% endif %}
+                >
+                  <span aria-hidden="true">&laquo;</span>
+                  <span class="sr-only">Previous</span>
+                </a>
+              </li>
+
+              <!-- Page Numbers -->
+              {% for n in nav_range %}
+                <li class="page-item {% if page_obj.number == n %} active {% endif %}">
+                  <a class="page-link" href="?{% update_query_params page=n %}">{{ n }}</a>
+                </li>
+              {% endfor %}
+
+              <!-- Next Button -->
+              <li class="page-item {% if not page_obj.has_next %} disabled {% endif %} justify-content-center">
+                <a class="page-link"
+                    {% if page_obj.has_next %}
+                   href="?{% update_query_params page=page_obj.next_page_number %}"
+                    {% else %}
+                   href="#" tabindex="-1"
+                    {% endif %}
+                >
+                  <span aria-hidden="true">&raquo;</span>
+                  <span class="sr-only">Next</span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

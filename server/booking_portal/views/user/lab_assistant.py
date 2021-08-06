@@ -1,10 +1,10 @@
-from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db import transaction
+from django.http import Http404
+from django.shortcuts import render, redirect
 
+from .portal import BasePortalFilter, get_pagintion_nav_range
 from ... import models, permissions
-from .portal import BasePortalFilter
 
 
 @login_required
@@ -12,15 +12,20 @@ from .portal import BasePortalFilter
 def lab_assistant_portal(request):
     f = BasePortalFilter(
         request.GET,
-        queryset=models.Request.objects.all().order_by('-slot__date')
+        queryset=models.Request.objects.order_by('-slot__date', '-pk')
     )
+    page_obj = f.paginate()
 
     return render(
         request,
-        'booking_portal/portal_forms/lab_assistant_portal.html',
+        'booking_portal/portal_forms/base_portal.html',
         {
-            'context_data': f,
-            'usertype': 'lab'
+            'page_obj': page_obj,
+            'nav_range': get_pagintion_nav_range(page_obj),
+            'filter_form': f.form,
+            'user_type': 'assistant',
+            'user_is_student': False,
+            'modifiable_request_status': models.Request.WAITING_FOR_LAB_ASST,
         }
     )
 

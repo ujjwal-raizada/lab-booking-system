@@ -1,12 +1,12 @@
 import random
 
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.shortcuts import render, redirect
 from django.db import transaction
+from django.http import HttpResponse, Http404
+from django.shortcuts import render, redirect
 
-from ... import models, permissions
 from .portal import BasePortalFilter
+from ... import models, permissions
 
 
 @login_required
@@ -14,16 +14,21 @@ from .portal import BasePortalFilter
 def faculty_portal(request):
     f = BasePortalFilter(
         request.GET,
-        queryset=models.Request.objects.filter(
-            faculty=request.user,
-        ).order_by('-slot__date'))
+        queryset=models.Request.objects.filter(faculty=request.user)
+                                       .select_related('slot')
+                                       .order_by('-slot__date')
+    )
+    page_obj = f.paginate()
 
     return render(
         request,
-        'booking_portal/portal_forms/faculty_portal.html',
+        'booking_portal/portal_forms/base_portal.html',
         {
-            'context_data': f,
-            'usertype': 'faculty'
+            'page_obj': page_obj,
+            'filter_form': f.form,
+            'user_type': 'faculty',
+            'user_is_student': False,
+            'modifiable_request_status': models.Request.WAITING_FOR_FACULTY,
         }
     )
 

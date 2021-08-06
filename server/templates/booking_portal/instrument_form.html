@@ -22,7 +22,7 @@
 
 {% if edit %}
 <form action="" method="POST">
-{% elif usertype != 'student' %}
+{% elif user_type != 'student' %}
 <form action={% url 'add_remarks' id=id %} method="POST">
 {% endif%}
     <script>
@@ -44,7 +44,7 @@
       <input type="submt" class="btn btn-secondary" onclick="window.print()" value="Download PDF">
     {% endif %}
 
-    {% if usertype != 'student' %}
+    {% if user_type != 'student' %}
         <input type="submit" class="btn btn-primary" value="Add Your Remarks">
     </div>
     {% endif %}

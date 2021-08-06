@@ -18,11 +18,11 @@ def index(request):
     elif student_instance:
         context = 'student'
     elif lab_instance:
-        context = 'lab'
+        context = 'assistant'
     else:
         context = 'none'
 
-    return render(request, 'home.html', {'usertype': context})
+    return render(request, 'home.html', {'user_type': context})
 
 
 @login_required
@@ -50,7 +50,7 @@ def show_application(request, id):
              get_user_type(request.user) == "faculty"
              ) or
             (field_val == "lab_assistant_remarks" and
-             get_user_type(request.user) == "lab"
+             get_user_type(request.user) == "assistant"
              )
         ) and form_field_value == None:
 
@@ -66,13 +66,12 @@ def show_application(request, id):
         {
             'form': form_object,
             'edit': False,
-            'usertype': get_user_type(request.user),
+            'user_type': get_user_type(request.user),
             'id': id,
             'instrument_title': form.title,
             'instrument_subtitle': form.subtitle,
             'instrument_verbose_name': content_object._meta.verbose_name,
             'form_notes': form.help_text,
-            'usertype': get_user_type(request.user),
             'status': request_obj.status,
         }
     )

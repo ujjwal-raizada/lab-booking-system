@@ -16,16 +16,21 @@ from ...models import Slot, Request, Student
 def student_portal(request):
     f = BasePortalFilter(
         request.GET,
-        queryset=Request.objects.filter(
-            student=request.user
-        ).order_by('-slot__date'))
+        queryset=Request.objects.filter(student=request.user)
+                                .select_related('slot')
+                                .order_by('-slot__date')
+    )
+    page_obj = f.paginate()
 
     return render(
         request,
-        'booking_portal/portal_forms/student_portal.html',
+        'booking_portal/portal_forms/base_portal.html',
         {
-            'context_data': f,
-            'usertype': 'student'
+            'page_obj': page_obj,
+            'filter_form': f.form,
+            'user_type': 'student',
+            'user_is_student': True,
+            'modifiable_request_status': '',  # student cannot modify
         }
     )
 
@@ -55,7 +60,7 @@ def book_machine(request, instr_id):
         'instrument_subtitle': form_class.subtitle,
         'instrument_verbose_name': form_model_class._meta.verbose_name,
         'form_notes': form_class.help_text,
-        'usertype': 'student',
+        'user_type': 'student',
         'status': Request.WAITING_FOR_FACULTY,
     }
 
