@@ -11,6 +11,11 @@ from .models.instrument.requests import *
 # `form_template_dict` is the primary key of the 'Instrument' model. An
 # alternative method needs to be found.
 
+# NOTE2: An entry for UTM in the Instrument model is inserted as part of
+# DB migrations. We can retroactively modify the previous migrations to do
+# the same for the other instruments. and probably use clearly defined
+# constants as the variable name.
+
 form_template_dict = {
     1: (FESEMForm, FESEM),
     2: (TCSPCForm, TCSPC),
@@ -31,7 +36,8 @@ form_template_dict = {
     17: (SCXRDForm, SCXRD),
     18: (XPSForm, XPS),
     19: (UVSpectrophotometerForm, UVSpectrophotometer),
-    20: (HPLC_FDForm, HPLC_FD)
+    20: (HPLC_FDForm, HPLC_FD),
+    21: (UTMForm, UTM),
 }
 
 view_application_dict = {model: form

@@ -14,15 +14,17 @@ class UserDetailsForm(forms.ModelForm):
 
     user_name = MyModelChoiceField(
         queryset=Student.objects.all(),
+        label='Email Id',
         widget=forms.Select(
             attrs={
                 'class': 'form-control',
             }
-        )
+        ),
     )
 
     sup_name = MyModelChoiceField(
         queryset=Faculty.objects.all(),
+        label='Supervisor Name',
         widget=forms.Select(
             attrs={
                 'class': 'form-control',
@@ -55,9 +57,7 @@ class UserDetailsForm(forms.ModelForm):
             'req_discussed'
         )
         labels = {
-            'user_name': 'Username',
             'duration': 'Slot Duration',
-            'sup_name': 'Supervisor Name',
             'sup_dept': 'Supervisor Department',
             'sample_from_outside': 'Is the sample obtained from outside BITS through collaboration?',
             'origin_of_sample': 'Provide origin of sample',

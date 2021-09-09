@@ -536,3 +536,35 @@ class UVSpectrophotometer(UserDetail, UserRemark):
     class Meta:
         verbose_name = 'UVSpectrophotometer'
         verbose_name_plural = 'UVSpectrophotometer'
+
+
+class UTM(UserDetail, UserRemark):
+    TEST_TYPE_TENSILE = 'tensile'
+    TEST_TYPE_COMPRESSION = 'compression'
+    TEST_TYPE_3POINT_BENDING = '3-point-bending'
+    TEST_TYPE_ILSS = 'ilss'
+    TEST_TYPE_DOUBLE_CANT_BEAM = 'double-cant-beam'
+
+    TEST_TYPE_CHOICES = (
+        (TEST_TYPE_TENSILE, 'Tensile'),
+        (TEST_TYPE_COMPRESSION, 'Compression'),
+        (TEST_TYPE_3POINT_BENDING, '3 Point Bending'),
+        (TEST_TYPE_ILSS, 'ILSS'),
+        (TEST_TYPE_DOUBLE_CANT_BEAM ,'Double Cantilever Beam'),
+    )
+
+    material = models.CharField(max_length=75)
+    test_type = models.CharField(max_length=75, choices=TEST_TYPE_CHOICES)
+    test_speed = models.IntegerField()
+    temperature = models.IntegerField(help_text=(
+        "The temperature ranges are as follows:</br>"
+        "Room Temperature = 25°C</br>"
+        "Temperature Chamber = -70°C - 250°C</br>"
+        "Furnace = 250°C - 1200°C</br>"
+        "Any additional remarks can be specified in the box below.</br>"
+    ))
+
+    class Meta:
+        verbose_name = 'UTM'
+        verbose_name_plural = 'UTM'
+

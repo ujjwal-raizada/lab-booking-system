@@ -18,3 +18,4 @@ from .tcspc import TCSPCForm
 from .tga import TGAForm
 from .uvspectrophotometer import UVSpectrophotometerForm
 from .xps import XPSForm
+from .utm import UTMForm
