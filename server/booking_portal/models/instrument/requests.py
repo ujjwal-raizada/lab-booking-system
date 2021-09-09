@@ -557,11 +557,13 @@ class UTM(UserDetail, UserRemark):
     test_type = models.CharField(max_length=75, choices=TEST_TYPE_CHOICES)
     test_speed = models.IntegerField()
     temperature = models.IntegerField(help_text=(
+        "<small>"
         "The temperature ranges are as follows:</br>"
         "Room Temperature = 25°C</br>"
         "Temperature Chamber = -70°C - 250°C</br>"
         "Furnace = 250°C - 1200°C</br>"
         "Any additional remarks can be specified in the box below.</br>"
+        "</small>"
     ))
 
     class Meta:

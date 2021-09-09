@@ -14,7 +14,7 @@ class UTMForm(UserDetailsForm, UserRemarkForm):
     title = "Universal Testing Machine"
     subtitle = "Universal Testing Machine"
     help_text = '''
-    <b>Please provide any other </b>
+    <b>Please provide any other information in other remarks (eg: additional temperature details)</b>
     '''
 
     class Meta(UserDetailsForm.Meta, UserRemarkForm.Meta):
@@ -47,15 +47,15 @@ class UTMForm(UserDetailsForm, UserRemarkForm):
                     'class': 'form-control',
                 }
                 ),
-                'test_type': forms.TextInput(attrs={
+                'test_type': forms.Select(attrs={
                     'class': 'form-control',
                 }
                 ),
-                'test_speed': forms.TextInput(attrs={
+                'test_speed': forms.NumberInput(attrs={
                     'class': 'form-control',
                 }
                 ),
-                'temperature': forms.Select(attrs={
+                'temperature': forms.NumberInput(attrs={
                     'class': 'form-control',
                 }
                 ),
