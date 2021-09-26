@@ -1,28 +1,20 @@
 import csv
-import datetime
-from io import TextIOWrapper
+from io import BytesIO, StringIO, TextIOWrapper
 
-from django.urls import path
-from django.shortcuts import render, redirect
-from django.http import Http404
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.hashers import make_password
-from django.contrib.auth.models import Group, Permission
-from django.core.mail import send_mail
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
+from django.db import transaction
+from django.http import FileResponse
+from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
-from django.utils.html import strip_tags
+from django.urls import path
+from django.utils.html import strip_tags, escape, format_html
 
-
-from ... import models
 from ... import forms
-from ... import permissions
-
-# Allowed headers for different CSV files
-CSV_HEADERS = ('name', 'email', 'password')
-CSV_HEADERS_STUDENT = CSV_HEADERS + ('supervisor',)
-CSV_HEADERS_FACULTY = CSV_HEADERS + ('department', )
 
 
 class CustomUserAdmin(UserAdmin):
@@ -30,6 +22,8 @@ class CustomUserAdmin(UserAdmin):
     Student/Faculty/Lab Assistant inherit this admin
     class
     """
+    CSV_HEADERS = ('name', 'email', 'password')
+
     form = forms.CustomUserChangeForm
     add_form = forms.CustomUserCreationForm
 
@@ -50,114 +44,130 @@ class CustomUserAdmin(UserAdmin):
     search_fields = ('email',)
     ordering = ('email',)
 
-    change_list_template = "admin/csv_change_list.html"
+    def get_urls(self):
+        urls = super().get_urls()
+        info = self.model._meta.app_label, self.model._meta.model_name
 
-    def create_users(self, user_type, records, staff=False, notify_user=False):
+        my_urls = [
+            path('import-csv/', self.import_csv, name='%s_%s_import-csv' % info),
+            path('import-csv/sample/', self.import_csv_sample, name='%s_%s_import-csv-sample' % info)
+        ]
+        return my_urls + urls
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['bulk_add_text'] = 'Import from CSV'
+        extra_context['bulk_add_url'] = 'import-csv/'
+        return super().changelist_view(request, extra_context)
+
+    @transaction.atomic
+    def create_users(self, user_type, records, staff=False, notify_user=False, skip_existing=True):
         """
         Function to create users in bulk from a set of records
         """
-        headers = CSV_HEADERS
-        if user_type == models.Student:
-            headers = CSV_HEADERS_STUDENT
-        elif user_type == models.Faculty:
-            headers = CSV_HEADERS_FACULTY
-
+        headers = self.get_csv_headers()
         if set(records.fieldnames) != set(headers):
-            raise Exception(
-                f"Invalid CSV headers/columns. Expected: {headers}")
+            raise Exception(f"Invalid CSV headers/columns. Expected: {headers}")
 
+        created_users = []
         for record in records:
-            pswd_text = record['password']
-            record['password'] = make_password(record['password'])
-            if user_type == models.Student:
-                obj = models.Faculty.objects.filter(
-                    email=record['supervisor']).first()
-                if not obj:
-                    raise Exception(
-                        f"Invalid Supervisor Name: \"{record['supervisor']}\"")
-                else:
-                    record['supervisor'] = obj
+            if not record['password']:
+                record['password'] = user_type.objects.make_random_password(8)
+            raw_password = record['password']
+            record['password'] = make_password(raw_password)
 
             if user_type.objects.filter(email=record['email']).exists():
-                raise Exception(
-                    f"User with username \"{record['email']}\" already exists.")
-            else:
-                user = user_type.objects.create(**record)
-                if (staff):
-                    user.is_staff = True
-                    user.save()
+                if not skip_existing:
+                    raise ObjectDoesNotExist(f"User with username \"{record['email']}\" already exists.")
+                else:
+                    continue
+
+            record = self._validate_record(record)
+            user = user_type.objects.create(**record, is_staff=staff)
 
             if notify_user:
                 text = render_to_string('email/welcome.html', {
                     'receipent_name': user.name,
                     'email': user.email,
-                    'password': pswd_text,
-                    'user_type': permissions.get_user_type(user),
+                    'password': raw_password,
+                    'user_type': user_type.__name__,
                 })
 
-                send_mail(
-                    subject="Welcome to OnlineCAL !",
+                user.send_email(
+                    subject="Welcome to OnlineCAL!",
                     message=strip_tags(text),
-                    from_email=settings.EMAIL_HOST_USER,
-                    recipient_list=[user.email, ],
-                    fail_silently=settings.DEBUG,
-                    html_message=text,
                 )
 
-    def get_urls(self):
-        urls = super().get_urls()
-        my_urls = [
-            path("import-csv/", self.import_csv),
-        ]
-        return my_urls + urls
+                created_users.append(user.name)
+        return created_users
 
     def import_csv(self, request):
         """
         Function to bulk import user details from a CSV file
         """
-
         if request.method == "POST":
+            form = forms.BulkImportForm(request.POST, request.FILES)
+            if not form.is_valid():
+                self.message_user(request, "Error: Invalid form", level=messages.ERROR)
+                return render(request, 'admin/bulk_import_form.html', {'form': form})
+
             try:
-                csv_file = TextIOWrapper(
-                    request.FILES['csv_file'].file,
-                    encoding=request.encoding
-                )
+                csv_file = TextIOWrapper(form.cleaned_data['csv_file'], encoding=request.encoding)
                 dialect = csv.Sniffer().sniff(csv_file.read())
                 csv_file.seek(0)
                 reader = csv.DictReader(csv_file, dialect=dialect)
             except Exception as err:
-                self.message_user(request, "Error: {}".format(err))
-                return redirect("..")
+                self.message_user(request, "Error: {}".format(err), level=messages.ERROR)
+                return render(request, 'admin/bulk_import_form.html', {'form': form})
+
             try:
+                send_email = form.cleaned_data['send_email']
+                ignore_existing = form.cleaned_data['ignore_existing']
 
-                # This flag sets "is_staff" boolean
-                staff = False
-                if '/student/' in request.path:
-                    user_type = models.Student
-                elif '/faculty/' in request.path:
-                    user_type = models.Faculty
-                elif '/labassistant/' in request.path:
-                    user_type = models.LabAssistant
-                    staff = True
-                else:
-                    raise Http404
+                user_type = self.get_user_type(request)
+                staff = self.is_user_staff()
 
-                # If send_email is true, then the new user will receive email
-                send_email = False if request.POST.get(
-                    'send_email') == "No" else True
-
-                self.create_users(user_type, reader, staff, send_email)
-
-            except Exception as err:
-                messages.error(
-                    request, f'Error on row number {reader.line_num}: {err}')
+                created_users = self.create_users(user_type, reader, staff, send_email, skip_existing=ignore_existing)
+            except  Exception as err:
+                self.message_user(request, f"Error on row number {reader.line_num}: {err}", level=messages.ERROR)
+                return render(request, 'admin/bulk_import_form.html', {'form': form})
             else:
-                messages.success(request, "Your csv file has been imported")
-            return redirect("..")
+                created_users = [escape(x) for x in created_users]
+                names = '<br/>'.join(created_users)
+                self.message_user(request, format_html("The following users have been created:<br/>{}", names))
+                return redirect("..")
 
         else:
             form = forms.BulkImportForm()
-            payload = {"form": form}
-            return render(
-                request, "admin/bulk_import_form.html", payload
-            )
+            payload = {
+                'form': form,
+                'opts': self.get_user_type(request)._meta,
+                'has_view_permission': True,
+            }
+            return render(request, "admin/bulk_import_form.html", payload)
+
+    def import_csv_sample(self, request):
+        sio = StringIO()
+        writer = csv.DictWriter(sio, fieldnames=self.get_csv_headers())
+        writer.writeheader()
+
+        bio = BytesIO(sio.getvalue().encode('utf-8'))
+        user_type = self.get_user_type(request).__name__.lower()
+        return FileResponse(bio, as_attachment=True, filename=f'import_{user_type}.csv')
+
+    def get_user_type(self, request):
+        raise NotImplementedError("Derived classes should return a Model for the user type")
+
+    def is_user_staff(self):
+        raise NotImplementedError("Derived classes should return a boolean")
+
+    def _validate_record(self, record):
+        if not record['name'] or not record['email']:
+            raise ValidationError(f'Email or name not found')
+
+        # This call will raise validation error
+        validate_email(record['email'])
+        return record
+
+    def get_csv_headers(self):
+        return self.CSV_HEADERS

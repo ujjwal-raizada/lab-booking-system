@@ -2,7 +2,7 @@ import datetime
 
 from crispy_forms.bootstrap import PrependedAppendedText
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import ButtonHolder, Field, Layout, Submit
+from crispy_forms.layout import ButtonHolder, Field, Layout, Submit, Fieldset
 from django import forms
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django.core.exceptions import ValidationError
@@ -10,6 +10,8 @@ from django.core.exceptions import ValidationError
 from ..models.instrument import Instrument
 from ..models.slot import SlotManager
 from ..models.user import CustomUser, Faculty, Student
+from .fields import DateInput, CrispyTimeField, MinuteDurationField
+
 
 EMAIL_CHOICES = (
     ("Yes", "Yes"),
@@ -69,52 +71,28 @@ DELTA_DAYS = (
 class BulkImportForm(forms.Form):
     """Form for importing users from CSV"""
 
-    csv_file = forms.FileField()
-    send_email = forms.ChoiceField(
-        choices=EMAIL_CHOICES, initial=EMAIL_CHOICES[1])
+    csv_file = forms.FileField(
+        label='Uplaod CSV File',
+        help_text='<a href=sample/>Download a sample CSV</a>'
+    )
+    send_email = forms.BooleanField(label='Send password details to users?')
+    ignore_existing = forms.BooleanField(initial=True, label='Ignore if user exists?')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field_val in self.Meta.fields:
-            self.fields[field_val].label = self.Meta.labels.get(field_val)
 
-    class Meta:
-        fields = ('csv_file', 'send_email')
-        labels = {
-            'csv_file': 'Upload CSV File',
-            'send_email': 'Do you want to send password details to users?',
-        }
-
-
-class DateInput(forms.DateInput):
-    input_type = 'date'
-
-
-class CrispyTimeField(Field):
-    def __init__(self, *args, **kwargs):
-        kwargs['template'] = 'widgets/time_input.html'
-        kwargs['css_class'] = 'datetimepicker-input'
-        super().__init__(*args, **kwargs)
-
-
-class MinuteDurationField(forms.DurationField):
-    default_error_messages = {
-        'invalid': 'The duration in minutes must be a positive integer.'
-    }
-
-    def to_python(self, value):
-        validation_error = ValidationError(self.error_messages['invalid'])
-        if isinstance(value, datetime.timedelta):
-            return value
-
-        try:
-            value = int(value)
-        except (ValueError, TypeError):
-            raise validation_error
-        else:
-            if value > 0:
-                return datetime.timedelta(minutes=int(value))
-            raise validation_error
+        self.helper = FormHelper(self)
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-sm-2'
+        self.helper.field_class = 'col-sm-3'
+        self.helper.layout = Layout(
+            'csv_file',
+            'send_email',
+            'ignore_existing',
+            ButtonHolder(
+                Submit('import_users', value='Import Users'),
+            ),
+        )
 
 
 class BulkCreateSlotsForm(forms.Form):

@@ -1,8 +1,6 @@
-from django.core.exceptions import ObjectDoesNotExist
-
 from .user import CustomUserAdmin
 from ... import forms
-from ...models import Student, Faculty
+from ...models import LabAssistant
 
 
 class StudentAdmin(CustomUserAdmin):
@@ -20,20 +18,14 @@ class StudentAdmin(CustomUserAdmin):
         (None, {
             'classes': ('wide',),
             'fields': ('supervisor',)}
-        ),
+         ),
     )
 
     def _validate_record(self, record):
-        record = super()._validate_record(record)
-        obj = Faculty.objects.filter(email=record['supervisor']).first()
-        if not obj:
-            raise ObjectDoesNotExist(f"Invalid Supervisor Name: \"{record['supervisor']}\"")
-
-        record['supervisor'] = obj
-        return record
+        return super()._validate_record(record)
 
     def get_user_type(self, request):
-        return Student
+        return LabAssistant
 
     def is_user_staff(self):
         return False
