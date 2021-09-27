@@ -46,19 +46,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def has_module_perms(self, app_label):
         return self.is_staff
 
-    def _create_email_obj(self, request, subject, message):
-        EmailModel(receiver=self.email,
-                   request=request,
-                   text=message,
-                   subject=subject).save()
+    def _create_email_obj(self, subject, message):
+        EmailModel(receiver=self.email, text=message, subject=subject, sent=False).save()
 
-    def send_email(self, request, subject, message, sender=None, html_message=None, **kwargs):
-        self._create_email_obj(request, subject, message)
-        sender = settings.EMAIL_HOST_USER if sender == None else sender
-
-        # set 'fail_silently=False' when debugging the email system.
-        send_mail(subject, message, sender, [self.email],
-                  html_message=html_message, fail_silently=True)
+    def send_email(self, subject, message, sender=None, html_message=None, **kwargs):
+        self._create_email_obj(subject, message)
 
     @property
     def username(self):

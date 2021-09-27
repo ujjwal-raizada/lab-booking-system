@@ -112,9 +112,7 @@ def send_email_after_save(sender, instance, **kwargs):
             'instrument_name': instance.instrument.name,
             'slot': instance.slot.description,
         })
-        instance.faculty.send_email(instance, subject,
-                                    strip_tags(text),
-                                    html_message=text)
+        instance.faculty.send_email(subject, strip_tags(text), html_message=text)
 
         subject = "Pending Lab Booking Request"
         text = render_to_string('email/student_pending.html', {
@@ -122,9 +120,7 @@ def send_email_after_save(sender, instance, **kwargs):
             'instrument_name': instance.instrument.name,
             'slot': instance.slot.description,
         })
-        instance.student.send_email(instance, subject,
-                                    strip_tags(text),
-                                    html_message=text)
+        instance.student.send_email(subject, strip_tags(text), html_message=text)
 
     elif instance.status == Request.WAITING_FOR_LAB_ASST:
         subject = "Waiting for Lab Assistant Approval"
@@ -135,9 +131,7 @@ def send_email_after_save(sender, instance, **kwargs):
             'faculty_name': instance.faculty.name,
             'slot': instance.slot.description,
         })
-        instance.lab_assistant.send_email(instance, subject,
-                                          strip_tags(text),
-                                          html_message=text)
+        instance.lab_assistant.send_email(subject, strip_tags(text), html_message=text)
 
     elif instance.status == Request.APPROVED:
         slot.update_status(Slot.STATUS_3)
@@ -146,9 +140,7 @@ def send_email_after_save(sender, instance, **kwargs):
             'receipent_name': instance.student.name,
             'slot': instance.slot.description,
         })
-        instance.student.send_email(instance, subject,
-                                    strip_tags(text),
-                                    html_message=text)
+        instance.student.send_email(subject, strip_tags(text), html_message=text)
 
     elif instance.status == Request.REJECTED:
         slot.update_status(Slot.STATUS_1)
@@ -159,9 +151,7 @@ def send_email_after_save(sender, instance, **kwargs):
             'faculty_remarks': instance.content_object.faculty_remarks,
             'lab_assistant_remarks': instance.content_object.lab_assistant_remarks,
         })
-        instance.student.send_email(instance, subject,
-                                    strip_tags(text),
-                                    html_message=text)
+        instance.student.send_email(subject, strip_tags(text), html_message=text)
 
     elif instance.status == Request.CANCELLED:
         subject = "Lab Booking Cancelled"
@@ -171,6 +161,4 @@ def send_email_after_save(sender, instance, **kwargs):
             'faculty_remarks': instance.content_object.faculty_remarks,
             'lab_assistant_remarks': instance.content_object.lab_assistant_remarks,
         })
-        instance.student.send_email(instance, subject,
-                                    strip_tags(text),
-                                    html_message=text)
+        instance.student.send_email(subject, strip_tags(text), html_message=text)
