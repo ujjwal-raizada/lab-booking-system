@@ -109,7 +109,7 @@ class CustomUserAdmin(UserAdmin):
             form = forms.BulkImportForm(request.POST, request.FILES)
             if not form.is_valid():
                 self.message_user(request, "Error: Invalid form", level=messages.ERROR)
-                return render(request, 'admin/bulk_import_form.html', {'form': form})
+                return self.render_bulk_import_form(request, form)
 
             try:
                 csv_file = TextIOWrapper(form.cleaned_data['csv_file'], encoding=request.encoding)
@@ -118,7 +118,7 @@ class CustomUserAdmin(UserAdmin):
                 reader = csv.DictReader(csv_file, dialect=dialect)
             except Exception as err:
                 self.message_user(request, "Error: {}".format(err), level=messages.ERROR)
-                return render(request, 'admin/bulk_import_form.html', {'form': form})
+                return self.render_bulk_import_form(request, form)
 
             try:
                 send_email = form.cleaned_data['send_email']
@@ -128,9 +128,9 @@ class CustomUserAdmin(UserAdmin):
                 staff = self.is_user_staff()
 
                 created_users = self.create_users(user_type, reader, staff, send_email, skip_existing=ignore_existing)
-            except  Exception as err:
+            except Exception as err:
                 self.message_user(request, f"Error on row number {reader.line_num}: {err}", level=messages.ERROR)
-                return render(request, 'admin/bulk_import_form.html', {'form': form})
+                return self.render_bulk_import_form(request, form)
             else:
                 created_users = [escape(x) for x in created_users]
                 names = '<br/>'.join(created_users)
@@ -138,13 +138,15 @@ class CustomUserAdmin(UserAdmin):
                 return redirect("..")
 
         else:
-            form = forms.BulkImportForm()
-            payload = {
-                'form': form,
-                'opts': self.get_user_type(request)._meta,
-                'has_view_permission': True,
-            }
-            return render(request, "admin/bulk_import_form.html", payload)
+            return self.render_bulk_import_form(request, forms.BulkImportForm())
+
+    def render_bulk_import_form(self, request, form):
+        payload = {
+            'form': form,
+            'opts': self.get_user_type(request)._meta,
+            'has_view_permission': True,
+        }
+        return render(request, 'admin/bulk_import_form.html', payload)
 
     def import_csv_sample(self, request):
         sio = StringIO()
