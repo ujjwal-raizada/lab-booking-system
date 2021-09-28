@@ -84,6 +84,8 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             os.path.join(BASE_DIR, 'templates'),
+            # Our custom auth package is not a Django app.
+            os.path.join(BASE_DIR, 'auth', 'templates'),
         ],
         'APP_DIRS': True,
         'OPTIONS': {
