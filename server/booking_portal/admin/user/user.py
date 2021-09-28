@@ -71,6 +71,9 @@ class CustomUserAdmin(UserAdmin):
 
         created_users = []
         for record in records:
+            record['email'] = record['email'].strip()
+            record['name'] = record['name'].strip()
+
             if not record['password']:
                 record['password'] = user_type.objects.make_random_password(8)
             raw_password = record['password']
