@@ -1,5 +1,5 @@
 {% extends 'email/base.html' %}
-{% block message %} Unfortunately, your booking has been rejected for <strong> Machine: {{ instrument_name }}</strong> and <strong> Time Slot: {{ slot }}</strong>. <br>
+{% block message %}Unfortunately, your booking has been rejected for <strong> Machine: {{ instrument_name }}</strong> and <strong> Time Slot: {{ slot }}</strong>. <br>
 {% if faculty_remarks or lab_assistant_remarks%}
 Please find below the remarks for your application: <br>
 <ul>

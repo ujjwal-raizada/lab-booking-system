@@ -4,29 +4,28 @@
 <p>Welcome to OnlineCAL! This portal will allow you to book slots for all of your CAL instruments. No more paperwork
     required! You can access all of your previous/upcoming bookings with a single click! You can book a slot any time
     and track your application status 24x7!</p>
-<p>Well, these are some of the features, login to view more ! :)</p>
 <p>Here are your credentials:</p>
 <ul style="list-style-type: square;">
     <li>Email: <a href="mailto:{{ email }}">{{ email }}</a></li>
     <li>Password: {{ password }}</li>
     <li>User Type: {{ user_type }}</li>
-    <li>Link to Website: <a href="https://onlinecal.bits-hyderabad.ac.in/" target="_blank"
+    <li>Portal Link: <a href="https://onlinecal.bits-hyderabad.ac.in/" target="_blank"
             rel="noopener">https://onlinecal.bits-hyderabad.ac.in/</a></li>
 </ul>
 
 <p>Please read the following instructions so that you can familiarize yourselves with the portal:</p>
 <ol>
-    {% if user_type == "student" %}
-    <li><strong>Student: </strong>If you belong to this User Type, then you can start booking slots right away! However,
-        please note that you can only book another slot for the same machine once it is over (is in the past) or the
+    {% if user_type|lower == "student" %}
+    <li>You can start booking slots right away! However,
+        please note that you can only book another slot for the same machine once it is over (is in the past) or an existing
         application has been rejected. You can book slots for other machines while you may have pending requests.
         You will receive an email once there is a final decision on your application.</li>
-    {% elif user_type == "assistant" %}
-    <li><strong>Lab Assistant: </strong>You cannot book a slot for a machine. You can only review an application and
+    {% elif user_type|lower == "lab assistant" %}
+    <li>You cannot book a slot for a machine. You can only review an application and
         approve/reject it. You can also add remarks to applications. You will receive an email once there is a pending
         request which awaits your approval.</li>
-    {% elif user_type == "faculty" %}
-    <li><strong>Faculty: </strong>You cannot book a slot for a machine. You can only review an application and
+    {% elif user_type|lower == "faculty" %}
+    <li>You cannot book a slot for a machine. You can only review an application and
         approve/reject it. You can also add remarks to applications. You will receive an email once there is a pending
         request which awaits your approval.</li>
     {% endif %}

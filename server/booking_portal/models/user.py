@@ -46,11 +46,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def has_module_perms(self, app_label):
         return self.is_staff
 
-    def _create_email_obj(self, subject, message):
-        EmailModel(receiver=self.email, text=message, subject=subject, sent=False).save()
+    def _create_email_obj(self, subject, message, html_message):
+        EmailModel(receiver=self.email, text=message, text_html=html_message, subject=subject, sent=False).save()
 
-    def send_email(self, subject, message, sender=None, html_message=None, **kwargs):
-        self._create_email_obj(subject, message)
+    def send_email(self, subject, message, html_message):
+        self._create_email_obj(subject, message, html_message)
 
     @property
     def username(self):
@@ -64,8 +64,8 @@ class Faculty(CustomUser):
     department = models.CharField(max_length=20, null=True)
 
     class Meta:
-        verbose_name = "faculty"
-        verbose_name_plural = "faculties"
+        verbose_name = "Faculty"
+        verbose_name_plural = "Faculties"
         default_related_name = "faculties"
 
 
@@ -74,11 +74,11 @@ class Student(CustomUser):
         Faculty, on_delete=models.PROTECT, null=False)
 
     class Meta:
-        verbose_name = "student"
+        verbose_name = "Student"
         default_related_name = "students"
 
 
 class LabAssistant(CustomUser):
     class Meta:
-        verbose_name = "lab assistant"
+        verbose_name = "Lab Assistant"
         default_related_name = "labassistants"

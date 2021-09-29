@@ -3,6 +3,7 @@ from datetime import timedelta
 
 from django.test import Client
 from django.test import TestCase
+from django.core.management import call_command
 
 from booking_portal.factories import StudentFactory, LabAssistantFactory, InstrumentFactory
 from booking_portal.models import Slot, Request

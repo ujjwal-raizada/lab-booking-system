@@ -1,0 +1,15 @@
+{% extends 'email/base.txt' %}
+
+{% block message %}We are sorry to inform your booking for Machine: {{ instrument_name }} and Time Slot: {{ slot }}.
+{% if faculty_remarks or lab_assistant_remarks %}
+Please find below the remarks for your application:
+
+{% if faculty_remarks %}
+Supervisor's Comments: {{ faculty_remarks }}
+{% endif %}
+
+{% if lab_assistant_remarks %}
+Lab Assistant's Comments: {{ lab_assistant_remarks }}
+{% endif %}
+{% endif %}
+Please consult your supervisor for more information.{% endblock %}

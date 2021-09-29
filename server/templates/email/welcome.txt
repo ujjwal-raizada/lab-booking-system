@@ -1,0 +1,38 @@
+{% extends 'email/base.txt' %}
+
+{% block message %}Welcome to OnlineCAL! This portal will allow you to book slots for all of your
+CAL instruments. No more paperwork required! You can access all of your
+previous/upcoming bookings with a single click! You can book a slot any time
+and track your application status 24x7!
+
+Here are your credentials:
+    Email: {{ email }}
+    Password: {{ password }}
+    User Type: {{ user_type }}
+    Portal Link: https://onlinecal.bits-hyderabad.ac.in/
+
+Please read the following instructions so that you can familiarize yourselves
+with the portal:
+{% if user_type|lower == "student" %}
+    You can begin booking slots right away! However please note that you
+    can only book another slot for the same machine once it is over (is
+    in the past) or an existing application has been rejected. You can book
+    slots for other machines while you may have pending requests.
+    You will receive an email once there is a final decision on your
+    application.
+{% elif user_type|lower == "labassistant" %}
+    You cannot book a slot for a machine. You can only review an
+    application and approve/reject it. You can also add remarks to
+    applications. You will receive an email once there is a pending
+    request which awaits your approval.
+{% elif user_type|lower == "faculty" %}
+    You cannot book a slot for a machine. You can only review an
+    application and approve/reject it. You can also add remarks to applications.
+    You will receive an email once there is a pending request which awaits your
+    approval.
+{% endif %}
+You can also download an application from the portal. Just click on
+"View Application" on the portal.
+
+If you have any problems, please contact the Dev Team at:
+cal-online@hyderabad.bits-pilani.ac.in{% endblock %}

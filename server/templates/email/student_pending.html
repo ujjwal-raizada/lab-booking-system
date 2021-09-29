@@ -1,3 +1,6 @@
 {% extends 'email/base.html' %}
-{% block message %} This is for your information that we have received a booking request for <strong> Machine: {{ instrument_name }} </strong> and <strong> Time Slot : {{ slot }} </strong> . The application has been sent to your supervisor for approval. You will receive an email after final approval/rejection.
-Please follow your dashboard to view the status of your application.{% endblock %}
+{% block message %}This is to inform you that we have received a booking request for
+  <strong> Machine: {{ instrument_name }} </strong> and <strong> Time Slot:
+  {{ slot }} </strong>.  The application has been sent to your supervisor for approval.
+ You will receive an email after final approval/rejection.</p>
+  <p>Please follow your dashboard to view the status of your application.</p>{% endblock %}

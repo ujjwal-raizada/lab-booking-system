@@ -89,7 +89,13 @@ class CustomUserAdmin(UserAdmin):
             user = user_type.objects.create(**record, is_staff=staff)
 
             if notify_user:
-                text = render_to_string('email/welcome.html', {
+                text = render_to_string('email/welcome.txt', {
+                    'receipent_name': user.name,
+                    'email': user.email,
+                    'password': raw_password,
+                    'user_type': user_type.__name__,
+                })
+                text_html = render_to_string('email/welcome.html', {
                     'receipent_name': user.name,
                     'email': user.email,
                     'password': raw_password,
@@ -98,7 +104,8 @@ class CustomUserAdmin(UserAdmin):
 
                 user.send_email(
                     subject="Welcome to OnlineCAL!",
-                    message=strip_tags(text),
+                    message=text,
+                    html_message=text_html,
                 )
 
                 created_users.append(user.name)

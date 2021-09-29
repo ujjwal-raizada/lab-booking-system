@@ -4,7 +4,8 @@ from django.db import models
 class EmailModel(models.Model):
     receiver = models.EmailField(null=True, blank=False)
     date_time = models.DateTimeField(auto_now_add=True)
-    text = models.CharField(max_length=500, null=True)
+    text = models.TextField()
+    text_html = models.TextField()
     subject = models.CharField(max_length=100, null=True)
     sent = models.BooleanField()
 

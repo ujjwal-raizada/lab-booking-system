@@ -1,0 +1,5 @@
+{% extends 'email/base.txt' %}
+
+{% block message %}Congratulations! Your booking has been approved for Time Slot: {{ slot }}.
+
+Please sign-in to see your booking details.{% endblock %}
