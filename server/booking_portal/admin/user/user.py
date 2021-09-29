@@ -1,5 +1,6 @@
 import csv
 from io import BytesIO, StringIO, TextIOWrapper
+from functools import update_wrapper
 
 from django.contrib import messages
 from django.contrib.auth.admin import UserAdmin
@@ -12,7 +13,7 @@ from django.http import FileResponse
 from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
 from django.urls import path
-from django.utils.html import strip_tags, escape, format_html
+from django.utils.html import escape, mark_safe
 
 from ... import forms
 
@@ -48,9 +49,15 @@ class CustomUserAdmin(UserAdmin):
         urls = super().get_urls()
         info = self.model._meta.app_label, self.model._meta.model_name
 
+        def wrap(view):
+            def wrapper(*args, **kwargs):
+                return self.admin_site.admin_view(view)(*args, **kwargs)
+            wrapper.model_admin = self
+            return update_wrapper(wrapper, view)
+
         my_urls = [
-            path('import-csv/', self.import_csv, name='%s_%s_import-csv' % info),
-            path('import-csv/sample/', self.import_csv_sample, name='%s_%s_import-csv-sample' % info)
+            path('import-csv/', wrap(self.import_csv), name='%s_%s_import-csv' % info),
+            path('import-csv/sample/', wrap(self.import_csv_sample), name='%s_%s_import-csv-sample' % info)
         ]
         return my_urls + urls
 
@@ -144,7 +151,7 @@ class CustomUserAdmin(UserAdmin):
             else:
                 created_users = [escape(x) for x in created_users]
                 names = '<br/>'.join(created_users)
-                self.message_user(request, format_html("The following users have been created:<br/>{}", names))
+                self.message_user(request, mark_safe("{} users have been created:<br/>{}".format(len(created_users), names)))
                 return redirect("..")
 
         else:
