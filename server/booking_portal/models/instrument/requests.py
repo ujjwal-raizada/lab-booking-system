@@ -555,7 +555,11 @@ class UTM(UserDetail, UserRemark):
 
     material = models.CharField(max_length=75)
     test_type = models.CharField(max_length=75, choices=TEST_TYPE_CHOICES)
-    test_speed = models.IntegerField()
+    test_speed = models.DecimalField(max_digits=7, decimal_places=2, help_text=(
+        "<small>"
+        "Precision upto 2 decimal places"
+        "</small>"
+    ))
     temperature = models.IntegerField(help_text=(
         "<small>"
         "The temperature ranges are as follows:</br>"
