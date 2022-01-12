@@ -13,6 +13,7 @@ from .lscm import LSCMForm
 from .nmr import NMRForm
 from .pxrd import PXRDForm
 from .rheometer import RheometerForm
+from .saxs_waxs import SAXSWAXSForm
 from .scxrd import SCXRDForm
 from .tcspc import TCSPCForm
 from .tga import TGAForm

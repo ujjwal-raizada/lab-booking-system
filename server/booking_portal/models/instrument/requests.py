@@ -464,6 +464,27 @@ class PXRD(UserDetail, UserRemark):
         verbose_name_plural = 'PXRD'
 
 
+class SAXS_WAXS(UserDetail, UserRemark):
+    sample_code = models.CharField(max_length=75)
+    nature_of_samples = models.CharField(max_length=10, choices=[
+        ('Film', 'Film'),
+        ('Liquid', 'Liquid'),
+        ('Powder', 'Powder'),
+        ('Other', 'Other'),
+    ])
+
+    def __str__(self):
+        return "{} : {} {} {}".format(
+            "SAXS/WAXS",
+            str(self.date.day),
+            calendar.month_name[self.date.month],
+            str(self.date.year)
+        )
+
+    class Meta:
+        verbose_name = 'SAXS/WAXS'
+        verbose_name_plural = 'SAXS/WAXS'
+
 class SCXRD(UserDetail, UserRemark):
     sample_code = models.CharField(max_length=75)
     chemical_composition = models.CharField(max_length=75)
