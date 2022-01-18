@@ -1,3 +1,4 @@
+import csv
 import datetime
 
 from django.db import models
@@ -5,9 +6,26 @@ from django.db.models import Q
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from booking_portal.models.request import Request
-from booking_portal.models.slot import Slot
+from ..request import Request
+from ..slot import Slot
 
+
+class InstrumentManager(models.Manager):
+    def export_instrument_usage_report(self, file, instruments, start_date, end_date):
+        headers = ('Instrument Name', 'Approved Bookings')
+        writer = csv.DictWriter(file, headers)
+        writer.writeheader()
+
+        for instr in instruments:
+            approved_count = Request.objects.filter(instrument=instr,
+                                              slot__date__gte=start_date,
+                                              slot__date__lte=end_date,
+                                              status=Request.APPROVED).count()
+            row = {
+                'Instrument Name': instr.name,
+                'Approved Bookings': approved_count,
+            }
+            writer.writerow(row)
 
 class Instrument(models.Model):
     name = models.CharField(max_length=50, unique=True, null=False)
@@ -17,6 +35,8 @@ class Instrument(models.Model):
         verbose_name="Available for Booking?",
         default=True,
     )
+
+    objects = InstrumentManager()
 
     @property
     def short_id(self):

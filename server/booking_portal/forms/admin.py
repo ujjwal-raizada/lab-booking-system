@@ -244,3 +244,44 @@ class InstrumentChangeForm(forms.ModelForm):
                 choices=BOOL_CHOICES
             ),
         }
+
+
+class InstrumentUsageReportForm(forms.Form):
+    start_date = forms.DateField(
+        initial=datetime.date.today,
+        widget=DateInput,
+        label="Start date for usage report",
+    )
+    end_date = forms.DateField(
+        initial=datetime.date.today,
+        widget=DateInput,
+        label="End date for usage report"
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper(self)
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-sm-2'
+        self.helper.field_class = 'col-sm-3'
+        self.helper.layout = Layout(
+            'start_date',
+            'end_date',
+            ButtonHolder(
+                Submit('download_report', value='Download Report')
+            )
+        )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        start_date: datetime.date = cleaned_data.get('start_date')
+        end_date: datetime.date = cleaned_data.get('end_date')
+
+        if start_date > end_date:
+            self.add_error(
+                'start_date',
+                ValidationError("Start date cannot be after end date")
+            )
+
+        return cleaned_data
