@@ -60,7 +60,7 @@ class InstrumentAdmin(admin.ModelAdmin):
         info = self.model._meta.app_label, self.model._meta.model_name
 
         my_urls = [
-            path("usage-report-form/", InstrumentAdmin.instrument_usage_report_form, name='%s_%s_usage-report-form' % info)
+            path("usage-report/", InstrumentAdmin.instrument_usage_report_form, name='%s_%s_usage-report' % info)
         ]
         return my_urls + urls
 
@@ -70,7 +70,7 @@ class InstrumentAdmin(admin.ModelAdmin):
         opts = self.model._meta
         url = '%s?instruments=%s' %(
             reverse(
-                'admin:%s_%s_usage-report-form' % (opts.app_label, opts.model_name),
+                'admin:%s_%s_usage-report' % (opts.app_label, opts.model_name),
             ),
             ",".join([str(pk) for pk in selected])
         )

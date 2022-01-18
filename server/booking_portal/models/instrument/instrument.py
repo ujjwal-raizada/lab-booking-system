@@ -12,18 +12,31 @@ from ..slot import Slot
 
 class InstrumentManager(models.Manager):
     def export_instrument_usage_report(self, file, instruments, start_date, end_date):
-        headers = ('Instrument Name', 'Approved Bookings')
+        headers = ('Instrument Name', 'Approved Bookings', 'Total Utilisation (hours:minutes)')
         writer = csv.DictWriter(file, headers)
         writer.writeheader()
 
         for instr in instruments:
-            approved_count = Request.objects.filter(instrument=instr,
-                                              slot__date__gte=start_date,
-                                              slot__date__lte=end_date,
-                                              status=Request.APPROVED).count()
+            requests = Request.objects.filter(
+                instrument=instr,
+                slot__date__gte=start_date,
+                slot__date__lte=end_date,
+                status=Request.APPROVED
+            ).select_related('slot')
+            approved_count = requests.count()
+
+            # Calculate the total utilisation for the instrument
+            utilisation = datetime.timedelta()
+            for request in requests:
+                print(request.slot.duration)
+                utilisation += request.slot.duration
+            util_hours, remainder = divmod(utilisation.total_seconds(), 3600)
+            util_minutes, _ = divmod(remainder, 60)
+
             row = {
                 'Instrument Name': instr.name,
                 'Approved Bookings': approved_count,
+                'Total Utilisation (hours:minutes)': "%s:%s" % (int(util_hours), int(util_minutes)),
             }
             writer.writerow(row)
 
