@@ -5,6 +5,7 @@ from .instrument import InstrumentAdmin
 from .request import RequestAdmin
 from .slot import SlotAdmin
 from .user import CustomUserAdmin, FacultyAdmin, StudentAdmin
+from .announcement import AnnouncementAdmin
 from ..models import (Announcement, CustomUser, EmailModel, Faculty,
                       Instrument, LabAssistant, Request, Slot, Student)
 from ..models.instrument.requests import *
@@ -35,8 +36,9 @@ admin.site.register(HPLC)
 admin.site.register(HPLC_FD)
 admin.site.register(NMR)
 admin.site.register(PXRD)
+admin.site.register(SAXS_WAXS)
 admin.site.register(SCXRD)
 admin.site.register(XPS)
 admin.site.register(UVSpectrophotometer)
 admin.site.register(UTM)
-admin.site.register(Announcement)
+admin.site.register(Announcement, AnnouncementAdmin)

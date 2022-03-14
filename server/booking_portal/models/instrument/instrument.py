@@ -1,3 +1,4 @@
+import csv
 import datetime
 
 from django.db import models
@@ -5,9 +6,39 @@ from django.db.models import Q
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from booking_portal.models.request import Request
-from booking_portal.models.slot import Slot
+from ..request import Request
+from ..slot import Slot
 
+
+class InstrumentManager(models.Manager):
+    def export_instrument_usage_report(self, file, instruments, start_date, end_date):
+        headers = ('Instrument Name', 'Approved Bookings', 'Total Utilisation (hours:minutes)')
+        writer = csv.DictWriter(file, headers)
+        writer.writeheader()
+
+        for instr in instruments:
+            requests = Request.objects.filter(
+                instrument=instr,
+                slot__date__gte=start_date,
+                slot__date__lte=end_date,
+                status=Request.APPROVED
+            ).select_related('slot')
+            approved_count = requests.count()
+
+            # Calculate the total utilisation for the instrument
+            utilisation = datetime.timedelta()
+            for request in requests:
+                print(request.slot.duration)
+                utilisation += request.slot.duration
+            util_hours, remainder = divmod(utilisation.total_seconds(), 3600)
+            util_minutes, _ = divmod(remainder, 60)
+
+            row = {
+                'Instrument Name': instr.name,
+                'Approved Bookings': approved_count,
+                'Total Utilisation (hours:minutes)': "%s:%s" % (int(util_hours), int(util_minutes)),
+            }
+            writer.writerow(row)
 
 class Instrument(models.Model):
     name = models.CharField(max_length=50, unique=True, null=False)
@@ -17,6 +48,8 @@ class Instrument(models.Model):
         verbose_name="Available for Booking?",
         default=True,
     )
+
+    objects = InstrumentManager()
 
     @property
     def short_id(self):
